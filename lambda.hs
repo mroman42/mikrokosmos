@@ -2,7 +2,11 @@
 -- http://dev.stephendiehl.com/fun/003_lambda_calculus.html
 
 {- Lambda parsing -}
+{- TODO: \x.\y.x y z -}
+{- TODO: Avoid lookup -}
+{- TODO: Is it better to use Data.Map.Strict or Data.Map? -}
 import Text.ParserCombinators.Parsec
+import qualified Data.Map as Map
 
 data Lexp = Lvar Char
           | Llam Char Lexp
@@ -35,7 +39,7 @@ parens = between (char '(') (char ')')
 
 showlexp :: Lexp -> String
 showlexp (Lvar c) = [c]
-showlexp (Llam c e) = "λx." ++ showlexp e ++ ""
+showlexp (Llam c e) = "λ" ++ [c] ++ "." ++ showlexp e ++ ""
 showlexp (Lapp f g) = showlexp f ++ " " ++ showlexp g
 
 {- Lambda Expressions DeBrunjin -}
@@ -51,19 +55,20 @@ showexp (App f g)  = showexp f ++ " " ++ showexp g
 instance Show Exp where
   show = showexp
 
+{- Translation to DeBrunjin -}
+tobrunjin :: Map.Map Char Integer -> Lexp -> Exp
+tobrunjin d (Llam c e) = Lambda $ tobrunjin (Map.insert c 1 (Map.map succ d)) e
+tobrunjin d (Lapp f g) = App (tobrunjin d f) (tobrunjin d g)
+tobrunjin d (Lvar c) =
+  case Map.lookup c d of
+    Just n  -> Var n
+    Nothing -> Var 0
 
-
+toBrunjin = tobrunjin Map.empty
 
 main :: IO ()
 main = do
   l <- getLine
   case parse lambdaexp "" l of
         Left e  -> putStrLn "Error" 
-        Right s -> (putStrLn $ showlexp s) >> main
-        
-main' = interact (unlines . map (\xs ->
-                    case (parse lambdaexp "" xs) of
-                      Left _ -> undefined
-                      Right s -> showlexp s
-                      )
-                . lines)
+        Right s -> (putStrLn $ showlexp s) >> (putStrLn . showexp $ toBrunjin s) >> main
