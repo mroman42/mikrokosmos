@@ -57,7 +57,7 @@ instance Show Exp where
 
 {- Translation to DeBruijn -}
 tobruijn :: Map.Map Char Integer -> Lexp -> Exp
-njin d (Llam c e) = Lambda $ tobruijn (Map.insert c 1 (Map.map succ d)) e
+tobruijn d (Llam c e) = Lambda $ tobruijn (Map.insert c 1 (Map.map succ d)) e
 tobruijn d (Lapp f g) = App (tobruijn d f) (tobruijn d g)
 tobruijn d (Lvar c) =
   case Map.lookup c d of
@@ -67,6 +67,16 @@ tobruijn d (Lvar c) =
 toBruijn = tobruijn Map.empty
 
 {- Reductions -}
+betared :: Exp -> Exp
+betared (App (Lambda f) x) = substitute 1 x f
+betared e = e
+
+substitute :: Integer -> Exp -> Exp -> Exp
+substitute n x (Lambda e) = Lambda (substitute (succ n) x e)
+substitute n x (App f g)  = App (substitute n x f) (substitute n x g)
+substitute n x (Var m)
+  | n == m    = x
+  | otherwise = (Var m)
 
 
 
@@ -76,4 +86,7 @@ main = do
   l <- getLine
   case parse lambdaexp "" l of
         Left e  -> putStrLn "Error" 
-        Right s -> (putStrLn $ showlexp s) >> (putStrLn . showexp $ toBruijn s) >> main
+        Right s -> (putStrLn $ showlexp s)
+                   >> (putStrLn . showexp $ toBruijn s)
+                   >> (putStrLn . showexp $ betared $ toBruijn s)
+                   >> main
