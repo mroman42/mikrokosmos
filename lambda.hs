@@ -42,7 +42,7 @@ showlexp (Lvar c) = [c]
 showlexp (Llam c e) = "λ" ++ [c] ++ "." ++ showlexp e ++ ""
 showlexp (Lapp f g) = showlexp f ++ " " ++ showlexp g
 
-{- Lambda Expressions DeBrunjin -}
+{- Lambda Expressions DeBruijn -}
 data Exp = Var Integer
          | Lambda Exp
          | App Exp Exp
@@ -55,20 +55,25 @@ showexp (App f g)  = showexp f ++ " " ++ showexp g
 instance Show Exp where
   show = showexp
 
-{- Translation to DeBrunjin -}
-tobrunjin :: Map.Map Char Integer -> Lexp -> Exp
-tobrunjin d (Llam c e) = Lambda $ tobrunjin (Map.insert c 1 (Map.map succ d)) e
-tobrunjin d (Lapp f g) = App (tobrunjin d f) (tobrunjin d g)
-tobrunjin d (Lvar c) =
+{- Translation to DeBruijn -}
+tobruijn :: Map.Map Char Integer -> Lexp -> Exp
+njin d (Llam c e) = Lambda $ tobruijn (Map.insert c 1 (Map.map succ d)) e
+tobruijn d (Lapp f g) = App (tobruijn d f) (tobruijn d g)
+tobruijn d (Lvar c) =
   case Map.lookup c d of
     Just n  -> Var n
     Nothing -> Var 0
 
-toBrunjin = tobrunjin Map.empty
+toBruijn = tobruijn Map.empty
 
+{- Reductions -}
+
+
+
+{- TODO: Better interaction (:quit,:load)-}
 main :: IO ()
 main = do
   l <- getLine
   case parse lambdaexp "" l of
         Left e  -> putStrLn "Error" 
-        Right s -> (putStrLn $ showlexp s) >> (putStrLn . showexp $ toBrunjin s) >> main
+        Right s -> (putStrLn $ showlexp s) >> (putStrLn . showexp $ toBruijn s) >> main
