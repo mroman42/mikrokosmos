@@ -2,7 +2,6 @@
 -- http://dev.stephendiehl.com/fun/003_lambda_calculus.html
 
 {- Lambda parsing -}
-import Text.Parsec
 import Text.ParserCombinators.Parsec
 
 data Lexp = Lvar Char
@@ -11,10 +10,10 @@ data Lexp = Lvar Char
           deriving (Show)
 
 lambdaexp :: Parser Lexp
-lambdaexp = choice [lambdaabs, lambdaapp, parens lambdaexp, variable]
+lambdaexp = choice [lambdaabs, try lambdaapp, parens lambdaexp, variable]
 
 variable :: Parser Lexp
-variable = fmap Lvar anyChar
+variable = fmap Lvar letter
 
 lambdaabs :: Parser Lexp
 lambdaabs = do
@@ -25,9 +24,10 @@ lambdaabs = do
   return $ Llam var exp
 
 lambdaapp :: Parser Lexp
-lambdaapp = do
-  exp1 <- parens lambdaexp
-  exp2 <- parens lambdaexp
+lambdaapp = parens $ do
+  exp1 <- lambdaexp
+  i    <- skipMany space
+  exp2 <- lambdaexp
   return $ Lapp exp1 exp2
 
 parens :: Parser a -> Parser a
@@ -55,7 +55,13 @@ instance Show Exp where
 
 
 main :: IO ()
-main = interact (unlines . map (\xs ->
+main = do
+  l <- getLine
+  case parse lambdaexp "" l of
+        Left e  -> putStrLn "Error" 
+        Right s -> (putStrLn $ showlexp s) >> main
+        
+main' = interact (unlines . map (\xs ->
                     case (parse lambdaexp "" xs) of
                       Left _ -> undefined
                       Right s -> showlexp s
