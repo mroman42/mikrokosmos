@@ -2,6 +2,8 @@
 -- http://dev.stephendiehl.com/fun/003_lambda_calculus.html
 -- https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B
 
+module Lambda where
+
 {- Lambda parsing -}
 {- TODO: Avoid lookup -}
 {- TODO: Is it better to use Data.Map.Strict or Data.Map? -}
@@ -110,13 +112,13 @@ substitute n x (Var m)
 
 
 
-{- TODO: Better interaction (:quit,:load)-}
+{- TODO: Better interaction (:load)-}
 main :: IO ()
-main = runInputT defaultSettings loop
+main = runInputT defaultSettings (outputStrLn initText >> loop)
   where
     loop :: InputT IO ()
     loop = do
-      minput <- getInputLine "λ> "
+      minput <- getInputLine "mikroλ> "
       case minput of
         Nothing -> return ()
         Just ":quit" -> return ()
@@ -127,3 +129,5 @@ main = runInputT defaultSettings loop
                                    >> (outputStrLn . showexp $ simplifyall $ toBruijn s)
                                    >> loop
 
+initText :: String
+initText = "Welcome to the Mikrokosmos Lambda Interpreter!"
