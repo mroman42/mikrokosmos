@@ -23,7 +23,7 @@ lambdaexp = do
   _ <- spaces
   l <- many (do
                 s <- simpleexp
-                w <- spaces
+                _ <- spaces
                 return s
             )
   return $ foldr Lapp e l 
@@ -105,7 +105,7 @@ substitute n x (Lambda e) = Lambda (substitute (succ n) x e)
 substitute n x (App f g)  = App (substitute n x f) (substitute n x g)
 substitute n x (Var m)
   | n == m    = x
-  | otherwise = (Var m)
+  | otherwise = Var m
 
 
 
@@ -114,8 +114,8 @@ main :: IO ()
 main = do
   l <- getLine
   case parse lambdaexp "" l of
-        Left e  -> putStrLn "Error" 
-        Right s -> (putStrLn $ showlexp s)
+        Left _  -> putStrLn "Error" 
+        Right s -> putStrLn (showlexp s)
                    >> (putStrLn . showexp $ toBruijn s)
                    >> (putStrLn . showexp $ simplifyall $ toBruijn s)
                    >> main
