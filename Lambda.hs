@@ -118,7 +118,9 @@ data InterpreterAction = Interpret Action
 
 data Action = Bind (String, Lexp)
             | Execute Lexp
-                       
+            | Comment
+            deriving (Show)
+            
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
 
@@ -143,12 +145,13 @@ interpreterLoop context = do
       case maybeloadfile of
         Nothing    -> outputStrLn "Error loading file"
         Just actions -> case multipleAct context actions of
-                          (ccontext, output) -> outputStrLn output >> interpreterLoop ccontext
+                          (ccontext, output) -> outputStr output >> interpreterLoop ccontext
     Interpret action -> case act context action of
-                          (ccontext, output) -> outputStrLn output >> interpreterLoop ccontext
+                          (ccontext, output) -> outputStr output >> interpreterLoop ccontext
 
 
 act :: Context -> Action -> (Context, String)
+act context Comment       = (context,"")
 act context (Bind (s,le)) = (Map.insert s (toBruijn context le) context, "")
 act context (Execute le)  = (context, unlines [ showlexp le
                                                 , showexp $ toBruijn context le
@@ -165,7 +168,7 @@ multipleAct context = foldr (\action (ccontext,text) ->
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
   input <- readFile filename
-  let parsing = map (parse actionParser "") $ lines input
+  let parsing = map (parse actionParser "") $ filter (/="") $ lines input
   let actions = map (\x -> case x of
                              Left _  -> Nothing
                              Right a -> Just a) parsing
@@ -175,22 +178,25 @@ initText :: String
 initText = "Welcome to the Mikrokosmos Lambda Interpreter!"
 
 interpreteractionParser :: Parser InterpreterAction
-interpreteractionParser = choice [try interpretParser, try quitParser]
+interpreteractionParser = choice [try interpretParser, try quitParser, try loadParser]
 
 interpretParser :: Parser InterpreterAction
 interpretParser = Interpret <$> actionParser
 
 actionParser :: Parser Action
-actionParser = choice [try bindParser, try executeParser]
+actionParser = choice [try bindParser, try executeParser, try commentParser]
 
 bindParser :: Parser Action
 bindParser = fmap Bind $ (,) <$> many1 letter <*> (spaces >> char '=' >> spaces >> lambdaexp)
 
 executeParser :: Parser Action
-executeParser = fmap Execute lambdaexp
+executeParser = Execute <$> lambdaexp
+
+commentParser :: Parser Action
+commentParser = string "#" >> many anyChar >> return Comment
 
 quitParser :: Parser InterpreterAction
 quitParser = string ":quit" >> return Quit
 
 loadParser :: Parser InterpreterAction
-loadParser = fmap Load (string ":load" >> spaces >> many1 anyChar)
+loadParser = Load <$> (string ":load" >> spaces >> many1 anyChar)
