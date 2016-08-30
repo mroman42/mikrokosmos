@@ -109,34 +109,56 @@ substitute n x (Var m)
 
 
 {- TODO: Better interaction (:load)-}
-data Action = Interpret Lexp
-            | Bind (String, Lexp)
-            | EmptyLine
-            | Error
-            | Quit
-              
+data InterpreterAction = Interpret Action
+                       | EmptyLine
+                       | Error
+                       | Quit
+                       | Load String
+
+data Action = Bind (String, Lexp)
+            | Execute Lexp
+                       
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
 
-interpreterLoop :: Map.Map String Exp -> InputT IO ()
+type Context = Map.Map String Exp
+
+interpreterLoop :: Context -> InputT IO ()
 interpreterLoop context = do
   minput <- getInputLine "mikroλ> "
-  let action =
+  let interpreteraction =
         case minput of
           Nothing -> Quit
           Just "" -> EmptyLine
           Just input -> case parse actionParser "" input of
             Left _    -> Error
             Right act -> act
-  case action of
+  case interpreteraction of
     EmptyLine -> interpreterLoop context
     Quit -> return ()
-    Bind (s,le) -> interpreterLoop (Map.insert s (toBruijn context le) context)
     Error -> outputStrLn "Error"
-    Interpret le -> outputStrLn (showlexp le)
-                    >> (outputStrLn . showexp $ toBruijn context le)
-                    >> (outputStrLn . showexp $ simplifyall $ toBruijn context le)
-                    >> interpreterLoop context
+    Load filename -> (return $ loadFile filename) >> interpreterLoop context
+    Interpret action -> case act context action of
+                          (context,output) -> outputStrLn output >> interpreterLoop context
+
+
+act :: Context -> Action -> (Context, String)
+act context EmptyLine       = interpreterLoop context
+act context Quit            = return ()
+act context (Bind (s,le))   = interpreterLoop (Map.insert s (toBruijn context le) context)
+act context Error           = outputStrLn "Error"
+act context (Interpret le)  = outputStrLn (showlexp le)
+                              >> (outputStrLn . showexp $ toBruijn context le)
+                              >> (outputStrLn . showexp $ simplifyall $ toBruijn context le)
+                              >> interpreterLoop context
+act context (Load filename) = do
+  let actions = fmap act (loadFile filename)
+  interpreterLoop context
+
+loadFile :: String -> IO [Action]
+loadFile filename = do
+  instructions <- lines <$> readFile filename
+  return $ map (parse bindParser "") 
 
 initText :: String
 initText = "Welcome to the Mikrokosmos Lambda Interpreter!"
@@ -152,3 +174,6 @@ interpretParser = fmap Interpret lambdaexp
 
 quitParser :: Parser Action
 quitParser = string ":quit" >> return Quit
+
+loadParser :: Parser Action
+loadParser = fmap Load (string ":load" >> spaces >> many1 anyChar)
