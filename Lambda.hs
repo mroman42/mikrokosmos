@@ -20,16 +20,7 @@ data Lexp = Lvar Char
 
 -- | Parses a lambda expression with named variables.
 lambdaexp :: Parser Lexp
-lambdaexp = do
-  _ <- spaces
-  e <- simpleexp
-  _ <- spaces
-  l <- many (do
-                s <- simpleexp
-                _ <- spaces
-                return s
-            )
-  return $ foldr Lapp e l 
+lambdaexp = foldl1 Lapp <$> (spaces >> sepBy1 simpleexp spaces)
 
 simpleexp :: Parser Lexp
 simpleexp = choice [lambdaabs, variable, parens lambdaexp]
