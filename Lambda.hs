@@ -1,6 +1,7 @@
 -- Links:
 -- http://dev.stephendiehl.com/fun/003_lambda_calculus.html
 -- https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B
+-- Inspired by the Glambda interpreter
 
 module Lambda where
 
@@ -13,8 +14,8 @@ import qualified Data.Map as Map
 import System.Console.Haskeline
 
 -- | A lambda expression with named variables.
-data Lexp = Lvar Char
-          | Llam Char Lexp
+data Lexp = Lvar String
+          | Llam String Lexp
           | Lapp Lexp Lexp
           deriving (Show)
 
@@ -26,19 +27,21 @@ simpleexp :: Parser Lexp
 simpleexp = choice [lambdaabs, variable, parens lambdaexp]
 
 variable :: Parser Lexp
-variable = Lvar <$> letter
+variable = Lvar <$> many1 lower
 
 lambdaabs :: Parser Lexp
-lambdaabs = Llam <$> (char '\\' >> anyChar) <*> (char '.' >> lambdaexp)
+lambdaabs = Llam <$> (char '\\' >> many1 lower) <*> (char '.' >> lambdaexp)
 
 parens :: Parser a -> Parser a
 parens = between (char '(') (char ')')
 
 -- | Shows a lambda expression with named variables
 showlexp :: Lexp -> String
-showlexp (Lvar c) = [c]
-showlexp (Llam c e) = "λ" ++ [c] ++ "." ++ showlexp e ++ ""
+showlexp (Lvar c) = c
+showlexp (Llam c e) = "λ" ++ c ++ "." ++ showlexp e ++ ""
 showlexp (Lapp f g) = showlexp f ++ " " ++ showlexp g
+
+
 
 {- Lambda Expressions DeBruijn -}
 -- | A lambda expression using DeBruijn indexes.
@@ -56,7 +59,7 @@ instance Show Exp where
   show = showexp
 
 {- Translation to DeBruijn -}
-tobruijn :: Map.Map Char Integer -> Lexp -> Exp
+tobruijn :: Map.Map String Integer -> Lexp -> Exp
 tobruijn d (Llam c e) = Lambda $ tobruijn (Map.insert c 1 (Map.map succ d)) e
 tobruijn d (Lapp f g) = App (tobruijn d f) (tobruijn d g)
 tobruijn d (Lvar c) =
