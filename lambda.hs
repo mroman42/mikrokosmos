@@ -46,6 +46,7 @@ showlexp (Lapp f g) = showlexp f ++ " " ++ showlexp g
 data Exp = Var Integer
          | Lambda Exp
          | App Exp Exp
+         deriving (Eq)
 
 showexp :: Exp -> String
 showexp (Var n)    = show n
@@ -67,6 +68,17 @@ tobruijn d (Lvar c) =
 toBruijn = tobruijn Map.empty
 
 {- Reductions -}
+simplifyall :: Exp -> Exp
+simplifyall e
+  | e == s    = e
+  | otherwise = simplifyall s
+  where s = simplify e
+
+simplify :: Exp -> Exp
+simplify (Lambda e) = Lambda (simplify e)
+simplify (App f g)  = betared (App (simplify f) (simplify g))
+simplify (Var e)    = Var e
+
 betared :: Exp -> Exp
 betared (App (Lambda f) x) = substitute 1 x f
 betared e = e
@@ -88,5 +100,5 @@ main = do
         Left e  -> putStrLn "Error" 
         Right s -> (putStrLn $ showlexp s)
                    >> (putStrLn . showexp $ toBruijn s)
-                   >> (putStrLn . showexp $ betared $ toBruijn s)
+                   >> (putStrLn . showexp $ simplifyall $ toBruijn s)
                    >> main
