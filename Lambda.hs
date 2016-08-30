@@ -112,26 +112,37 @@ substitute n x (Var m)
 data Action = Interpret Lexp
             | Bind (String, Lexp)
             | EmptyLine
+            | Error
             | Quit
               
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
-  
+
 interpreterLoop :: Map.Map String Exp -> InputT IO ()
 interpreterLoop context = do
   minput <- getInputLine "mikroλ> "
-  case minput of
-      Nothing -> return ()
-      Just ":quit" -> return ()
-      Just input -> case parse lambdaexp "" input of
-        Left _  -> outputStrLn "Error" 
-        Right s -> outputStrLn (showlexp s)
-                   >> (outputStrLn . showexp $ toBruijn context s)
-                   >> (outputStrLn . showexp $ simplifyall $ toBruijn context s)
-                   >> interpreterLoop context
+  let action =
+        case minput of
+          Nothing -> Quit
+          Just "" -> EmptyLine
+          Just input -> case parse actionParser "" input of
+            Left _    -> Error
+            Right act -> act
+  case action of
+    EmptyLine -> interpreterLoop context
+    Quit -> return ()
+    Bind (s,le) -> interpreterLoop (Map.insert s (toBruijn context le) context)
+    Error -> outputStrLn "Error"
+    Interpret le -> outputStrLn (showlexp le)
+                    >> (outputStrLn . showexp $ toBruijn context le)
+                    >> (outputStrLn . showexp $ simplifyall $ toBruijn context le)
+                    >> interpreterLoop context
 
 initText :: String
 initText = "Welcome to the Mikrokosmos Lambda Interpreter!"
+
+actionParser :: Parser Action
+actionParser = choice [try bindParser, try interpretParser, try quitParser]
 
 bindParser :: Parser Action
 bindParser = fmap Bind $ (,) <$> many1 letter <*> (spaces >> char '=' >> spaces >> lambdaexp)
@@ -140,7 +151,4 @@ interpretParser :: Parser Action
 interpretParser = fmap Interpret lambdaexp
 
 quitParser :: Parser Action
-quitParser = string "quit" >> return Quit
-
-actionParser :: Parser Action
-actionParser = choice [try bindParser]
+quitParser = string ":quit" >> return Quit
