@@ -1,5 +1,6 @@
 -- Links:
 -- http://dev.stephendiehl.com/fun/003_lambda_calculus.html
+-- https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B
 
 {- Lambda parsing -}
 {- TODO: Avoid lookup -}
@@ -7,11 +8,13 @@
 import Text.ParserCombinators.Parsec
 import qualified Data.Map as Map
 
+-- | A lambda expression with named variables.
 data Lexp = Lvar Char
           | Llam Char Lexp
           | Lapp Lexp Lexp
           deriving (Show)
 
+-- | Parses a lambda expression with named variables.
 lambdaexp :: Parser Lexp
 lambdaexp = do
   _ <- spaces
@@ -48,12 +51,14 @@ lambdaapp = parens $ do
 parens :: Parser a -> Parser a
 parens = between (char '(') (char ')')
 
+-- | Shows a lambda expression with named variables
 showlexp :: Lexp -> String
 showlexp (Lvar c) = [c]
 showlexp (Llam c e) = "λ" ++ [c] ++ "." ++ showlexp e ++ ""
 showlexp (Lapp f g) = showlexp f ++ " " ++ showlexp g
 
 {- Lambda Expressions DeBruijn -}
+-- | A lambda expression using DeBruijn indexes.
 data Exp = Var Integer
          | Lambda Exp
          | App Exp Exp
@@ -76,9 +81,12 @@ tobruijn d (Lvar c) =
     Just n  -> Var n
     Nothing -> Var 0
 
+-- | Transforms a lambda expression with named variables to a deBruijn index expression
+toBruijn :: Lexp -> Lexp
 toBruijn = tobruijn Map.empty
 
 {- Reductions -}
+-- | Applies simplification to the expression until it stabilizes.
 simplifyall :: Exp -> Exp
 simplifyall e
   | e == s    = e
@@ -90,11 +98,19 @@ simplify (Lambda e) = Lambda (simplify e)
 simplify (App f g)  = betared (App (simplify f) (simplify g))
 simplify (Var e)    = Var e
 
-betared :: Exp -> Exp
+
+-- | Applies beta-reduction to an expression.
+betared :: Exp -- ^ initial expression
+        -> Exp 
 betared (App (Lambda f) x) = substitute 1 x f
 betared e = e
 
-substitute :: Integer -> Exp -> Exp -> Exp
+
+-- | Substitutes an index for a lambda expression
+substitute :: Integer -- ^ deBruijn index of the desired target
+           -> Exp     -- ^ replacement for the index
+           -> Exp     -- ^ initial expression
+           -> Exp
 substitute n x (Lambda e) = Lambda (substitute (succ n) x e)
 substitute n x (App f g)  = App (substitute n x f) (substitute n x g)
 substitute n x (Var m)
