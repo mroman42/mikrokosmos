@@ -6,6 +6,7 @@
 {- TODO: Avoid lookup -}
 {- TODO: Is it better to use Data.Map.Strict or Data.Map? -}
 import Text.ParserCombinators.Parsec
+import Control.Applicative ((<$>),(<*>))
 import qualified Data.Map as Map
 
 -- | A lambda expression with named variables.
@@ -31,22 +32,10 @@ simpleexp :: Parser Lexp
 simpleexp = choice [lambdaabs, variable, parens lambdaexp]
 
 variable :: Parser Lexp
-variable = fmap Lvar letter
+variable = Lvar <$> letter
 
 lambdaabs :: Parser Lexp
-lambdaabs = do
-  l <- char '\\'
-  var <- anyChar
-  p <- char '.'
-  exp <- lambdaexp
-  return $ Llam var exp
-
-lambdaapp :: Parser Lexp
-lambdaapp = parens $ do
-  exp1 <- lambdaexp
-  i    <- skipMany space
-  exp2 <- lambdaexp
-  return $ Lapp exp1 exp2
+lambdaabs = Llam <$> (char '\\' >> anyChar) <*> (char '.' >> lambdaexp)
 
 parens :: Parser a -> Parser a
 parens = between (char '(') (char ')')
@@ -82,7 +71,8 @@ tobruijn d (Lvar c) =
     Nothing -> Var 0
 
 -- | Transforms a lambda expression with named variables to a deBruijn index expression
-toBruijn :: Lexp -> Lexp
+toBruijn :: Lexp -- ^ Initial lambda expression with named variables
+         -> Exp
 toBruijn = tobruijn Map.empty
 
 {- Reductions -}
