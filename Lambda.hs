@@ -162,7 +162,7 @@ act context (Execute le)  = (context, unlines [ showlexp le
 -- TODO: Writer monad
 -- TODO: Use Text instead of String for efficiency
 multipleAct :: Context -> [Action] -> (Context, String)
-multipleAct context = foldr (\action (ccontext,text) ->
+multipleAct context = foldl (\(ccontext,text) action ->
                                 (fst $ act ccontext action, text ++ snd (act ccontext action)))
                       (context,"")
                                     
