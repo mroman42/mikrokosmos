@@ -14,6 +14,7 @@ import qualified Data.Map as Map
 import System.Console.Haskeline
 import Control.Monad.Trans
 import Data.Maybe
+import Data.Char
 
 -- | A lambda expression with named variables.
 data Lexp = Lvar String
@@ -29,7 +30,7 @@ simpleexp :: Parser Lexp
 simpleexp = choice [lambdaabs, variable, parens lambdaexp]
 
 variable :: Parser Lexp
-variable = Lvar <$> many1 lower
+variable = Lvar <$> many1 alphaNum
 
 lambdaabs :: Parser Lexp 
 lambdaabs = Llam <$> (char '\\' >> many1 lower) <*> (char '.' >> lambdaexp)
@@ -167,6 +168,7 @@ multipleAct context = foldr (\action (ccontext,text) ->
                                     
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
+  putStrLn filename
   input <- readFile filename
   let parsing = map (parse actionParser "") $ filter (/="") $ lines input
   let actions = map (\x -> case x of
@@ -187,7 +189,7 @@ actionParser :: Parser Action
 actionParser = choice [try bindParser, try executeParser, try commentParser]
 
 bindParser :: Parser Action
-bindParser = fmap Bind $ (,) <$> many1 letter <*> (spaces >> char '=' >> spaces >> lambdaexp)
+bindParser = fmap Bind $ (,) <$> many1 alphaNum <*> (spaces >> char '=' >> spaces >> lambdaexp)
 
 executeParser :: Parser Action
 executeParser = Execute <$> lambdaexp
@@ -199,4 +201,4 @@ quitParser :: Parser InterpreterAction
 quitParser = string ":quit" >> return Quit
 
 loadParser :: Parser InterpreterAction
-loadParser = Load <$> (string ":load" >> spaces >> many1 anyChar)
+loadParser = Load <$> (string ":load" >> between spaces spaces (many1 (satisfy (not . isSpace))))
