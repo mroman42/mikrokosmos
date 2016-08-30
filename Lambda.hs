@@ -8,13 +8,13 @@ module Lambda where
 {- Lambda parsing -}
 {- TODO: Avoid lookup -}
 {- TODO: Is it better to use Data.Map.Strict or Data.Map? -}
-import Text.ParserCombinators.Parsec
-import Control.Applicative ((<$>),(<*>))
-import qualified Data.Map as Map
-import System.Console.Haskeline
-import Control.Monad.Trans
-import Data.Maybe
-import Data.Char
+import           Control.Applicative           ((<$>), (<*>))
+import           Control.Monad.Trans
+import           Data.Char
+import qualified Data.Map                      as Map
+import           Data.Maybe
+import           System.Console.Haskeline
+import           Text.ParserCombinators.Parsec
 
 -- | A lambda expression with named variables.
 data Lexp = Lvar String
@@ -32,7 +32,7 @@ simpleexp = choice [lambdaabs, variable, parens lambdaexp]
 variable :: Parser Lexp
 variable = Lvar <$> many1 alphaNum
 
-lambdaabs :: Parser Lexp 
+lambdaabs :: Parser Lexp
 lambdaabs = Llam <$> (char '\\' >> many1 lower) <*> (char '.' >> lambdaexp)
 
 parens :: Parser a -> Parser a
@@ -56,7 +56,7 @@ data Exp = Var Integer
 showexp :: Exp -> String
 showexp (Var n)    = show n
 showexp (Lambda e) = "λ(" ++ showexp e ++ ")"
-showexp (App f g)  = showexp f ++ " " ++ showexp g 
+showexp (App f g)  = showexp f ++ " " ++ showexp g
 
 instance Show Exp where
   show = showexp
@@ -92,7 +92,7 @@ simplify (Var e)    = Var e
 
 -- | Applies beta-reduction to an expression.
 betared :: Exp -- ^ initial expression
-        -> Exp 
+        -> Exp
 betared (App (Lambda f) x) = substitute 1 x f
 betared e = e
 
@@ -121,7 +121,7 @@ data Action = Bind (String, Lexp)
             | Execute Lexp
             | Comment
             deriving (Show)
-            
+
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
 
@@ -165,7 +165,7 @@ multipleAct :: Context -> [Action] -> (Context, String)
 multipleAct context = foldl (\(ccontext,text) action ->
                                 (fst $ act ccontext action, text ++ snd (act ccontext action)))
                       (context,"")
-                                    
+
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
   putStrLn filename
@@ -175,7 +175,7 @@ loadFile filename = do
                              Left _  -> Nothing
                              Right a -> Just a) parsing
   return $ sequence actions
-    
+
 initText :: String
 initText = "Welcome to the Mikrokosmos Lambda Interpreter!"
 
