@@ -2,7 +2,6 @@
 -- http://dev.stephendiehl.com/fun/003_lambda_calculus.html
 
 {- Lambda parsing -}
-{- TODO: \x.\y.x y z -}
 {- TODO: Avoid lookup -}
 {- TODO: Is it better to use Data.Map.Strict or Data.Map? -}
 import Text.ParserCombinators.Parsec
@@ -14,7 +13,19 @@ data Lexp = Lvar Char
           deriving (Show)
 
 lambdaexp :: Parser Lexp
-lambdaexp = choice [lambdaabs, try lambdaapp, parens lambdaexp, variable]
+lambdaexp = do
+  _ <- spaces
+  e <- simpleexp
+  _ <- spaces
+  l <- many (do
+                s <- simpleexp
+                w <- spaces
+                return s
+            )
+  return $ foldr Lapp e l 
+
+simpleexp :: Parser Lexp
+simpleexp = choice [lambdaabs, variable, parens lambdaexp]
 
 variable :: Parser Lexp
 variable = fmap Lvar letter
