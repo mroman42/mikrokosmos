@@ -8,6 +8,7 @@
 import Text.ParserCombinators.Parsec
 import Control.Applicative ((<$>),(<*>))
 import qualified Data.Map as Map
+import System.Console.Haskeline
 
 -- | A lambda expression with named variables.
 data Lexp = Lvar Char
@@ -111,11 +112,18 @@ substitute n x (Var m)
 
 {- TODO: Better interaction (:quit,:load)-}
 main :: IO ()
-main = do
-  l <- getLine
-  case parse lambdaexp "" l of
-        Left _  -> putStrLn "Error" 
-        Right s -> putStrLn (showlexp s)
-                   >> (putStrLn . showexp $ toBruijn s)
-                   >> (putStrLn . showexp $ simplifyall $ toBruijn s)
-                   >> main
+main = runInputT defaultSettings loop
+  where
+    loop :: InputT IO ()
+    loop = do
+      minput <- getInputLine "λ> "
+      case minput of
+        Nothing -> return ()
+        Just ":quit" -> return ()
+        Just input -> case parse lambdaexp "" input of
+                        Left _  -> outputStrLn "Error" 
+                        Right s -> outputStrLn (showlexp s)
+                                   >> (outputStrLn . showexp $ toBruijn s)
+                                   >> (outputStrLn . showexp $ simplifyall $ toBruijn s)
+                                   >> loop
+
