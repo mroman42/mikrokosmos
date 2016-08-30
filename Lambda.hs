@@ -12,6 +12,7 @@ import Text.ParserCombinators.Parsec
 import Control.Applicative ((<$>),(<*>))
 import qualified Data.Map as Map
 import System.Console.Haskeline
+import Control.Monad.Trans
 import Data.Maybe
 
 -- | A lambda expression with named variables.
@@ -109,46 +110,93 @@ substitute n x (Var m)
 
 
 {- TODO: Better interaction (:load)-}
-data Action = Interpret Lexp
-            | Bind (String, Lexp)
-            | EmptyLine
-            | Error
-            | Quit
-              
+data InterpreterAction = Interpret Action
+                       | EmptyLine
+                       | Error
+                       | Quit
+                       | Load String
+
+data Action = Bind (String, Lexp)
+            | Execute Lexp
+            | Comment
+            deriving (Show)
+            
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
 
-interpreterLoop :: Map.Map String Exp -> InputT IO ()
+type Context = Map.Map String Exp
+
+interpreterLoop :: Context -> InputT IO ()
 interpreterLoop context = do
   minput <- getInputLine "mikroλ> "
-  let action =
+  let interpreteraction =
         case minput of
           Nothing -> Quit
           Just "" -> EmptyLine
-          Just input -> case parse actionParser "" input of
-            Left _    -> Error
-            Right act -> act
-  case action of
+          Just input -> case parse interpreteractionParser "" input of
+            Left _  -> Error
+            Right a -> a
+  case interpreteraction of
     EmptyLine -> interpreterLoop context
     Quit -> return ()
-    Bind (s,le) -> interpreterLoop (Map.insert s (toBruijn context le) context)
     Error -> outputStrLn "Error"
-    Interpret le -> outputStrLn (showlexp le)
-                    >> (outputStrLn . showexp $ toBruijn context le)
-                    >> (outputStrLn . showexp $ simplifyall $ toBruijn context le)
-                    >> interpreterLoop context
+    Load filename -> do
+      maybeloadfile <- lift $ loadFile filename
+      case maybeloadfile of
+        Nothing    -> outputStrLn "Error loading file"
+        Just actions -> case multipleAct context actions of
+                          (ccontext, output) -> outputStr output >> interpreterLoop ccontext
+    Interpret action -> case act context action of
+                          (ccontext, output) -> outputStr output >> interpreterLoop ccontext
 
+
+act :: Context -> Action -> (Context, String)
+act context Comment       = (context,"")
+act context (Bind (s,le)) = (Map.insert s (toBruijn context le) context, "")
+act context (Execute le)  = (context, unlines [ showlexp le
+                                                , showexp $ toBruijn context le
+                                                , showexp $ simplifyall $ toBruijn context le
+                                                ])
+
+-- TODO: Writer monad
+-- TODO: Use Text instead of String for efficiency
+multipleAct :: Context -> [Action] -> (Context, String)
+multipleAct context = foldr (\action (ccontext,text) ->
+                                (fst $ act ccontext action, text ++ snd (act ccontext action)))
+                      (context,"")
+                                    
+loadFile :: String -> IO (Maybe [Action])
+loadFile filename = do
+  input <- readFile filename
+  let parsing = map (parse actionParser "") $ filter (/="") $ lines input
+  let actions = map (\x -> case x of
+                             Left _  -> Nothing
+                             Right a -> Just a) parsing
+  return $ sequence actions
+    
 initText :: String
 initText = "Welcome to the Mikrokosmos Lambda Interpreter!"
 
+interpreteractionParser :: Parser InterpreterAction
+interpreteractionParser = choice [try interpretParser, try quitParser, try loadParser]
+
+interpretParser :: Parser InterpreterAction
+interpretParser = Interpret <$> actionParser
+
 actionParser :: Parser Action
-actionParser = choice [try bindParser, try interpretParser, try quitParser]
+actionParser = choice [try bindParser, try executeParser, try commentParser]
 
 bindParser :: Parser Action
 bindParser = fmap Bind $ (,) <$> many1 letter <*> (spaces >> char '=' >> spaces >> lambdaexp)
 
-interpretParser :: Parser Action
-interpretParser = fmap Interpret lambdaexp
+executeParser :: Parser Action
+executeParser = Execute <$> lambdaexp
 
-quitParser :: Parser Action
+commentParser :: Parser Action
+commentParser = string "#" >> many anyChar >> return Comment
+
+quitParser :: Parser InterpreterAction
 quitParser = string ":quit" >> return Quit
+
+loadParser :: Parser InterpreterAction
+loadParser = Load <$> (string ":load" >> spaces >> many1 anyChar)
