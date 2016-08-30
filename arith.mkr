@@ -1,0 +1,14 @@
+# Arithmetic library
+# This library uses Church numerals to represent natural numbers
+# Succesor of a natural number is defined with 0
+succ = \n.\f.\x.f (n f x)
+0 = \f.\x.x
+1 = succ 0
+2 = succ 1
+3 = succ 2
+4 = succ 3
+5 = succ 4
+
+# Basic operations on natural numbers
+plus = \m.\n.\f.\x.m f (n f x)
+mult = \m.\n.\f.m (n f)
