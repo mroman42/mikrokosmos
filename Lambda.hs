@@ -166,8 +166,18 @@ substitute n x (Var m)
 -- actions (bindings and evaluation), and interpreter specific actions, as
 -- "quit" or "load".
 main :: IO ()
-main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
+main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop defaultOptions Map.empty)
 
+-- | Configuration options for the interpreter. They can be changed dinamically.
+data InterpreterOptions = InterpreterOptions { verbose :: Bool -- ^ true if produces verbose output
+                                             , format :: Bool  -- ^ true if formats the output
+                                             }
+
+-- | Default config options
+defaultOptions :: InterpreterOptions
+defaultOptions = InterpreterOptions { verbose = True
+                                    , format  = True
+                                    }
 
 -- TODO: Help
 -- | Interpreter action. It can be a language action (binding and evaluation)
@@ -189,27 +199,28 @@ data Action = Bind (String, LambdaName) -- ^ bind a name to an expression
 -- | Executes a language action. Given a context and an action, returns
 -- the new context after the action and a text output.
 act :: Context -> Action -> (Context, String)
-act context Comment       = (context,"")
-act context (Bind (s,le)) = (Map.insert s (toBruijn context le) context, "")
-act context (Execute le)  = (context, unlines [ showlexp le
+act context Comment             = (context,"")
+act context (Bind (s,le))       = (Map.insert s (toBruijn context le) context, "")
+act context (Execute le)        = (context, unlines [ showlexp le
                                                 , showexp $ toBruijn context le
                                                 , showexp $ simplifyall $ toBruijn context le
                                                 ])
 
 -- TODO: Writer monad
 -- TODO: Use Text instead of String for efficiency
+-- TODO: Lists of string are inefficient
 -- | Executes multiple actions. Given a context and a set of actions, returns
 -- the new context after the sequence of actions and a text output.
-multipleAct :: Context -> [Action] -> (Context, String)
+multipleAct :: Context -> [Action] -> (Context, [String])
 multipleAct context = foldl (\(ccontext,text) action ->
-                                (fst $ act ccontext action, text ++ snd (act ccontext action)))
-                      (context,"")
+                                (fst $ act ccontext action, text ++ [snd (act ccontext action)]))
+                      (context,[])
 
 
 -- TODO: State Monad
 -- | Interpreter awaiting for an instruction.
-interpreterLoop :: Context -> InputT IO ()
-interpreterLoop context = do
+interpreterLoop :: InterpreterOptions ->  Context -> InputT IO ()
+interpreterLoop options context = do
   minput <- getInputLine "mikroλ> "
   let interpreteraction =
         case minput of
@@ -219,7 +230,7 @@ interpreterLoop context = do
             Left _  -> Error
             Right a -> a
   case interpreteraction of
-    EmptyLine -> interpreterLoop context
+    EmptyLine -> interpreterLoop options context
     Quit -> return ()
     Error -> outputStrLn "Error"
     Load filename -> do
@@ -227,9 +238,9 @@ interpreterLoop context = do
       case maybeloadfile of
         Nothing    -> outputStrLn "Error loading file"
         Just actions -> case multipleAct context actions of
-                          (ccontext, output) -> outputStr output >> interpreterLoop ccontext
+                          (ccontext, output) -> mapM_ outputStr output >> interpreterLoop options ccontext
     Interpret action -> case act context action of
-                          (ccontext, output) -> outputStr output >> interpreterLoop ccontext
+                          (ccontext, outputs) -> outputStr outputs >> interpreterLoop options ccontext
 
 -- | Loads the given filename and returns the complete list of actions.
 -- Returns Nothing if there is an error reading or parsing the file.
