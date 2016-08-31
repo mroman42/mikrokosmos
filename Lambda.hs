@@ -1,8 +1,3 @@
--- Links:
--- http://dev.stephendiehl.com/fun/003_lambda_calculus.html
--- https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B
--- Inspired by the Glambda interpreter
-
 module Lambda where
 
 import           Control.Applicative           ((<$>), (<*>))
