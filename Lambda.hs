@@ -122,15 +122,11 @@ instance Show Exp where
 
 
 -- Reductions of lambda expressions.
--- TODO: Step-by-step reduction.
 
 -- | Applies repeated simplification to the expression until it stabilizes and
 -- returns the final simplified expression.
 simplifyall :: Exp -> Exp
-simplifyall e
-  | e == s    = e
-  | otherwise = simplifyall s
-  where s = simplify e
+simplifyall = last . stepsSimplify
 
 -- | Applies repeated simplification to the expression until it stabilizes and
 -- returns all the intermediate results.
@@ -177,6 +173,7 @@ substitute n x (Var m)
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
 
+
 -- TODO: Help
 -- | Interpreter action. It can be a language action (binding and evaluation)
 -- or an interpreter specific one, such as "quit". 
@@ -214,6 +211,7 @@ multipleAct context = foldl (\(ccontext,text) action ->
                       (context,"")
 
 
+-- TODO: State Monad
 -- | Interpreter awaiting for an instruction.
 interpreterLoop :: Context -> InputT IO ()
 interpreterLoop context = do
