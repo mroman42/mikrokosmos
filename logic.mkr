@@ -1,0 +1,9 @@
+# Logic library
+
+# Uses Church Booleans
+true  = \a.\b.a
+false = \a.\b.b
+
+# Basic logic gates
+and = \p.\q.p q p
+or  = \p.\q.p p q
