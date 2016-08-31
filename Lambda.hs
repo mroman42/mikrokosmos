@@ -7,6 +7,7 @@ import qualified Data.Map.Strict               as Map
 import           Data.Maybe
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
+import           System.Console.ANSI
 
 type Context = Map.Map String Exp
 
@@ -222,7 +223,7 @@ multipleAct context = foldl (\(ccontext,text) action ->
 
 -- | Prompt line
 prompt :: String
-prompt = "mikroλ> "
+prompt = setSGRCode [SetConsoleIntensity BoldIntensity] ++ "mikroλ> " ++ setSGRCode []
 
 -- TODO: State Monad
 -- | Interpreter awaiting for an instruction.
