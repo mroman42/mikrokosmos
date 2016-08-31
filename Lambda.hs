@@ -5,12 +5,10 @@
 
 module Lambda where
 
-{- TODO: Avoid lookup -}
-{- TODO: Is it better to use Data.Map.Strict or Data.Map? -}
 import           Control.Applicative           ((<$>), (<*>))
 import           Control.Monad.Trans
 import           Data.Char
-import qualified Data.Map                      as Map
+import qualified Data.Map.Strict               as Map
 import           Data.Maybe
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
@@ -25,36 +23,36 @@ type Context = Map.Map String Exp
 -- it into an internal representation.
 
 -- | A lambda expression with named variables.
-data Lexp = Lvar String       -- ^ variable
-          | Llam String Lexp  -- ^ lambda abstraction 
-          | Lapp Lexp Lexp    -- ^ function application
+data LambdaName = LambdaVariable String               -- ^ variable
+                | LambdaAbstraction String LambdaName -- ^ lambda abstraction 
+                | Lapp LambdaName LambdaName          -- ^ function application
 
 -- | Parses a lambda expression with named variables.
 -- A lambda expression is a sequence of one or more autonomous
 -- lambda expressions. They are parsed assuming left-associativity.
-lambdaexp :: Parser Lexp
+lambdaexp :: Parser LambdaName
 lambdaexp = foldl1 Lapp <$> (spaces >> sepBy1 simpleexp spaces)
 
 -- | Parses a simple lambda expression, without function applications
 -- at the top level. It can be a lambda abstraction, a variable or another
 -- potentially complex lambda expression enclosed in parentheses.
-simpleexp :: Parser Lexp
+simpleexp :: Parser LambdaName
 simpleexp = choice [lambdaabs, variable, parens lambdaexp]
 
 parens :: Parser a -> Parser a
 parens = between (char '(') (char ')')
 
 -- | Parses a variable. Any name can form a lambda variable.
-variable :: Parser Lexp
-variable = Lvar <$> name
+variable :: Parser LambdaName
+variable = LambdaVariable <$> name
 
 -- | Allowed variable names
 name :: Parser String
 name = many1 alphaNum
 
 -- | Parses a lambda abstraction. The '\' is used as lambda. 
-lambdaabs :: Parser Lexp
-lambdaabs = Llam <$> (char lambdachar >> name) <*> (char '.' >> lambdaexp)
+lambdaabs :: Parser LambdaName
+lambdaabs = LambdaAbstraction <$> (char lambdachar >> name) <*> (char '.' >> lambdaexp)
 
 -- | Char used to represent lambda in user's input.
 lambdachar :: Char
@@ -62,12 +60,12 @@ lambdachar = '\\'
 
 -- | Shows a lambda expression with named variables.
 -- Parentheses are ignored; they are written only around applications.
-showlexp :: Lexp -> String
-showlexp (Lvar c)   = c
-showlexp (Llam c e) = "λ" ++ c ++ "." ++ showlexp e ++ ""
+showlexp :: LambdaName -> String
+showlexp (LambdaVariable c)   = c
+showlexp (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showlexp e ++ ""
 showlexp (Lapp f g) = "(" ++ showlexp f ++ " " ++ showlexp g ++ ")"
 
-instance Show Lexp where
+instance Show LambdaName where
   show = showlexp
 
 
@@ -87,26 +85,30 @@ data Exp = Var Integer -- ^ integer indexing the variable.
 -- Uses a dictionary of already binded numbers and variables.
 tobruijn :: Map.Map String Integer -- ^ dictionary of the names of the variables used
          -> Context                -- ^ dictionary of the names already binded on the scope
-         -> Lexp                   -- ^ initial expression
+         -> LambdaName             -- ^ initial expression
          -> Exp
          
--- Every lambda abstraction is inserted in the variable dictionary.
-tobruijn d context (Llam c e) = Lambda $ tobruijn (Map.insert c 1 (Map.map succ d)) context e
+-- Every lambda abstraction is inserted in the variable dictionary,
+-- and every number in the dictionary increases to reflect we are entering
+-- into a deeper context.
+tobruijn d context (LambdaAbstraction c e) = Lambda $ tobruijn newdict context e
+  where newdict = Map.insert c 1 (Map.map succ d)
 -- Translation of applications is trivial.
 tobruijn d context (Lapp f g) = App (tobruijn d context f) (tobruijn d context g)
 -- Every variable is checked on the variable dictionary and in the current scope.
-tobruijn d context (Lvar c) =
+tobruijn d context (LambdaVariable c) =
   case Map.lookup c d of
     Just n  -> Var n
     Nothing -> fromMaybe (Var 0) (Map.lookup c context)
 
 -- | Transforms a lambda expression with named variables to a deBruijn index expression.
 -- Uses only the dictionary of the variables in the current context.
-toBruijn :: Context  -- ^ Variable context
-         -> Lexp     -- ^ Initial lambda expression with named variables
+toBruijn :: Context     -- ^ Variable context
+         -> LambdaName  -- ^ Initial lambda expression with named variables
          -> Exp
 toBruijn = tobruijn Map.empty
 
+-- TODO: Show an index after the lambda
 -- | Shows an expression with DeBruijn indexes.
 showexp :: Exp -> String
 showexp (Var n)    = show n
@@ -119,26 +121,28 @@ instance Show Exp where
 
 
 
-{- Reductions -}
--- | Applies simplification to the expression until it stabilizes.
+-- Reductions of lambda expressions.
+-- TODO: Step-by-step reduction.
+
+-- | Applies repeated simplification to the expression until it stabilizes.
 simplifyall :: Exp -> Exp
 simplifyall e
   | e == s    = e
   | otherwise = simplifyall s
   where s = simplify e
 
+-- | Simplifies the expression recursively. Applies multiples beta reductions
+-- on each step.
 simplify :: Exp -> Exp
 simplify (Lambda e) = Lambda (simplify e)
 simplify (App f g)  = betared (App (simplify f) (simplify g))
 simplify (Var e)    = Var e
 
-
--- | Applies beta-reduction to an expression.
-betared :: Exp -- ^ initial expression
-        -> Exp
+-- | Applies beta-reduction to a function application.
+-- Leaves the rest of the operations untouched.
+betared :: Exp -> Exp
 betared (App (Lambda f) x) = substitute 1 x f
 betared e = e
-
 
 -- | Substitutes an index for a lambda expression
 substitute :: Integer -- ^ deBruijn index of the desired target
@@ -153,21 +157,49 @@ substitute n x (Var m)
 
 
 
-{- TODO: Better interaction (:load)-}
-data InterpreterAction = Interpret Action
-                       | EmptyLine
-                       | Error
-                       | Quit
-                       | Load String
 
-data Action = Bind (String, Lexp)
-            | Execute Lexp
-            | Comment
-            deriving (Show)
-
+-- Lambda interpreter
+-- The logic of the interpreter is written here. It allows to execute normal
+-- actions (bindings and evaluation), and interpreter specific actions, as
+-- "quit" or "load".
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
 
+-- TODO: Help
+-- | Interpreter action. It can be a language action (binding and evaluation)
+-- or an interpreter specific one, such as "quit". 
+data InterpreterAction = Interpret Action -- ^ Language action
+                       | EmptyLine        -- ^ Empty line, it will be ignored
+                       | Error            -- ^ Error on the interpreter
+                       | Quit             -- ^ Close the interpreter
+                       | Load String      -- ^ Load the given file
+
+-- | Language action. The language has a number of possible valid statements;
+-- all on the following possible forms.
+data Action = Bind (String, LambdaName) -- ^ bind a name to an expression
+            | Execute LambdaName        -- ^ execute an expression
+            | Comment                   -- ^ comment
+            -- Derives Show for debugging purposes only. 
+            deriving (Show)
+
+-- | Executes a language action. Given a context and an action, returns
+-- the new context after the action and a text output.
+act :: Context -> Action -> (Context, String)
+act context Comment       = (context,"")
+act context (Bind (s,le)) = (Map.insert s (toBruijn context le) context, "")
+act context (Execute le)  = (context, unlines [ showlexp le
+                                                , showexp $ toBruijn context le
+                                                , showexp $ simplifyall $ toBruijn context le
+                                                ])
+
+-- TODO: Writer monad
+-- TODO: Use Text instead of String for efficiency
+-- | Executes multiple actions. Given a context and a set of actions, returns
+-- the new context after the sequence of actions and a text output.
+multipleAct :: Context -> [Action] -> (Context, String)
+multipleAct context = foldl (\(ccontext,text) action ->
+                                (fst $ act ccontext action, text ++ snd (act ccontext action)))
+                      (context,"")
 
 
 interpreterLoop :: Context -> InputT IO ()
@@ -193,22 +225,8 @@ interpreterLoop context = do
     Interpret action -> case act context action of
                           (ccontext, output) -> outputStr output >> interpreterLoop ccontext
 
-
-act :: Context -> Action -> (Context, String)
-act context Comment       = (context,"")
-act context (Bind (s,le)) = (Map.insert s (toBruijn context le) context, "")
-act context (Execute le)  = (context, unlines [ showlexp le
-                                                , showexp $ toBruijn context le
-                                                , showexp $ simplifyall $ toBruijn context le
-                                                ])
-
--- TODO: Writer monad
--- TODO: Use Text instead of String for efficiency
-multipleAct :: Context -> [Action] -> (Context, String)
-multipleAct context = foldl (\(ccontext,text) action ->
-                                (fst $ act ccontext action, text ++ snd (act ccontext action)))
-                      (context,"")
-
+-- | Loads the given filename and returns the complete list of actions.
+-- Returns Nothing if there is an error reading or parsing the file.
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
   putStrLn filename
@@ -219,29 +237,41 @@ loadFile filename = do
                              Right a -> Just a) parsing
   return $ sequence actions
 
+-- | Initial text on the interpreter.
 initText :: String
-initText = "Welcome to the Mikrokosmos Lambda Interpreter!"
+initText = unlines [
+  "Welcome to the Mikrokosmos Lambda Interpreter!",
+  "Version 0.1.0. GNU General Public License Version 3."
+  ]
 
+-- | Parses an interpreter action.
 interpreteractionParser :: Parser InterpreterAction
 interpreteractionParser = choice [try interpretParser, try quitParser, try loadParser]
 
+-- | Parses a language action as an interpreter action.
 interpretParser :: Parser InterpreterAction
 interpretParser = Interpret <$> actionParser
 
+-- | Parses a language action.
 actionParser :: Parser Action
 actionParser = choice [try bindParser, try executeParser, try commentParser]
 
+-- | Parses a binding between a variable an its representation.
 bindParser :: Parser Action
 bindParser = fmap Bind $ (,) <$> many1 alphaNum <*> (spaces >> char '=' >> spaces >> lambdaexp)
 
+-- | Parses an expression in order to execute it.
 executeParser :: Parser Action
 executeParser = Execute <$> lambdaexp
 
+-- | Parses comments.
 commentParser :: Parser Action
 commentParser = string "#" >> many anyChar >> return Comment
 
+-- | Parses a "quit" command.
 quitParser :: Parser InterpreterAction
 quitParser = string ":quit" >> return Quit
 
+-- | Parses a "load-file" command.
 loadParser :: Parser InterpreterAction
 loadParser = Load <$> (string ":load" >> between spaces spaces (many1 (satisfy (not . isSpace))))
