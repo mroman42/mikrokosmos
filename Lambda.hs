@@ -7,7 +7,7 @@ import qualified Data.Map.Strict               as Map
 import           Data.Maybe
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
-import           System.Console.ANSI
+import           Format
 
 type Context = Map.Map String Exp
 
@@ -223,7 +223,7 @@ multipleAct context = foldl (\(ccontext,text) action ->
 
 -- | Prompt line
 prompt :: String
-prompt = setSGRCode [SetConsoleIntensity BoldIntensity] ++ "mikroλ> " ++ setSGRCode []
+prompt = formatPrompt ++ "mikroλ> " ++ end
 
 -- TODO: State Monad
 -- | Interpreter awaiting for an instruction.
@@ -248,11 +248,15 @@ interpreterLoop options context = do
         Nothing    -> outputStrLn "Error loading file"
         Just actions -> case multipleAct context actions of
                           (ccontext, outputs) -> do
+                            outputStr formatFormula
                             outputActions options outputs
+                            outputStr end
                             interpreterLoop options ccontext
     Interpret action -> case act context action of
                           (ccontext, output) -> do
+                            outputStr formatFormula
                             outputActions options [output]
+                            outputStr end
                             interpreterLoop options ccontext
 
 -- | Outputs results from actions. Given a list of options and outputs,
@@ -281,8 +285,8 @@ loadFile filename = do
 -- | Initial text on the interpreter.
 initText :: String
 initText = unlines [
-  "Welcome to the Mikrokosmos Lambda Interpreter!",
-  "Version 0.1.0. GNU General Public License Version 3."
+  formatIntro ++ "Welcome to the Mikrokosmos Lambda Interpreter!" ++ end,
+  formatFormula ++ "Version 0.1.0. GNU General Public License Version 3." ++ end
   ]
 
 -- | Parses an interpreter action.
