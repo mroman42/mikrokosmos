@@ -124,19 +124,31 @@ instance Show Exp where
 -- Reductions of lambda expressions.
 -- TODO: Step-by-step reduction.
 
--- | Applies repeated simplification to the expression until it stabilizes.
+-- | Applies repeated simplification to the expression until it stabilizes and
+-- returns the final simplified expression.
 simplifyall :: Exp -> Exp
 simplifyall e
   | e == s    = e
   | otherwise = simplifyall s
   where s = simplify e
 
--- | Simplifies the expression recursively. Applies multiples beta reductions
--- on each step.
+-- | Applies repeated simplification to the expression until it stabilizes and
+-- returns all the intermediate results.
+stepsSimplify :: Exp -> [Exp]
+stepsSimplify e
+  | e == s    = [e]
+  | otherwise = e : stepsSimplify s
+  where s = simplify e
+
+-- TODO: Simplify internal operations first. This has not an optimal efficiency.
+-- | Simplifies the expression recursively.
+-- Applies only a beta reduction at each step.
 simplify :: Exp -> Exp
-simplify (Lambda e) = Lambda (simplify e)
-simplify (App f g)  = betared (App (simplify f) (simplify g))
-simplify (Var e)    = Var e
+simplify (Lambda e)         = Lambda (simplify e)
+simplify (App (Lambda f) x) = betared (App (Lambda f) x)
+simplify (App (Var e) x)    = App (Var e) (simplify x)
+simplify (App (App f g) x)  = App (simplify (App f g)) x
+simplify (Var e)            = Var e
 
 -- | Applies beta-reduction to a function application.
 -- Leaves the rest of the operations untouched.
@@ -202,6 +214,7 @@ multipleAct context = foldl (\(ccontext,text) action ->
                       (context,"")
 
 
+-- | Interpreter awaiting for an instruction.
 interpreterLoop :: Context -> InputT IO ()
 interpreterLoop context = do
   minput <- getInputLine "mikroλ> "
