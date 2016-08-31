@@ -170,13 +170,13 @@ main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop defaul
 
 -- | Configuration options for the interpreter. They can be changed dinamically.
 data InterpreterOptions = InterpreterOptions { verbose :: Bool -- ^ true if produces verbose output
-                                             , format :: Bool  -- ^ true if formats the output
+                                             , color :: Bool   -- ^ true if colors the output
                                              }
 
 -- | Default config options
 defaultOptions :: InterpreterOptions
-defaultOptions = InterpreterOptions { verbose = True
-                                    , format  = True
+defaultOptions = InterpreterOptions { verbose = False
+                                    , color   = True
                                     }
 
 -- TODO: Help
@@ -187,6 +187,7 @@ data InterpreterAction = Interpret Action -- ^ Language action
                        | Error            -- ^ Error on the interpreter
                        | Quit             -- ^ Close the interpreter
                        | Load String      -- ^ Load the given file
+                       | SetVerbose       -- ^ Changes verbosity
 
 -- | Language action. The language has a number of possible valid statements;
 -- all on the following possible forms.
@@ -199,12 +200,14 @@ data Action = Bind (String, LambdaName) -- ^ bind a name to an expression
 -- | Executes a language action. Given a context and an action, returns
 -- the new context after the action and a text output.
 act :: Context -> Action -> (Context, String)
-act context Comment             = (context,"")
-act context (Bind (s,le))       = (Map.insert s (toBruijn context le) context, "")
-act context (Execute le)        = (context, unlines [ showlexp le
-                                                , showexp $ toBruijn context le
-                                                , showexp $ simplifyall $ toBruijn context le
-                                                ])
+act context Comment       = (context,"")
+act context (Bind (s,le)) = (Map.insert s (toBruijn context le) context, "")
+act context (Execute le)  = (context,
+                             unlines $
+                              [ showlexp le ] ++
+                              [ unlines $ map showexp $ stepsSimplify $ toBruijn context le ] ++
+                              [ showexp $ simplifyall $ toBruijn context le]
+                            )
 
 -- TODO: Writer monad
 -- TODO: Use Text instead of String for efficiency
@@ -217,11 +220,15 @@ multipleAct context = foldl (\(ccontext,text) action ->
                       (context,[])
 
 
+-- | Prompt line
+prompt :: String
+prompt = "mikroλ> "
+
 -- TODO: State Monad
 -- | Interpreter awaiting for an instruction.
-interpreterLoop :: InterpreterOptions ->  Context -> InputT IO ()
+interpreterLoop :: InterpreterOptions -> Context -> InputT IO ()
 interpreterLoop options context = do
-  minput <- getInputLine "mikroλ> "
+  minput <- getInputLine prompt
   let interpreteraction =
         case minput of
           Nothing -> Quit
@@ -233,14 +240,30 @@ interpreterLoop options context = do
     EmptyLine -> interpreterLoop options context
     Quit -> return ()
     Error -> outputStrLn "Error"
+    SetVerbose -> interpreterLoop (options {verbose = not $ verbose options}) context
     Load filename -> do
       maybeloadfile <- lift $ loadFile filename
       case maybeloadfile of
         Nothing    -> outputStrLn "Error loading file"
         Just actions -> case multipleAct context actions of
-                          (ccontext, output) -> mapM_ outputStr output >> interpreterLoop options ccontext
+                          (ccontext, outputs) -> do
+                            outputActions options outputs
+                            interpreterLoop options ccontext
     Interpret action -> case act context action of
-                          (ccontext, outputs) -> outputStr outputs >> interpreterLoop options ccontext
+                          (ccontext, output) -> do
+                            outputActions options [output]
+                            interpreterLoop options ccontext
+
+-- | Outputs results from actions. Given a list of options and outputs,
+-- formats and prints them in console.
+outputActions :: InterpreterOptions -> [String] -> InputT IO ()
+outputActions options = mapM_ (outputStr . format)
+  where
+    format :: String -> String
+    format "" = ""
+    format s
+      | not (verbose options) = (++"\n") . last . lines $ s
+      | otherwise             = s
 
 -- | Loads the given filename and returns the complete list of actions.
 -- Returns Nothing if there is an error reading or parsing the file.
@@ -263,7 +286,11 @@ initText = unlines [
 
 -- | Parses an interpreter action.
 interpreteractionParser :: Parser InterpreterAction
-interpreteractionParser = choice [try interpretParser, try quitParser, try loadParser]
+interpreteractionParser = choice [ try interpretParser
+                                 , try quitParser
+                                 , try loadParser
+                                 , try verboseParser
+                                 ]
 
 -- | Parses a language action as an interpreter action.
 interpretParser :: Parser InterpreterAction
@@ -288,6 +315,10 @@ commentParser = string "#" >> many anyChar >> return Comment
 -- | Parses a "quit" command.
 quitParser :: Parser InterpreterAction
 quitParser = string ":quit" >> return Quit
+
+-- | Parses a change in verbosity.
+verboseParser :: Parser InterpreterAction
+verboseParser = string ":verbose" >> return SetVerbose
 
 -- | Parses a "load-file" command.
 loadParser :: Parser InterpreterAction
