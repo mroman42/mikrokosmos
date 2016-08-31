@@ -5,7 +5,6 @@
 
 module Lambda where
 
-{- Lambda parsing -}
 {- TODO: Avoid lookup -}
 {- TODO: Is it better to use Data.Map.Strict or Data.Map? -}
 import           Control.Applicative           ((<$>), (<*>))
@@ -16,43 +15,99 @@ import           Data.Maybe
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
 
+type Context = Map.Map String Exp
+
+
+
+-- Parsing of Lambda Expressions.
+-- The user can input a lambda expression with named variables, of
+-- the form of "\x.x" or "(\a.(\b.a b))". The interpreter will parse
+-- it into an internal representation.
+
 -- | A lambda expression with named variables.
-data Lexp = Lvar String
-          | Llam String Lexp
-          | Lapp Lexp Lexp
-          deriving (Show)
+data Lexp = Lvar String       -- ^ variable
+          | Llam String Lexp  -- ^ lambda abstraction 
+          | Lapp Lexp Lexp    -- ^ function application
 
 -- | Parses a lambda expression with named variables.
+-- A lambda expression is a sequence of one or more autonomous
+-- lambda expressions. They are parsed assuming left-associativity.
 lambdaexp :: Parser Lexp
 lambdaexp = foldl1 Lapp <$> (spaces >> sepBy1 simpleexp spaces)
 
+-- | Parses a simple lambda expression, without function applications
+-- at the top level. It can be a lambda abstraction, a variable or another
+-- potentially complex lambda expression enclosed in parentheses.
 simpleexp :: Parser Lexp
 simpleexp = choice [lambdaabs, variable, parens lambdaexp]
-
-variable :: Parser Lexp
-variable = Lvar <$> many1 alphaNum
-
-lambdaabs :: Parser Lexp
-lambdaabs = Llam <$> (char '\\' >> many1 lower) <*> (char '.' >> lambdaexp)
 
 parens :: Parser a -> Parser a
 parens = between (char '(') (char ')')
 
--- | Shows a lambda expression with named variables
+-- | Parses a variable. Any name can form a lambda variable.
+variable :: Parser Lexp
+variable = Lvar <$> name
+
+-- | Allowed variable names
+name :: Parser String
+name = many1 alphaNum
+
+-- | Parses a lambda abstraction. The '\' is used as lambda. 
+lambdaabs :: Parser Lexp
+lambdaabs = Llam <$> (char lambdachar >> name) <*> (char '.' >> lambdaexp)
+
+-- | Char used to represent lambda in user's input.
+lambdachar :: Char
+lambdachar = '\\'
+
+-- | Shows a lambda expression with named variables.
+-- Parentheses are ignored; they are written only around applications.
 showlexp :: Lexp -> String
 showlexp (Lvar c)   = c
 showlexp (Llam c e) = "λ" ++ c ++ "." ++ showlexp e ++ ""
-showlexp (Lapp f g) = showlexp f ++ " " ++ showlexp g
+showlexp (Lapp f g) = "(" ++ showlexp f ++ " " ++ showlexp g ++ ")"
+
+instance Show Lexp where
+  show = showlexp
 
 
 
-{- Lambda Expressions DeBruijn -}
+
+-- DeBruijn Expressions
+-- The interpreter uses DeBruijn notation as an internal representation and
+-- as output format. It is easier to do beta reduction with DeBruijn indexes.
+
 -- | A lambda expression using DeBruijn indexes.
-data Exp = Var Integer
-         | Lambda Exp
-         | App Exp Exp
+data Exp = Var Integer -- ^ integer indexing the variable.
+         | Lambda Exp  -- ^ lambda abstraction
+         | App Exp Exp -- ^ function application
          deriving (Eq)
 
+-- | Translates a named variable expression into a DeBruijn one.
+-- Uses a dictionary of already binded numbers and variables.
+tobruijn :: Map.Map String Integer -- ^ dictionary of the names of the variables used
+         -> Context                -- ^ dictionary of the names already binded on the scope
+         -> Lexp                   -- ^ initial expression
+         -> Exp
+         
+-- Every lambda abstraction is inserted in the variable dictionary.
+tobruijn d context (Llam c e) = Lambda $ tobruijn (Map.insert c 1 (Map.map succ d)) context e
+-- Translation of applications is trivial.
+tobruijn d context (Lapp f g) = App (tobruijn d context f) (tobruijn d context g)
+-- Every variable is checked on the variable dictionary and in the current scope.
+tobruijn d context (Lvar c) =
+  case Map.lookup c d of
+    Just n  -> Var n
+    Nothing -> fromMaybe (Var 0) (Map.lookup c context)
+
+-- | Transforms a lambda expression with named variables to a deBruijn index expression.
+-- Uses only the dictionary of the variables in the current context.
+toBruijn :: Context  -- ^ Variable context
+         -> Lexp     -- ^ Initial lambda expression with named variables
+         -> Exp
+toBruijn = tobruijn Map.empty
+
+-- | Shows an expression with DeBruijn indexes.
 showexp :: Exp -> String
 showexp (Var n)    = show n
 showexp (Lambda e) = "λ(" ++ showexp e ++ ")"
@@ -61,20 +116,8 @@ showexp (App f g)  = showexp f ++ " " ++ showexp g
 instance Show Exp where
   show = showexp
 
-{- Translation to DeBruijn -}
-tobruijn :: Map.Map String Integer -> Map.Map String Exp -> Lexp -> Exp
-tobruijn d context (Llam c e) = Lambda $ tobruijn (Map.insert c 1 (Map.map succ d)) context e
-tobruijn d context (Lapp f g) = App (tobruijn d context f) (tobruijn d context g)
-tobruijn d context (Lvar c) =
-  case Map.lookup c d of
-    Just n  -> Var n
-    Nothing -> fromMaybe (Var 0) (Map.lookup c context)
 
--- | Transforms a lambda expression with named variables to a deBruijn index expression
-toBruijn :: Map.Map String Exp -- ^ Variable context
-         -> Lexp               -- ^ Initial lambda expression with named variables
-         -> Exp
-toBruijn = tobruijn Map.empty
+
 
 {- Reductions -}
 -- | Applies simplification to the expression until it stabilizes.
@@ -125,7 +168,7 @@ data Action = Bind (String, Lexp)
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop Map.empty)
 
-type Context = Map.Map String Exp
+
 
 interpreterLoop :: Context -> InputT IO ()
 interpreterLoop context = do
