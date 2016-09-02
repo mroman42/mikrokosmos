@@ -146,7 +146,7 @@ simplify (Var e)            = Var e
 -- | Applies beta-reduction to a function application.
 -- Leaves the rest of the operations untouched.
 betared :: Exp -> Exp
-betared (App (Lambda f) x) = substitute 1 x f
+betared (App (Lambda e) x) = substitute 1 x e
 betared e = e
 
 -- | Substitutes an index for a lambda expression
@@ -154,14 +154,25 @@ substitute :: Integer -- ^ deBruijn index of the desired target
            -> Exp     -- ^ replacement for the index
            -> Exp     -- ^ initial expression
            -> Exp
-substitute n x (Lambda e) = Lambda (substitute (succ n) x e)
+substitute n x (Lambda e) = Lambda (substitute (succ n) (incrementFreeVars 0 x) e)
 substitute n x (App f g)  = App (substitute n x f) (substitute n x g)
 substitute n x (Var m)
+  -- The lambda is replaced directly
   | n == m    = x
+  -- A more exterior lambda decreases a number
   | n <  m    = Var (m-1)
+  -- An unrelated variable remains untouched
   | otherwise = Var m
 
-
+-- | Increments free variables assuming they are bind to an
+-- external lambda. This is done to substitute them correctly in
+-- internal expressions.
+incrementFreeVars :: Integer -> Exp -> Exp
+incrementFreeVars n (App f g)  = App (incrementFreeVars n f) (incrementFreeVars n g)
+incrementFreeVars n (Lambda e) = Lambda (incrementFreeVars (succ n) e)
+incrementFreeVars n (Var m)
+  | m > n     = Var (succ m)
+  | otherwise = Var m
 
 
 -- Lambda interpreter
