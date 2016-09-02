@@ -4,12 +4,13 @@ import           Control.Applicative           ((<$>), (<*>))
 import           Control.Monad.Trans
 import           Data.Char
 import qualified Data.Map.Strict               as Map
+import qualified Data.Bimap                    as Bimap
 import           Data.Maybe
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
 import           Format
 
-type Context = Map.Map String Exp
+type Context = Bimap.Bimap String Exp
 
 
 
@@ -75,7 +76,7 @@ instance Show LambdaName where
 data Exp = Var Integer -- ^ integer indexing the variable.
          | Lambda Exp  -- ^ lambda abstraction
          | App Exp Exp -- ^ function application
-         deriving (Eq)
+         deriving (Eq, Ord)
 
 -- | Translates a named variable expression into a DeBruijn one.
 -- Uses a dictionary of already binded numbers and variables.
@@ -95,7 +96,7 @@ tobruijn d context (Lapp f g) = App (tobruijn d context f) (tobruijn d context g
 tobruijn d context (LambdaVariable c) =
   case Map.lookup c d of
     Just n  -> Var n
-    Nothing -> fromMaybe (Var 0) (Map.lookup c context)
+    Nothing -> fromMaybe (Var 0) (Bimap.lookup c context)
 
 -- | Transforms a lambda expression with named variables to a deBruijn index expression.
 -- Uses only the dictionary of the variables in the current context.
@@ -167,7 +168,7 @@ substitute n x (Var m)
 -- actions (bindings and evaluation), and interpreter specific actions, as
 -- "quit" or "load".
 main :: IO ()
-main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop defaultOptions Map.empty)
+main = runInputT defaultSettings (outputStrLn initText >> interpreterLoop defaultOptions Bimap.empty)
 
 -- | Configuration options for the interpreter. They can be changed dinamically.
 data InterpreterOptions = InterpreterOptions { verbose :: Bool -- ^ true if produces verbose output
@@ -204,7 +205,7 @@ data Action = Bind (String, LambdaName) -- ^ bind a name to an expression
 -- the new context after the action and a text output.
 act :: Context -> Action -> (Context, String)
 act context Comment       = (context,"")
-act context (Bind (s,le)) = (Map.insert s (toBruijn context le) context, "")
+act context (Bind (s,le)) = (Bimap.insert s (toBruijn context le) context, "")
 act context (Execute le)  = (context,
                              unlines $
                               [ showlexp le ] ++
