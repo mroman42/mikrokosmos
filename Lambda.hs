@@ -210,8 +210,16 @@ act context (Execute le)  = (context,
                              unlines $
                               [ showlexp le ] ++
                               [ unlines $ map showexp $ stepsSimplify $ toBruijn context le ] ++
-                              [ showexp $ simplifyall $ toBruijn context le]
+                              [ showCompleteExp context $ simplifyall $ toBruijn context le ]
                             )
+
+showCompleteExp :: Context -> Exp -> String
+showCompleteExp context expr = case getExpressionName context expr of
+  Nothing      -> showexp expr
+  Just expName -> showexp expr ++ formatName ++ " ==> " ++ expName ++ end
+
+getExpressionName :: Context -> Exp -> Maybe String
+getExpressionName context expr = Bimap.lookupR expr context
 
 -- TODO: Writer monad
 -- TODO: Use Text instead of String for efficiency
