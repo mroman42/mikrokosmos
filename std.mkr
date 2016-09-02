@@ -35,6 +35,10 @@ mult = \m.\n.\f.\x.m (n f) x
 pred  = \n.\f.\x.n (\g.(\h.h (g f))) (\u.x) (\u.u)
 minus = \m.\n.(n pred) m
 
+# Predicates on natural numbers
+iszero = \n.(n (\x.false) true)
+leq    = \m.\n.(iszero (minus m n))
+
 
 
 
@@ -57,8 +61,8 @@ prod = (foldr mult (succ 0))
 
 # Map
 # Writes map as a foldr.
-map = (\f.(foldr (\h.\t.cons (f h) t) nil))
-
+map    = (\f.(foldr (\h.\t.cons (f h) t) nil))
+filter = \p.(foldr (\h.\t.((p h) (cons h t) t)) nil)
 
 
 
