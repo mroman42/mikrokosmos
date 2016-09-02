@@ -11,7 +11,7 @@
 ## Logic
 # Uses Church Booleans
 true  = \a.\b.a
-#false = \a.\b.b
+false = \a.\b.b
 
 # Basic logic gates
 and = \p.\q.p q p
@@ -46,11 +46,16 @@ second = \p.p false
 # Uses the right-fold representation of lists.
 # The representation of a list is its foldr function.
 cons = \h.\t.\c.\n.(c h (t c n))
+nil = \c.\n.n
 
 # Folds
 foldr = \o.\n.\l.(l o n)
 sum  = (foldr plus 0)
 prod = (foldr mult (succ 0))
+
+# Map
+# Writes map as a foldr.
+map = (\f.(foldr (\h.\t.cons (f h) t) nil))
 
 
 
