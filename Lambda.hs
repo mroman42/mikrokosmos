@@ -205,7 +205,7 @@ data Action = Bind (String, LambdaName) -- ^ bind a name to an expression
 -- the new context after the action and a text output.
 act :: Context -> Action -> (Context, String)
 act context Comment       = (context,"")
-act context (Bind (s,le)) = (Bimap.insert s (toBruijn context le) context, "")
+act context (Bind (s,le)) = (Bimap.insert s (simplifyall $ toBruijn context le) context, "")
 act context (Execute le)  = (context,
                              unlines $
                               [ showlexp le ] ++
