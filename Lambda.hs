@@ -189,6 +189,8 @@ data InterpreterAction = Interpret Action -- ^ Language action
                        | Quit             -- ^ Close the interpreter
                        | Load String      -- ^ Load the given file
                        | SetVerbose       -- ^ Changes verbosity
+                       | SetColors        -- ^ Changes colors
+                       | Help             -- ^ Shows help
 
 -- | Language action. The language has a number of possible valid statements;
 -- all on the following possible forms.
@@ -225,6 +227,20 @@ multipleAct context = foldl (\(ccontext,text) action ->
 prompt :: String
 prompt = formatPrompt ++ "mikroλ> " ++ end
 
+-- | Help line
+helpStr :: String
+helpStr = unlines [
+  formatFormula ++
+  "Commands available from the prompt:",
+  "\t<expression>\t evaluates the expression",
+  "\t:quit       \t quits the interpreter",
+  "\t:load <file>\t loads the given .mkr library or script",
+  "\t:verbose    \t sets verbose mode on/off",
+  "\t:color      \t sets terminal colors on/off",
+  "\t:help       \t shows this help"
+  ++ end
+  ]
+
 -- TODO: State Monad
 -- | Interpreter awaiting for an instruction.
 interpreterLoop :: InterpreterOptions -> Context -> InputT IO ()
@@ -242,6 +258,8 @@ interpreterLoop options context = do
     Quit -> return ()
     Error -> outputStrLn "Error"
     SetVerbose -> interpreterLoop (options {verbose = not $ verbose options}) context
+    SetColors  -> interpreterLoop (options {color   = not $ color   options}) context
+    Help -> outputStr helpStr >> interpreterLoop options context
     Load filename -> do
       maybeloadfile <- lift $ loadFile filename
       case maybeloadfile of
@@ -295,6 +313,7 @@ interpreteractionParser = choice [ try interpretParser
                                  , try quitParser
                                  , try loadParser
                                  , try verboseParser
+                                 , try helpParser
                                  ]
 
 -- | Parses a language action as an interpreter action.
@@ -303,7 +322,10 @@ interpretParser = Interpret <$> actionParser
 
 -- | Parses a language action.
 actionParser :: Parser Action
-actionParser = choice [try bindParser, try executeParser, try commentParser]
+actionParser = choice [ try bindParser
+                      , try executeParser
+                      , try commentParser
+                      ]
 
 -- | Parses a binding between a variable an its representation.
 bindParser :: Parser Action
@@ -320,6 +342,10 @@ commentParser = string "#" >> many anyChar >> return Comment
 -- | Parses a "quit" command.
 quitParser :: Parser InterpreterAction
 quitParser = string ":quit" >> return Quit
+
+-- | Parses a "help" command.
+helpParser :: Parser InterpreterAction
+helpParser = string ":help" >> return Help
 
 -- | Parses a change in verbosity.
 verboseParser :: Parser InterpreterAction
