@@ -37,6 +37,10 @@ succ = \n.\f.\x.f (n f x)
 plus = \m.\n.\f.\x.m f (n f x)
 mult = \m.\n.\f.\x.m (n f) x
 
+# Substraction
+pred = \n.\f.\x.n (\g.(\h.h (g f))) (\u.x) (\u.u)
+#id = (\x.x)
+#minus = \m.\n.(n pred) m
 
 
 ## Natural numbers
