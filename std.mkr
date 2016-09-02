@@ -1,4 +1,33 @@
-# Arithmetic library
+## Standard library ##
+
+# This is the standard library for the Mikrokosmos untyped lambda calculus
+# interpreter. It contains basic logic and arithmetic operations.
+# You can read more about Church encoding in its wikipedia page:
+#   https://en.wikipedia.org/wiki/Church_encoding
+#
+# This library is licensed under CC0.
+
+
+## Logic
+# Uses Church Booleans
+true  = \a.\b.a
+false = \a.\b.b
+
+# Basic logic gates
+and = \p.\q.p q p
+or  = \p.\q.p p q
+not = \b.b false true
+
+
+
+## Data structures: Pairs
+pair   = \x.\y.\z.z x y
+first  = \p.p true
+second = \p.p false
+
+
+
+## Arithmethic
 # This library uses Church numerals to represent natural numbers
 # Succesor of a natural number is defined with 0
 succ = \n.\f.\x.f (n f x)
@@ -8,6 +37,12 @@ succ = \n.\f.\x.f (n f x)
 plus = \m.\n.\f.\x.m f (n f x)
 mult = \m.\n.\f.\x.m (n f) x
 
+# Pairs are necessary to do substraction
+pair = 
+
+
+
+## Natural numbers
 # List of 100 first natural numbers
 1 = succ 0
 2 = succ 1
