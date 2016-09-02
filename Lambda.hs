@@ -158,6 +158,7 @@ substitute n x (Lambda e) = Lambda (substitute (succ n) x e)
 substitute n x (App f g)  = App (substitute n x f) (substitute n x g)
 substitute n x (Var m)
   | n == m    = x
+  | n <  m    = Var (m-1)
   | otherwise = Var m
 
 
