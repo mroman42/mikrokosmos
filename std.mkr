@@ -11,19 +11,13 @@
 ## Logic
 # Uses Church Booleans
 true  = \a.\b.a
-false = \a.\b.b
+#false = \a.\b.b
 
 # Basic logic gates
 and = \p.\q.p q p
 or  = \p.\q.p p q
 not = \b.b false true
 
-
-
-## Data structures: Pairs
-pair   = \x.\y.\z.z x y
-first  = \p.p true
-second = \p.p false
 
 
 
@@ -38,11 +32,30 @@ plus = \m.\n.\f.\x.m f (n f x)
 mult = \m.\n.\f.\x.m (n f) x
 
 # Substraction
-pred = \n.\f.\x.n (\g.(\h.h (g f))) (\u.x) (\u.u)
-#id = (\x.x)
-#minus = \m.\n.(n pred) m
+pred  = \n.\f.\x.n (\g.(\h.h (g f))) (\u.x) (\u.u)
+minus = \m.\n.(n pred) m
 
 
+## Data structures
+# Pairs
+pair   = \x.\y.\z.z x y
+first  = \p.p true
+second = \p.p false
+
+# Lists
+# Uses the right-fold representation of lists.
+# The representation of a list is its foldr function.
+cons = \h.\t.\c.\n.(c h (t c n))
+
+# Folds
+foldr = \o.\n.\l.(l o n)
+sum  = (foldr plus 0)
+prod = (foldr mult (succ 0))
+
+
+
+
+## APPENDIX
 ## Natural numbers
 # List of 100 first natural numbers
 1 = succ 0
