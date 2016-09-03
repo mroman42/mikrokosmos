@@ -18,6 +18,8 @@ and = \p.\q.p q p
 or  = \p.\q.p p q
 not = \b.b false true
 
+# Conditional
+ifelse = (\x.x)
 
 
 
@@ -38,7 +40,7 @@ minus = \m.\n.(n pred) m
 # Predicates on natural numbers
 iszero = \n.(n (\x.false) true)
 leq    = \m.\n.(iszero (minus m n))
-
+eq     = \m.\n.(and (leq m n) (leq n m))
 
 
 
@@ -63,6 +65,7 @@ prod = (foldr mult (succ 0))
 # Writes map as a foldr.
 map    = (\f.(foldr (\h.\t.cons (f h) t) nil))
 filter = \p.(foldr (\h.\t.((p h) (cons h t) t)) nil)
+
 
 
 
