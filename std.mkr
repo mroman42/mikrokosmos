@@ -23,6 +23,7 @@ ifelse = (\x.x)
 
 
 
+
 ## Arithmethic
 # This library uses Church numerals to represent natural numbers
 # Succesor of a natural number is defined with 0
@@ -44,6 +45,7 @@ eq     = \m.\n.(and (leq m n) (leq n m))
 
 
 
+
 ## Data structures
 # Pairs
 pair   = \x.\y.\z.z x y
@@ -57,14 +59,20 @@ cons = \h.\t.\c.\n.(c h (t c n))
 nil = \c.\n.n
 
 # Folds
-foldr = \o.\n.\l.(l o n)
-sum  = (foldr plus 0)
-prod = (foldr mult (succ 0))
+foldr  = \o.\n.\l.(l o n)
+sum    = (foldr plus 0)
+prod   = (foldr mult (succ 0))
+length = (foldr (\h.\t.succ t) 0)
 
 # Map
 # Writes map as a foldr.
 map    = (\f.(foldr (\h.\t.cons (f h) t) nil))
 filter = \p.(foldr (\h.\t.((p h) (cons h t) t)) nil)
+
+# Trees
+# Uses the fold representation of a binary tree
+# Its nil is the same one as the list representation
+node = \x.\l.\r.\f.\n.(f x (l f n) (r f n))
 
 
 
