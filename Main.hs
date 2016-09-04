@@ -6,11 +6,13 @@ import           Data.Char
 import           Data.List
 import qualified Data.Map.Strict               as Map
 import           Data.Maybe
+import           System.Environment
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
 import           Format
 import           MultiBimap
 
+type Filename = String
 type Context = MultiBimap.MultiBimap Exp String
 
 
@@ -85,7 +87,6 @@ tobruijn :: Map.Map String Integer -- ^ dictionary of the names of the variables
          -> Context                -- ^ dictionary of the names already binded on the scope
          -> LambdaName             -- ^ initial expression
          -> Exp
-         
 -- Every lambda abstraction is inserted in the variable dictionary,
 -- and every number in the dictionary increases to reflect we are entering
 -- into a deeper context.
@@ -180,9 +181,36 @@ incrementFreeVars n (Var m)
 -- The logic of the interpreter is written here. It allows to execute normal
 -- actions (bindings and evaluation), and interpreter specific actions, as
 -- "quit" or "load".
+
+-- | Runs the interpreter with default settings and an empty context.
 main :: IO ()
-main = runInputT defaultSettings (outputStrLn initText
-                                  >> interpreterLoop defaultOptions MultiBimap.empty)
+main = do
+  args <- getArgs
+  case args of
+    [] -> runInputT defaultSettings (outputStrLn initText
+                                  >> interpreterLoop defaultOptions emptyContext)
+    [filename] -> executeFile filename
+    _ -> putStrLn "Wrong number of arguments"
+
+
+-- | Executes the commands inside a file.
+executeFile :: Filename -> IO ()
+executeFile filename = do
+  maybeloadfile <- loadFile filename
+  case maybeloadfile of
+    Nothing    -> putStrLn "Error loading file"
+    Just actions -> case multipleAct emptyContext actions of
+                      (_, outputs) -> mapM_ (putStr . format) outputs
+                      where
+                        format :: String -> String
+                        format "" = ""
+                        format s = (++"\n") . last . lines $ s
+  
+
+-- | Empty context without any bindings
+emptyContext :: Context
+emptyContext = MultiBimap.empty
+
 
 -- | Configuration options for the interpreter. They can be changed dinamically.
 data InterpreterOptions = InterpreterOptions { verbose :: Bool -- ^ true if produces verbose output
