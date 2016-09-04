@@ -24,7 +24,7 @@ type Context = MultiBimap.MultiBimap Exp String
 -- Uses a dictionary of already binded numbers and variables.
 tobruijn :: Map.Map String Integer -- ^ dictionary of the names of the variables used
          -> Context                -- ^ dictionary of the names already binded on the scope
-         -> NamedLambda             -- ^ initial expression
+         -> NamedLambda            -- ^ initial expression
          -> Exp
 -- Every lambda abstraction is inserted in the variable dictionary,
 -- and every number in the dictionary increases to reflect we are entering
@@ -45,8 +45,6 @@ toBruijn :: Context     -- ^ Variable context
          -> NamedLambda  -- ^ Initial lambda expression with named variables
          -> Exp
 toBruijn = tobruijn Map.empty
-
-
 
 
 
