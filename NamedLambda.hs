@@ -13,9 +13,9 @@ import           Control.Applicative           ((<$>), (<*>))
 -- it into an internal representation.
 
 -- | A lambda expression with named variables.
-data NamedLambda = LambdaVariable String               -- ^ variable
-                 | LambdaAbstraction String NamedLambda -- ^ lambda abstraction 
-                 | LambdaApplication NamedLambda NamedLambda          -- ^ function application
+data NamedLambda = LambdaVariable String                     -- ^ variable
+                 | LambdaAbstraction String NamedLambda      -- ^ lambda abstraction
+                 | LambdaApplication NamedLambda NamedLambda -- ^ function application
 
 -- | Parses a lambda expression with named variables.
 -- A lambda expression is a sequence of one or more autonomous
@@ -27,33 +27,35 @@ lambdaexp = foldl1 LambdaApplication <$> (spaces >> sepBy1 simpleexp spaces)
 -- at the top level. It can be a lambda abstraction, a variable or another
 -- potentially complex lambda expression enclosed in parentheses.
 simpleexp :: Parser NamedLambda
-simpleexp = choice [lambdaabs, variable, parens lambdaexp]
+simpleexp = choice [lambdaAbstractionParser, variableParser, parens lambdaexp]
 
+-- | The returned parser parenthesizes the given parser
 parens :: Parser a -> Parser a
 parens = between (char '(') (char ')')
 
 -- | Parses a variable. Any name can form a lambda variable.
-variable :: Parser NamedLambda
-variable = LambdaVariable <$> name
+variableParser :: Parser NamedLambda
+variableParser = LambdaVariable <$> nameParser
 
 -- | Allowed variable names
-name :: Parser String
-name = many1 alphaNum
+nameParser :: Parser String
+nameParser = many1 alphaNum
 
 -- | Parses a lambda abstraction. The '\' is used as lambda. 
-lambdaabs :: Parser NamedLambda
-lambdaabs = LambdaAbstraction <$> (char lambdachar >> name) <*> (char '.' >> lambdaexp)
+lambdaAbstractionParser :: Parser NamedLambda
+lambdaAbstractionParser = LambdaAbstraction <$>
+  (char lambdaChar >> nameParser) <*> (char '.' >> lambdaexp)
 
 -- | Char used to represent lambda in user's input.
-lambdachar :: Char
-lambdachar = '\\'
+lambdaChar :: Char
+lambdaChar = '\\'
 
 -- | Shows a lambda expression with named variables.
 -- Parentheses are ignored; they are written only around applications.
-showlexp :: NamedLambda -> String
-showlexp (LambdaVariable c)   = c
-showlexp (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showlexp e ++ ""
-showlexp (LambdaApplication f g) = "(" ++ showlexp f ++ " " ++ showlexp g ++ ")"
+showNamedLambda :: NamedLambda -> String
+showNamedLambda (LambdaVariable c)      = c
+showNamedLambda (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showNamedLambda e ++ ""
+showNamedLambda (LambdaApplication f g) = "(" ++ showNamedLambda f ++ " " ++ showNamedLambda g ++ ")"
 
 instance Show NamedLambda where
-  show = showlexp
+  show = showNamedLambda
