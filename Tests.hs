@@ -1,19 +1,17 @@
+module Tests where
+
 import Test.HUnit
-import Text.ParserCombinators.Parsec
-import Lambda hiding (main)
-import Control.Monad
+import Main hiding (main)
+import Control.Monad (void)
 
-completeparse :: String -> Exp
-completeparse str =
-  case parse lambdaexp "" str of
-    Left _ -> undefined
-    Right e -> toBruijn e
 
-testcase1 :: Test
-testcase1 = TestCase (assertEqual "for (id.id)"
-                       (simplifyall $ completeparse "(\\x.x)(\\y.y)")
-                       (completeparse "(\\x.x)")
-                     )
+testSimplId :: Test
+testSimplId = TestCase $ assertEqual
+  "Simplifies the identity"
+  (Lambda (Var 1))
+  (simplifyall $ App (Lambda (Var 1)) (Lambda (Var 1)))
 
 main :: IO ()            
-main = void (runTestTT (TestList [TestLabel "id.id" testcase1]))
+main = void $ runTestTT $ TestList
+       [ TestLabel "Identity" testSimplId
+       ]
