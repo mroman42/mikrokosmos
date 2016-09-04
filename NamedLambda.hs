@@ -1,4 +1,8 @@
-module NamedLambda where
+module NamedLambda
+  ( NamedLambda (LambdaVariable, LambdaAbstraction, LambdaApplication)
+  , lambdaexp
+  )
+where
 
 import           Text.ParserCombinators.Parsec
 import           Control.Applicative           ((<$>), (<*>))
@@ -11,13 +15,13 @@ import           Control.Applicative           ((<$>), (<*>))
 -- | A lambda expression with named variables.
 data NamedLambda = LambdaVariable String               -- ^ variable
                  | LambdaAbstraction String NamedLambda -- ^ lambda abstraction 
-                 | Lapp NamedLambda NamedLambda          -- ^ function application
+                 | LambdaApplication NamedLambda NamedLambda          -- ^ function application
 
 -- | Parses a lambda expression with named variables.
 -- A lambda expression is a sequence of one or more autonomous
 -- lambda expressions. They are parsed assuming left-associativity.
 lambdaexp :: Parser NamedLambda
-lambdaexp = foldl1 Lapp <$> (spaces >> sepBy1 simpleexp spaces)
+lambdaexp = foldl1 LambdaApplication <$> (spaces >> sepBy1 simpleexp spaces)
 
 -- | Parses a simple lambda expression, without function applications
 -- at the top level. It can be a lambda abstraction, a variable or another
@@ -49,7 +53,7 @@ lambdachar = '\\'
 showlexp :: NamedLambda -> String
 showlexp (LambdaVariable c)   = c
 showlexp (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showlexp e ++ ""
-showlexp (Lapp f g) = "(" ++ showlexp f ++ " " ++ showlexp g ++ ")"
+showlexp (LambdaApplication f g) = "(" ++ showlexp f ++ " " ++ showlexp g ++ ")"
 
 instance Show NamedLambda where
   show = showlexp
