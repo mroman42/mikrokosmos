@@ -1,4 +1,4 @@
-module Lambda where
+module Main where
 
 import           Control.Applicative           ((<$>), (<*>))
 import           Control.Monad.Trans
@@ -261,7 +261,7 @@ helpStr = unlines [
   "\t:quit       \t quits the interpreter",
   "\t:load <file>\t loads the given .mkr library or script",
   "\t:verbose    \t sets verbose mode on/off",
-  "\t:color      \t sets terminal colors on/off",
+--  "\t:color      \t sets terminal colors on/off",
   "\t:help       \t shows this help"
   ++ end
   ]
