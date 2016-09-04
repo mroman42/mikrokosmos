@@ -11,64 +11,10 @@ import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
 import           Format
 import           MultiBimap
+import           NamedLambda
 
 type Filename = String
 type Context = MultiBimap.MultiBimap Exp String
-
-
-
--- Parsing of Lambda Expressions.
--- The user can input a lambda expression with named variables, of
--- the form of "\x.x" or "(\a.(\b.a b))". The interpreter will parse
--- it into an internal representation.
-
--- | A lambda expression with named variables.
-data LambdaName = LambdaVariable String               -- ^ variable
-                | LambdaAbstraction String LambdaName -- ^ lambda abstraction 
-                | Lapp LambdaName LambdaName          -- ^ function application
-
--- | Parses a lambda expression with named variables.
--- A lambda expression is a sequence of one or more autonomous
--- lambda expressions. They are parsed assuming left-associativity.
-lambdaexp :: Parser LambdaName
-lambdaexp = foldl1 Lapp <$> (spaces >> sepBy1 simpleexp spaces)
-
--- | Parses a simple lambda expression, without function applications
--- at the top level. It can be a lambda abstraction, a variable or another
--- potentially complex lambda expression enclosed in parentheses.
-simpleexp :: Parser LambdaName
-simpleexp = choice [lambdaabs, variable, parens lambdaexp]
-
-parens :: Parser a -> Parser a
-parens = between (char '(') (char ')')
-
--- | Parses a variable. Any name can form a lambda variable.
-variable :: Parser LambdaName
-variable = LambdaVariable <$> name
-
--- | Allowed variable names
-name :: Parser String
-name = many1 alphaNum
-
--- | Parses a lambda abstraction. The '\' is used as lambda. 
-lambdaabs :: Parser LambdaName
-lambdaabs = LambdaAbstraction <$> (char lambdachar >> name) <*> (char '.' >> lambdaexp)
-
--- | Char used to represent lambda in user's input.
-lambdachar :: Char
-lambdachar = '\\'
-
--- | Shows a lambda expression with named variables.
--- Parentheses are ignored; they are written only around applications.
-showlexp :: LambdaName -> String
-showlexp (LambdaVariable c)   = c
-showlexp (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showlexp e ++ ""
-showlexp (Lapp f g) = "(" ++ showlexp f ++ " " ++ showlexp g ++ ")"
-
-instance Show LambdaName where
-  show = showlexp
-
-
 
 
 -- DeBruijn Expressions
@@ -85,7 +31,7 @@ data Exp = Var Integer -- ^ integer indexing the variable.
 -- Uses a dictionary of already binded numbers and variables.
 tobruijn :: Map.Map String Integer -- ^ dictionary of the names of the variables used
          -> Context                -- ^ dictionary of the names already binded on the scope
-         -> LambdaName             -- ^ initial expression
+         -> NamedLambda             -- ^ initial expression
          -> Exp
 -- Every lambda abstraction is inserted in the variable dictionary,
 -- and every number in the dictionary increases to reflect we are entering
@@ -103,7 +49,7 @@ tobruijn d context (LambdaVariable c) =
 -- | Transforms a lambda expression with named variables to a deBruijn index expression.
 -- Uses only the dictionary of the variables in the current context.
 toBruijn :: Context     -- ^ Variable context
-         -> LambdaName  -- ^ Initial lambda expression with named variables
+         -> NamedLambda  -- ^ Initial lambda expression with named variables
          -> Exp
 toBruijn = tobruijn Map.empty
 
@@ -237,8 +183,8 @@ data InterpreterAction = Interpret Action -- ^ Language action
 
 -- | Language action. The language has a number of possible valid statements;
 -- all on the following possible forms.
-data Action = Bind (String, LambdaName) -- ^ bind a name to an expression
-            | Execute LambdaName        -- ^ execute an expression
+data Action = Bind (String, NamedLambda) -- ^ bind a name to an expression
+            | Execute NamedLambda        -- ^ execute an expression
             | Comment                   -- ^ comment
             -- Derives Show for debugging purposes only. 
             deriving (Show)
