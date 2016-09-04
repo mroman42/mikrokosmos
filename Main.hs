@@ -39,7 +39,7 @@ tobruijn :: Map.Map String Integer -- ^ dictionary of the names of the variables
 tobruijn d context (LambdaAbstraction c e) = Lambda $ tobruijn newdict context e
   where newdict = Map.insert c 1 (Map.map succ d)
 -- Translation of applications is trivial.
-tobruijn d context (Lapp f g) = App (tobruijn d context f) (tobruijn d context g)
+tobruijn d context (LambdaApplication f g) = App (tobruijn d context f) (tobruijn d context g)
 -- Every variable is checked on the variable dictionary and in the current scope.
 tobruijn d context (LambdaVariable c) =
   case Map.lookup c d of
@@ -196,7 +196,7 @@ act context Comment       = (context,"")
 act context (Bind (s,le)) = (MultiBimap.insert (simplifyall $ toBruijn context le) s context, "")
 act context (Execute le)  = (context,
                              unlines $
-                              [ showlexp le ] ++
+                              [ show le ] ++
                               [ unlines $ map showexp $ stepsSimplify $ toBruijn context le ] ++
                               [ showCompleteExp context $ simplifyall $ toBruijn context le ]
                             )
