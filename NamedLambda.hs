@@ -59,3 +59,5 @@ showNamedLambda (LambdaApplication f g) = "(" ++ showNamedLambda f ++ " " ++ sho
 
 instance Show NamedLambda where
   show = showNamedLambda
+
+
