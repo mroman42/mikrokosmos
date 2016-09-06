@@ -1,5 +1,6 @@
 # mikrokosmos
-Experiments on programming languages
+
+Mikrokosmos is an untyped lambda calculus interpreter.
 
 ### References & interesting links
 * [Build you a Haskell - Stephen Diehl](http://dev.stephendiehl.com/fun/003_lambda_calculus.html)  
