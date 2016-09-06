@@ -5,3 +5,6 @@
 /Format.hi
 /cosas.mkr
 /MultiBimap.hi
+/Main.hi
+*.hi
+/Main
