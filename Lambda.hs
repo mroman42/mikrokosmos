@@ -23,7 +23,7 @@ instance Show Exp where
 -- | Shows an expression with DeBruijn indexes.
 showexp :: Exp -> String
 showexp (Var n)    = show n
-showexp (Lambda e) = "λ(" ++ showexp e ++ ")"
+showexp (Lambda e) = "λ" ++ showexp e ++ ""
 showexp (App f g)  = "(" ++ showexp f ++ " " ++ showexp g ++ ")"
 
 
@@ -44,7 +44,6 @@ stepsSimplify e
   | otherwise = e : stepsSimplify s
   where s = simplify e
 
--- TODO: Simplify internal operations first. This has not an optimal efficiency.
 -- | Simplifies the expression recursively.
 -- Applies only a beta reduction at each step.
 simplify :: Exp -> Exp
