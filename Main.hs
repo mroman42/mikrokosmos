@@ -257,11 +257,11 @@ actionParser = choice [ try bindParser
 
 -- | Parses a binding between a variable an its representation.
 bindParser :: Parser Action
-bindParser = fmap Bind $ (,) <$> many1 alphaNum <*> (spaces >> char '=' >> spaces >> lambdaexp)
+bindParser = fmap Bind $ (,) <$> many1 alphaNum <*> (spaces >> string "!=" >> spaces >> lambdaexp)
 
 -- | Parses a binding and evaluation expression between a variable an its representation
 evalbindParser :: Parser Action
-evalbindParser = fmap EvalBind $ (,) <$> many1 alphaNum <*> (spaces >> string "!=" >> spaces >> lambdaexp)
+evalbindParser = fmap EvalBind $ (,) <$> many1 alphaNum <*> (spaces >> string "=" >> spaces >> lambdaexp)
 
 -- | Parses an expression in order to execute it.
 executeParser :: Parser Action
