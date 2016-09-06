@@ -109,17 +109,19 @@ data InterpreterAction = Interpret Action -- ^ Language action
 
 -- | Language action. The language has a number of possible valid statements;
 -- all on the following possible forms.
-data Action = Bind (String, NamedLambda) -- ^ bind a name to an expression
-            | Execute NamedLambda        -- ^ execute an expression
-            | Comment                   -- ^ comment
+data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
+            | EvalBind (String, NamedLambda) -- ^ bind a name to an expression and simplify it
+            | Execute NamedLambda            -- ^ execute an expression
+            | Comment                        -- ^ comment
             -- Derives Show for debugging purposes only. 
             deriving (Show)
 
 -- | Executes a language action. Given a context and an action, returns
 -- the new context after the action and a text output.
 act :: Context -> Action -> (Context, String)
-act context Comment       = (context,"")
-act context (Bind (s,le)) = (MultiBimap.insert (simplifyall $ toBruijn context le) s context, "")
+act context Comment           = (context,"")
+act context (Bind (s,le))     = (MultiBimap.insert (toBruijn context le) s context, "")
+act context (EvalBind (s,le)) = (MultiBimap.insert (simplifyall $ toBruijn context le) s context, "")
 act context (Execute le)  = (context,
                              unlines $
                               [ show le ] ++
@@ -248,6 +250,7 @@ interpretParser = Interpret <$> actionParser
 -- | Parses a language action.
 actionParser :: Parser Action
 actionParser = choice [ try bindParser
+                      , try evalbindParser
                       , try executeParser
                       , try commentParser
                       ]
@@ -255,6 +258,10 @@ actionParser = choice [ try bindParser
 -- | Parses a binding between a variable an its representation.
 bindParser :: Parser Action
 bindParser = fmap Bind $ (,) <$> many1 alphaNum <*> (spaces >> char '=' >> spaces >> lambdaexp)
+
+-- | Parses a binding and evaluation expression between a variable an its representation
+evalbindParser :: Parser Action
+evalbindParser = fmap EvalBind $ (,) <$> many1 alphaNum <*> (spaces >> string "!=" >> spaces >> lambdaexp)
 
 -- | Parses an expression in order to execute it.
 executeParser :: Parser Action
