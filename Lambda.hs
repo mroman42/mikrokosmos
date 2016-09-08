@@ -2,8 +2,11 @@ module Lambda
   ( Exp (Var, Lambda, App)
   , simplifyall
   , stepsSimplify
+  , showReduction
   )
 where
+
+import Format
 
 -- DeBruijn Expressions
 -- The interpreter uses DeBruijn notation as an internal representation and
@@ -19,12 +22,37 @@ instance Show Exp where
   show = showexp
 
 
--- TODO: Show an index after the lambda
 -- | Shows an expression with DeBruijn indexes.
 showexp :: Exp -> String
 showexp (Var n)    = show n
 showexp (Lambda e) = "λ" ++ showexp e ++ ""
 showexp (App f g)  = "(" ++ showexp f ++ " " ++ showexp g ++ ")"
+
+-- | Shows an expression coloring the next reduction.
+showReduction :: Exp -> String
+showReduction (Lambda e)         = "λ" ++ showReduction e
+showReduction (App (Lambda f) x) = betaColor (App (Lambda f) x)
+showReduction (Var e)            = show e
+showReduction (App rs x)         = "(" ++ showReduction rs ++ " "
+                                       ++ showReduction x ++ ")"
+
+
+betaColor :: Exp -> String
+betaColor (App (Lambda e) x) =
+  "(" ++
+  formatSubs1 ++ "λ" ++ formatFormula ++
+  indexColor 1 e ++
+  " " ++
+  formatSubs2 ++ showexp x ++ formatFormula
+  ++ ")"
+betaColor e = show e
+
+indexColor :: Integer -> Exp -> String
+indexColor n (Lambda e) = "λ" ++ indexColor (succ n) e
+indexColor n (App f g)  = "(" ++ indexColor n f ++ " " ++ indexColor n g ++ ")"
+indexColor n (Var m)
+  | n == m    = formatSubs1 ++ show m ++ formatFormula
+  | otherwise = show m
 
 
 

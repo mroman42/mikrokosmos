@@ -125,7 +125,7 @@ act context (EvalBind (s,le)) = (MultiBimap.insert (simplifyall $ toBruijn conte
 act context (Execute le)  = (context,
                              unlines $
                               [ show le ] ++
-                              [ unlines $ map show $ stepsSimplify $ toBruijn context le ] ++
+                              [ unlines $ map showReduction $ stepsSimplify $ toBruijn context le ] ++
                               [ showCompleteExp context $ simplifyall $ toBruijn context le ]
                             )
 
@@ -184,7 +184,9 @@ interpreterLoop options context = do
     EmptyLine -> interpreterLoop options context
     Quit -> return ()
     Error -> outputStrLn "Error"
-    SetVerbose -> interpreterLoop (options {verbose = not $ verbose options}) context
+    SetVerbose -> do
+      outputStrLn $ "verbose mode: " ++ if verbose options then "off" else "on"
+      interpreterLoop (options {verbose = not $ verbose options}) context
     SetColors  -> interpreterLoop (options {color   = not $ color   options}) context
     Help -> outputStr helpStr >> interpreterLoop options context
     Load filename -> do
