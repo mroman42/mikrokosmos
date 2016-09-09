@@ -1,4 +1,4 @@
-{-
+{-|
 Module: NamedLambda
 Description: Lambda expressions with named variables
 License: GPL-3
