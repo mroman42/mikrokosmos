@@ -29,7 +29,7 @@ you can write lambda expressions to evaluate them:
 ![First steps](https://cloud.githubusercontent.com/assets/5337877/18393670/92728f10-76b6-11e6-88cc-88e7f2cb9114.png)
 
 You can write expressions using `\var.` to denote a lambda abstraction on the `var` variable and
-you can bind names to expressions using `=`. *But why are you getting this weird output?* Well, the interpreter
+you can bind names to expressions using `=`. *But why am I getting this weird output?* Well, the interpreter
 outputs the lambda expressions in [De Bruijn notation](https://en.wikipedia.org/wiki/De_Bruijn_notation); it is more
 compact and the interpreter works internally with it. However, as you can see in the image, whenever the interpreter finds a known constant, it labels the expression with its name.
 
