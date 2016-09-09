@@ -36,7 +36,7 @@ showReduction (Var e)            = show e
 showReduction (App rs x)         = "(" ++ showReduction rs ++ " "
                                        ++ showReduction x ++ ")"
 
-
+-- | Colors a beta reduction
 betaColor :: Exp -> String
 betaColor (App (Lambda e) x) =
   "(" ++
@@ -47,6 +47,7 @@ betaColor (App (Lambda e) x) =
   ++ ")"
 betaColor e = show e
 
+-- | Colors all the appearances of a given color
 indexColor :: Integer -> Exp -> String
 indexColor n (Lambda e) = "λ" ++ indexColor (succ n) e
 indexColor n (App f g)  = "(" ++ indexColor n f ++ " " ++ indexColor n g ++ ")"

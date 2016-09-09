@@ -59,7 +59,7 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    [] -> runInputT defaultSettings (outputStrLn initText
+    [] -> runInputT defaultSettings (outputStrLn initialText
                                   >> interpreterLoop defaultOptions emptyContext)
     [filename] -> executeFile filename
     _ -> putStrLn "Wrong number of arguments"
@@ -95,7 +95,6 @@ defaultOptions = InterpreterOptions { verbose = False
                                     , color   = True
                                     }
 
--- TODO: Help
 -- | Interpreter action. It can be a language action (binding and evaluation)
 -- or an interpreter specific one, such as "quit". 
 data InterpreterAction = Interpret Action -- ^ Language action
@@ -113,8 +112,7 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
             | EvalBind (String, NamedLambda) -- ^ bind a name to an expression and simplify it
             | Execute NamedLambda            -- ^ execute an expression
             | Comment                        -- ^ comment
-            -- Derives Show for debugging purposes only. 
-            deriving (Show)
+
 
 -- | Executes a language action. Given a context and an action, returns
 -- the new context after the action and a text output.
@@ -150,29 +148,12 @@ multipleAct context = foldl (\(ccontext,text) action ->
                       (context,[])
 
 
--- | Prompt line
-prompt :: String
-prompt = formatPrompt ++ "mikroλ> " ++ end
-
--- | Help line
-helpStr :: String
-helpStr = unlines [
-  formatFormula ++
-  "Commands available from the prompt:",
-  "\t<expression>\t evaluates the expression",
-  "\t:quit       \t quits the interpreter",
-  "\t:load <file>\t loads the given .mkr library or script",
-  "\t:verbose    \t sets verbose mode on/off",
---  "\t:color      \t sets terminal colors on/off",
-  "\t:help       \t shows this help"
-  ++ end
-  ]
 
 -- TODO: State Monad
 -- | Interpreter awaiting for an instruction.
 interpreterLoop :: InterpreterOptions -> Context -> InputT IO ()
 interpreterLoop options context = do
-  minput <- getInputLine prompt
+  minput <- getInputLine promptText
   let interpreteraction =
         case minput of
           Nothing -> Quit
@@ -188,7 +169,7 @@ interpreterLoop options context = do
       outputStrLn $ "verbose mode: " ++ if verbose options then "off" else "on"
       interpreterLoop (options {verbose = not $ verbose options}) context
     SetColors  -> interpreterLoop (options {color   = not $ color   options}) context
-    Help -> outputStr helpStr >> interpreterLoop options context
+    Help -> outputStr helpText >> interpreterLoop options context
     Load filename -> do
       maybeloadfile <- lift $ loadFile filename
       case maybeloadfile of
@@ -228,13 +209,6 @@ loadFile filename = do
                              Left _  -> Nothing
                              Right a -> Just a) parsing
   return $ sequence actions
-
--- | Initial text on the interpreter.
-initText :: String
-initText = unlines [
-  formatIntro ++ "Welcome to the Mikrokosmos Lambda Interpreter!" ++ end,
-  formatFormula ++ "Version 0.1.0. GNU General Public License Version 3." ++ end
-  ]
 
 -- | Parses an interpreter action.
 interpreteractionParser :: Parser InterpreterAction
