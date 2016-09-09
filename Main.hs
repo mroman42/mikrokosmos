@@ -65,8 +65,10 @@ main = do
     _ -> putStrLn "Wrong number of arguments"
 
 
--- | Executes the commands inside a file.
-executeFile :: Filename -> IO ()
+-- | Executes the commands inside a file. A .mkr file can contain a sequence of
+--   expressions and variable bindings, and it is interpreted sequentially.
+executeFile :: Filename -- Input file
+            -> IO ()
 executeFile filename = do
   maybeloadfile <- loadFile filename
   case maybeloadfile of
@@ -119,12 +121,12 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
 act :: Context -> Action -> (Context, String)
 act context Comment           = (context,"")
 act context (Bind (s,le))     = (MultiBimap.insert (toBruijn context le) s context, "")
-act context (EvalBind (s,le)) = (MultiBimap.insert (simplifyall $ toBruijn context le) s context, "")
+act context (EvalBind (s,le)) = (MultiBimap.insert (simplifyAll $ toBruijn context le) s context, "")
 act context (Execute le)  = (context,
                              unlines $
                               [ show le ] ++
-                              [ unlines $ map showReduction $ stepsSimplify $ toBruijn context le ] ++
-                              [ showCompleteExp context $ simplifyall $ toBruijn context le ]
+                              [ unlines $ map showReduction $ simplifySteps $ toBruijn context le ] ++
+                              [ showCompleteExp context $ simplifyAll $ toBruijn context le ]
                             )
 
 showCompleteExp :: Context -> Exp -> String

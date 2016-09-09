@@ -1,7 +1,7 @@
 module Lambda
   ( Exp (Var, Lambda, App)
-  , simplifyall
-  , stepsSimplify
+  , simplifyAll
+  , simplifySteps
   , showReduction
   )
 where
@@ -62,15 +62,19 @@ indexColor n (Var m)
 
 -- | Applies repeated simplification to the expression until it stabilizes and
 -- returns the final simplified expression.
-simplifyall :: Exp -> Exp
-simplifyall = last . stepsSimplify
+-- >>> simplifyAll $ App (Lambda (Var 1)) (Lambda (Var 1))
+-- λ1
+simplifyAll :: Exp -> Exp
+simplifyAll = last . simplifySteps
 
 -- | Applies repeated simplification to the expression until it stabilizes and
 -- returns all the intermediate results.
-stepsSimplify :: Exp -> [Exp]
-stepsSimplify e
+-- >>> simplifySteps $ App (Lambda (Var 1)) (Lambda (Var 1))
+-- [(λ1 λ1),λ1]
+simplifySteps :: Exp -> [Exp]
+simplifySteps e
   | e == s    = [e]
-  | otherwise = e : stepsSimplify s
+  | otherwise = e : simplifySteps s
   where s = simplify e
 
 -- | Simplifies the expression recursively.
