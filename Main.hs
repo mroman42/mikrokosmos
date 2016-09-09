@@ -15,7 +15,7 @@ import           NamedLambda
 import           Lambda
 
 type Filename = String
-type Context = MultiBimap.MultiBimap Exp String
+type Context  = MultiBimap Exp String
 
 
 
