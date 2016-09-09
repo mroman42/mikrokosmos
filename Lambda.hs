@@ -62,15 +62,19 @@ indexColor n (Var m)
 
 -- | Applies repeated simplification to the expression until it stabilizes and
 -- returns the final simplified expression.
+--
 -- >>> simplifyAll $ App (Lambda (Var 1)) (Lambda (Var 1))
 -- λ1
+--
 simplifyAll :: Exp -> Exp
 simplifyAll = last . simplifySteps
 
 -- | Applies repeated simplification to the expression until it stabilizes and
 -- returns all the intermediate results.
+--
 -- >>> simplifySteps $ App (Lambda (Var 1)) (Lambda (Var 1))
 -- [(λ1 λ1),λ1]
+--
 simplifySteps :: Exp -> [Exp]
 simplifySteps e
   | e == s    = [e]

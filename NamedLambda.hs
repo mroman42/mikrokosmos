@@ -20,6 +20,12 @@ data NamedLambda = LambdaVariable String                     -- ^ variable
 -- | Parses a lambda expression with named variables.
 -- A lambda expression is a sequence of one or more autonomous
 -- lambda expressions. They are parsed assuming left-associativity.
+--
+-- >>> parse lambdaexp "" "\\f.\\x.f x"
+-- Right λf.λx.(f x)
+--
+-- Note that double backslashes are neccessary only when we quote strings;
+-- it will work only with a simple backslash in the interpreter.
 lambdaexp :: Parser NamedLambda
 lambdaexp = foldl1 LambdaApplication <$> (spaces >> sepBy1 simpleexp spaces)
 
