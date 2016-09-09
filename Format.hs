@@ -1,6 +1,23 @@
-module Format where
+module Format
+  ( formatFormula
+  , formatIntro
+  , formatPrompt
+  , formatName
+  , formatSubs1
+  , formatSubs2
+  , end
+  , promptText
+  , helpText
+  , initialText
+  )
+where
 
 import System.Console.ANSI
+
+-- This module controls the format of the text and expressions printed by the
+-- interpreter. Uses ANSI escape sequences to color the terminal and mark text
+-- as bold or italics. It also stores the texts showed by the interpreter.
+
 
 -- Colors
 -- | Prompt messages color
@@ -44,8 +61,36 @@ formatSubs1 = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground
 -- | Sequence of characters that signals the format of a expression which will
 --   be substituted in the next reduction step to the terminal.
 formatSubs2 :: String
-formatSubs2 = setSGRCode [SetColor Foreground Dull Yellow]
+formatSubs2 = setSGRCode [SetColor Foreground Dull subst2Color]
 
 -- | Sequence of characters that cleans all the format.
 end :: String
 end  = setSGRCode []
+
+
+
+
+-- | Prompt line. It is shown when the interpreter asks the user
+--   to introduce a new command.
+promptText :: String
+promptText = formatPrompt ++ "mikroλ> " ++ end
+
+-- | Help line. It is shown when the user uses the :help command.
+helpText :: String
+helpText = unlines [
+  formatFormula ++
+  "Commands available from the prompt:",
+  "\t<expression>\t evaluates the expression",
+  "\t:quit       \t quits the interpreter",
+  "\t:load <file>\t loads the given .mkr library or script",
+  "\t:verbose    \t sets verbose mode on/off",
+  "\t:help       \t shows this help"
+  ++ end
+  ]
+
+-- | Initial text on the interpreter. It is shown at startup.
+initialText :: String
+initialText = unlines [
+  formatIntro ++ "Welcome to the Mikrokosmos Lambda Interpreter!" ++ end,
+  formatFormula ++ "Version 0.1.0. GNU General Public License Version 3." ++ end
+  ]
