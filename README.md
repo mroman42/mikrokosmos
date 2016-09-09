@@ -46,6 +46,14 @@ integers and much more. You can load it with `:load std.mkr`; after that, you ca
 
 All this is written in lambda calculus! You can check the definitions on the `std.mkr` file.
 
+## Debugging and verbose mode
+
+If you want to check how the lambda reductions are being performed you can use the **verbose mode**.
+It can be activated and deactivated writing `:verbose`, and it will show you every step on the reduction of
+the expression, coloring the substitution at every step.
+
+![Verbose mode](https://cloud.githubusercontent.com/assets/5337877/18394177/e4925bd4-76b8-11e6-886e-6bd33fe02e88.png)
+
 ### References & interesting links
 * [Build you a Haskell - Stephen Diehl](http://dev.stephendiehl.com/fun/003_lambda_calculus.html)  
 * [Haskell from Scratch - Jekor](https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B)   
