@@ -1,3 +1,13 @@
+{-|
+Module: MultiBimap
+
+This module allows us to abstract a bidirectional multimap without
+having to worry about implementation details. It is useful in the translation
+between lambda expressions and names.
+ 
+Based on the bimap package:
+<https://hackage.haskell.org/package/bimap-0.3.2/docs/Data-Bimap.html>
+-}
 module MultiBimap
   ( MultiBimap
   , empty
@@ -8,12 +18,7 @@ module MultiBimap
   )
 where
 
--- This is a package which allows me to abstract a bidirectional multimap without
--- having to worry about implementation details. It is useful in the translation
--- between lambda expressions and names.
--- 
--- Based on the bimap package:
--- https://hackage.haskell.org/package/bimap-0.3.2/docs/Data-Bimap.html
+
 
 import qualified Data.Map      as M
 import qualified Data.MultiMap as MM
