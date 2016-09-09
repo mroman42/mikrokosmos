@@ -24,14 +24,27 @@ cabal install
 ## First steps
 
 Once installed, you can open the interpreter typing `mikrokosmos` in your terminal. It will show you a prompt where
-you can write lambda expressions to be evaluated.
+you can write lambda expressions to evaluate them:
 
-
+![First steps](https://cloud.githubusercontent.com/assets/5337877/18393670/92728f10-76b6-11e6-88cc-88e7f2cb9114.png)
 
 You can write expressions using `\var.` to denote a lambda abstraction on the `var` variable and
 you can bind names to expressions using `=`. *But why are you getting this weird output?* Well, the interpreter
 outputs the lambda expressions in [De Bruijn notation](https://en.wikipedia.org/wiki/De_Bruijn_notation); it is more
-compact and the interpreter works internally with it.
+compact and the interpreter works internally with it. However, as you can see in the image, whenever the interpreter finds a known constant, it labels the expression with its name.
+
+If you need help at any moment, you can type `:help` into the prompt to get a summary of the available options:
+
+![Help screen](https://cloud.githubusercontent.com/assets/5337877/18393812/33e86b6c-76b7-11e6-818b-76b68f599a44.png)
+
+## The standard library
+
+Mikrokosmos comes bundled with a standard library. It allows you to experiment with Church encoding of booleans,
+integers and much more. You can load it with `:load std.mkr`; after that, you can use a lot of new constants:
+
+![Standard library](https://cloud.githubusercontent.com/assets/5337877/18394001/1a238ec2-76b8-11e6-90ad-b2385ba60268.png)
+
+All this is written in lambda calculus! You can check the definitions on the `std.mkr` file.
 
 ### References & interesting links
 * [Build you a Haskell - Stephen Diehl](http://dev.stephendiehl.com/fun/003_lambda_calculus.html)  
