@@ -1,3 +1,11 @@
+{-|
+Module: Lambda
+Description: DeBruijn lambda expressions.
+License: GPL-3
+
+This package deals with the parsing, reduction and printing of lambda
+expressions using DeBruijn notation.
+-}
 module Lambda
   ( Exp (Var, Lambda, App)
   , simplifyAll

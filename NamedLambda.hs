@@ -1,3 +1,12 @@
+{-
+Module: NamedLambda
+Description: Lambda expressions with named variables
+License: GPL-3
+
+This package deals with lambda expressions containing named variables
+instead of DeBruijn indexes. It contains parsing and printing fuctions.
+-}
+
 module NamedLambda
   ( NamedLambda (LambdaVariable, LambdaAbstraction, LambdaApplication)
   , lambdaexp

@@ -1,3 +1,13 @@
+{-|
+Module: Format
+Description: Formatting the output of the interpreter
+License: GPL-3
+
+This module controls the format of the text and expressions printed by the
+interpreter. Uses ANSI escape sequences to color the terminal and mark text
+as bold or italics. It also stores the texts showed by the interpreter.
+-}
+
 module Format
   ( formatFormula
   , formatIntro
@@ -14,9 +24,6 @@ where
 
 import System.Console.ANSI
 
--- This module controls the format of the text and expressions printed by the
--- interpreter. Uses ANSI escape sequences to color the terminal and mark text
--- as bold or italics. It also stores the texts showed by the interpreter.
 
 
 -- Colors
