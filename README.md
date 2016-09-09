@@ -61,6 +61,8 @@ You can use them to do a bit of your usual functional programming:
 
 ![Trees](https://cloud.githubusercontent.com/assets/5337877/18394894/5cd41d1e-76bc-11e6-9564-8817992392af.png)
 
+Oh! And you can insert comments with `#`, both in the interpreter and in the files the interpreter can load.
+
 ### References & interesting links
 * [Build you a Haskell - Stephen Diehl](http://dev.stephendiehl.com/fun/003_lambda_calculus.html)  
 * [Haskell from Scratch - Jekor](https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B)   
