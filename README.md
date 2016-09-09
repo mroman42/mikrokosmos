@@ -21,6 +21,18 @@ cd mikrokosmos
 cabal install
 ```
 
+## First steps
+
+Once installed, you can open the interpreter typing `mikrokosmos` in your terminal. It will show you a prompt where
+you can write lambda expressions to be evaluated.
+
+
+
+You can write expressions using `\var.` to denote a lambda abstraction on the `var` variable and
+you can bind names to expressions using `=`. *But why are you getting this weird output?* Well, the interpreter
+outputs the lambda expressions in [De Bruijn notation](https://en.wikipedia.org/wiki/De_Bruijn_notation); it is more
+compact and the interpreter works internally with it.
+
 ### References & interesting links
 * [Build you a Haskell - Stephen Diehl](http://dev.stephendiehl.com/fun/003_lambda_calculus.html)  
 * [Haskell from Scratch - Jekor](https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B)   
