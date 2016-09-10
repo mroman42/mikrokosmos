@@ -8,3 +8,4 @@
 /Main.hi
 *.hi
 /Main
+/dist/*

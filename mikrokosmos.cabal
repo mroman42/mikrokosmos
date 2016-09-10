@@ -2,6 +2,8 @@ name:                mikrokosmos
 version:             0.1.0
 synopsis:            Lambda calculus interpreter
 description:         A didactic untyped lambda calculus interpreter.
+homepage:            https://github.com/M42/mikrokosmos
+bug-reports:         https://github.com/M42/mikrokosmos/issues
 license:             GPL-3
 license-file:        LICENSE
 author:              Mario Román (M42)
@@ -10,20 +12,31 @@ category:            Language
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
-
+tested-with:         GHC == 7.8.3
+extra-source-files:  std.mkr
+                                          
 source-repository head
-  type:     git
-  location: https://github.com/M42/mikrokosmos.git
+  type:           git
+  location:       git://github.com/M42/mikrokosmos.git
                      
 executable mikrokosmos
   main-is:             Main.hs
-  build-depends:       base >=4.7 && <4.8,
-                       mtl >=2.2 && <2.3,
-                       containers >=0.5 && <0.6,
-                       haskeline >=0.7 && <0.8,
-                       parsec >=3.1 && <3.2,
-                       ansi-terminal >=0.6 && <0.7,
-                       multimap >=1.2 && <1.3,
-                       HUnit >=1.2 && <1.3
-
+  build-depends:       base >=4.7 && <5,
+                       mtl >=2.2,
+                       containers >= 0.5,
+                       haskeline >=0.7,
+                       parsec >=3,
+                       ansi-terminal,
+                       multimap,
+                       HUnit >=1.0
+                       
+  other-modules:       Format
+                       Lambda
+                       NamedLambda
+                       MultiBimap
+                       
   default-language:    Haskell2010
+  ghc-options:         -Wall
+
+
+                   
