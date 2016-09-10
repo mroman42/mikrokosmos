@@ -31,7 +31,7 @@ cabal install
 Once installed, you can open the interpreter typing `mikrokosmos` in your terminal. It will show you a prompt where
 you can write lambda expressions to evaluate them:
 
-![First steps](https://cloud.githubusercontent.com/assets/5337877/18393670/92728f10-76b6-11e6-88cc-88e7f2cb9114.png)
+![First steps](https://cloud.githubusercontent.com/assets/5337877/18410331/71c77420-775f-11e6-841a-f094fdb9c95b.png)
 
 You can write expressions using `\var.` to denote a lambda abstraction on the `var` variable and
 you can bind names to expressions using `=`. *But why am I getting this weird output?* Well, the interpreter
@@ -40,14 +40,14 @@ compact and the interpreter works internally with it. However, as you can see in
 
 If you need help at any moment, you can type `:help` into the prompt to get a summary of the available options:
 
-![Help screen](https://cloud.githubusercontent.com/assets/5337877/18393812/33e86b6c-76b7-11e6-818b-76b68f599a44.png)
+![Help screen](https://cloud.githubusercontent.com/assets/5337877/18410309/bbedabe2-775e-11e6-85ed-b3436fb6ea24.png)
 
 ## The standard library
 
 Mikrokosmos comes bundled with a standard library in a file called `std.mkr`; if it was not the case for you, you can download the [library](https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr) from the git repository. It allows you to experiment with [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) of booleans,
 integers and much more. You can load it with `:load std.mkr`, given the file is in your working directory; after that, you can use a lot of new constants:
 
-![Standard library](https://cloud.githubusercontent.com/assets/5337877/18394001/1a238ec2-76b8-11e6-90ad-b2385ba60268.png)
+![Standard library](https://cloud.githubusercontent.com/assets/5337877/18410324/40cf42b2-775f-11e6-9f49-f4726db062d7.png)
 
 All this is written in lambda calculus! You can check the definitions on the `std.mkr` file.
 
