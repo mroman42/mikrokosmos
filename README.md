@@ -47,7 +47,7 @@ If you need help at any moment, you can type `:help` into the prompt to get a su
 Mikrokosmos comes bundled with a standard library in a file called `std.mkr`; if it was not the case for you, you can download the [library](https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr) from the git repository. It allows you to experiment with [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) of booleans,
 integers and much more. You can load it with `:load std.mkr`, given the file is in your working directory; after that, you can use a lot of new constants:
 
-![Standard library](https://cloud.githubusercontent.com/assets/5337877/18394001/1a238ec2-76b8-11e6-90ad-b2385ba60268.png)
+![Standard library](https://cloud.githubusercontent.com/assets/5337877/18410324/40cf42b2-775f-11e6-9f49-f4726db062d7.png)
 
 All this is written in lambda calculus! You can check the definitions on the `std.mkr` file.
 
