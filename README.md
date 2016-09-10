@@ -40,7 +40,7 @@ compact and the interpreter works internally with it. However, as you can see in
 
 If you need help at any moment, you can type `:help` into the prompt to get a summary of the available options:
 
-![Help screen](https://cloud.githubusercontent.com/assets/5337877/18393812/33e86b6c-76b7-11e6-818b-76b68f599a44.png)
+![Help screen](https://cloud.githubusercontent.com/assets/5337877/18410309/bbedabe2-775e-11e6-85ed-b3436fb6ea24.png)
 
 ## The standard library
 
