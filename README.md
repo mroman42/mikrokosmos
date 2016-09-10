@@ -12,8 +12,13 @@ And to install and to tinker with this interpreter.
 
 ## Installation
 
-Mikrokosmos will be soon installable from [Hackage](http://hackage.haskell.org/). Meanwhile, you can install it 
-cloning the repository and using [cabal](https://www.haskell.org/cabal/):
+Mikrokosmos is installable from [Hackage](http://hackage.haskell.org/); you can install it directly from `cabal`: 
+```
+cabal update
+cabal install mikrokosmos
+```
+
+However, you can also install it by cloning the git repository and using [cabal](https://www.haskell.org/cabal/):
 
 ``` bash
 git clone https://github.com/M42/mikrokosmos.git
@@ -39,8 +44,8 @@ If you need help at any moment, you can type `:help` into the prompt to get a su
 
 ## The standard library
 
-Mikrokosmos comes bundled with a standard library. It allows you to experiment with Church encoding of booleans,
-integers and much more. You can load it with `:load std.mkr`; after that, you can use a lot of new constants:
+Mikrokosmos comes bundled with a standard library in a file called `std.mkr`; if it was not the case for you, you can download the [library](https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr) from the git repository. It allows you to experiment with [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) of booleans,
+integers and much more. You can load it with `:load std.mkr`, given the file is in your working directory; after that, you can use a lot of new constants:
 
 ![Standard library](https://cloud.githubusercontent.com/assets/5337877/18394001/1a238ec2-76b8-11e6-90ad-b2385ba60268.png)
 
