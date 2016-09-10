@@ -3,9 +3,12 @@ Module: Lambda
 Description: DeBruijn lambda expressions.
 License: GPL-3
 
-This package deals with the parsing, reduction and printing of lambda
-expressions using DeBruijn notation.
+This module deals with the parsing, reduction and printing of lambda
+expressions using DeBruijn notation. The interpreter uses DeBruijn
+notation as an internal representation and as output format. This is because
+it is easier to do beta reduction with DeBruijn indexes.
 -}
+
 module Lambda
   ( Exp (Var, Lambda, App)
   , simplifyAll
@@ -17,9 +20,6 @@ where
 import Format
 
 -- DeBruijn Expressions
--- The interpreter uses DeBruijn notation as an internal representation and
--- as output format. It is easier to do beta reduction with DeBruijn indexes.
-
 -- | A lambda expression using DeBruijn indexes.
 data Exp = Var Integer -- ^ integer indexing the variable.
          | Lambda Exp  -- ^ lambda abstraction
