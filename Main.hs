@@ -4,8 +4,6 @@ import           Control.Applicative           ((<$>), (<*>))
 import           Control.Monad.Trans
 import           Data.Char
 import           Data.List
-import qualified Data.Map.Strict               as Map
-import           Data.Maybe
 import           System.Environment
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
@@ -16,37 +14,6 @@ import           Lambda
 
 type Filename = String
 type Context  = MultiBimap Exp String
-
-
-
-
--- | Translates a named variable expression into a DeBruijn one.
--- Uses a dictionary of already binded numbers and variables.
-tobruijn :: Map.Map String Integer -- ^ dictionary of the names of the variables used
-         -> Context                -- ^ dictionary of the names already binded on the scope
-         -> NamedLambda            -- ^ initial expression
-         -> Exp
--- Every lambda abstraction is inserted in the variable dictionary,
--- and every number in the dictionary increases to reflect we are entering
--- into a deeper context.
-tobruijn d context (LambdaAbstraction c e) = Lambda $ tobruijn newdict context e
-  where newdict = Map.insert c 1 (Map.map succ d)
--- Translation of applications is trivial.
-tobruijn d context (LambdaApplication f g) = App (tobruijn d context f) (tobruijn d context g)
--- Every variable is checked on the variable dictionary and in the current scope.
-tobruijn d context (LambdaVariable c) =
-  case Map.lookup c d of
-    Just n  -> Var n
-    Nothing -> fromMaybe (Var 0) (MultiBimap.lookupR c context)
-
--- | Transforms a lambda expression with named variables to a deBruijn index expression.
--- Uses only the dictionary of the variables in the current context.
-toBruijn :: Context     -- ^ Variable context
-         -> NamedLambda  -- ^ Initial lambda expression with named variables
-         -> Exp
-toBruijn = tobruijn Map.empty
-
-
 
 
 -- Lambda interpreter
