@@ -1,8 +1,6 @@
 module Main where
 
-import           Control.Applicative           ((<$>), (<*>))
 import           Control.Monad.Trans
-import           Data.Char
 import           Data.List
 import           System.Environment
 import           System.Console.Haskeline
@@ -11,18 +9,15 @@ import           Format
 import           MultiBimap
 import           NamedLambda
 import           Lambda
+import           Interpreter
 
 -- | A filename is a string containing the directory path and
 -- the real name of the file.
 type Filename = String
 
--- | A context is an application between expressions and the names
--- they may have.
-type Context  = MultiBimap Exp String
-
 
 -- Lambda interpreter
--- The logic of the interpreter is written here. It allows to execute normal
+-- The actions of the interpreter are written here. It allows to execute normal
 -- actions (bindings and evaluation), and interpreter specific actions, as
 -- "quit" or "load".
 
@@ -53,9 +48,9 @@ interpreterLoop options context = do
     Quit -> return ()
     Error -> outputStrLn "Error"
     SetVerbose -> do
-      outputStrLn $ "verbose mode: " ++ if verbose options then "off" else "on"
-      interpreterLoop (options {verbose = not $ verbose options}) context
-    SetColors  -> interpreterLoop (options {color   = not $ color   options}) context
+      outputStrLn $ "verbose mode: " ++ if getVerbose options then "off" else "on"
+      interpreterLoop (changeVerbose options) context
+    SetColors  -> interpreterLoop (changeColor options) context
     Help -> outputStr helpText >> interpreterLoop options context
     Load filename -> do
       maybeloadfile <- lift $ loadFile filename
@@ -74,45 +69,6 @@ interpreterLoop options context = do
                             outputStr end
                             interpreterLoop options ccontext
 
-
-
-  
-
--- | Empty context without any bindings
-emptyContext :: Context
-emptyContext = MultiBimap.empty
-
-
--- | Configuration options for the interpreter. They can be changed dinamically.
-data InterpreterOptions = InterpreterOptions
-  { verbose :: Bool -- ^ true to produce verbose output
-  , color :: Bool   -- ^ true to color the output
-  }
-
--- | Default configuration options for the interpreter.
-defaultOptions :: InterpreterOptions
-defaultOptions = InterpreterOptions
-  { verbose = False
-  , color   = True
-  }
-
--- | Interpreter action. It can be a language action (binding and evaluation)
--- or an interpreter specific one, such as "quit". 
-data InterpreterAction = Interpret Action -- ^ Language action
-                       | EmptyLine        -- ^ Empty line, it will be ignored
-                       | Error            -- ^ Error on the interpreter
-                       | Quit             -- ^ Close the interpreter
-                       | Load String      -- ^ Load the given file
-                       | SetVerbose       -- ^ Changes verbosity
-                       | SetColors        -- ^ Changes colors
-                       | Help             -- ^ Shows help
-
--- | Language action. The language has a number of possible valid statements;
--- all on the following possible forms.
-data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
-            | EvalBind (String, NamedLambda) -- ^ bind a name to an expression and simplify it
-            | Execute NamedLambda            -- ^ execute an expression
-            | Comment                        -- ^ comment
 
 
 -- | Executes a language action. Given a context and an action, returns
@@ -162,7 +118,7 @@ outputActions options = mapM_ (outputStr . format)
     format :: String -> String
     format "" = ""
     format s
-      | not (verbose options) = (++"\n") . last . lines $ s
+      | not (getVerbose options) = (++"\n") . last . lines $ s
       | otherwise             = s
 
 
@@ -194,63 +150,3 @@ executeFile filename = do
                         format :: String -> String
                         format "" = ""
                         format s = (++"\n") . last . lines $ s
-
-
-
-
-
--- Parsing of interpreter command line commands.
--- | Parses an interpreter action.
-interpreteractionParser :: Parser InterpreterAction
-interpreteractionParser = choice
-  [ try interpretParser
-  , try quitParser
-  , try loadParser
-  , try verboseParser
-  , try helpParser
-  ]
-
--- | Parses a language action as an interpreter action.
-interpretParser :: Parser InterpreterAction
-interpretParser = Interpret <$> actionParser
-
--- | Parses a language action.
-actionParser :: Parser Action
-actionParser = choice
-  [ try bindParser
-  , try evalbindParser
-  , try executeParser
-  , try commentParser
-  ]
-
--- | Parses a binding between a variable an its representation.
-bindParser :: Parser Action
-bindParser = fmap Bind $ (,) <$> many1 alphaNum <*> (spaces >> string "!=" >> spaces >> lambdaexp)
-
--- | Parses a binding and evaluation expression between a variable an its representation
-evalbindParser :: Parser Action
-evalbindParser = fmap EvalBind $ (,) <$> many1 alphaNum <*> (spaces >> string "=" >> spaces >> lambdaexp)
-
--- | Parses an expression in order to execute it.
-executeParser :: Parser Action
-executeParser = Execute <$> lambdaexp
-
--- | Parses comments.
-commentParser :: Parser Action
-commentParser = string "#" >> many anyChar >> return Comment
-
--- | Parses a "quit" command.
-quitParser :: Parser InterpreterAction
-quitParser = string ":quit" >> return Quit
-
--- | Parses a "help" command.
-helpParser :: Parser InterpreterAction
-helpParser = string ":help" >> return Help
-
--- | Parses a change in verbosity.
-verboseParser :: Parser InterpreterAction
-verboseParser = string ":verbose" >> return SetVerbose
-
--- | Parses a "load-file" command.
-loadParser :: Parser InterpreterAction
-loadParser = Load <$> (string ":load" >> between spaces spaces (many1 (satisfy (not . isSpace))))
