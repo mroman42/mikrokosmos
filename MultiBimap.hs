@@ -1,5 +1,7 @@
 {-|
 Module: MultiBimap
+Description: A multibimap implementation
+License: GPL-3
 
 This module allows us to abstract a bidirectional multimap without
 having to worry about implementation details. It is useful in the translation

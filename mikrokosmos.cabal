@@ -11,6 +11,10 @@ build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
 
+source-repository head
+  type:     git
+  location: https://github.com/M42/mikrokosmos.git
+                     
 executable mikrokosmos
   main-is:             Main.hs
   build-depends:       base >=4.7 && <4.8,
