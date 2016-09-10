@@ -107,6 +107,6 @@ tobruijn d context (LambdaVariable c) =
 -- | Transforms a lambda expression with named variables to a deBruijn index expression.
 -- Uses only the dictionary of the variables in the current context. 
 toBruijn :: Context     -- ^ Variable context
-         -> NamedLambda  -- ^ Initial lambda expression with named variables
+         -> NamedLambda -- ^ Initial lambda expression with named variables
          -> Exp
 toBruijn = tobruijn Map.empty
