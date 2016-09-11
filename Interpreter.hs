@@ -25,7 +25,8 @@ module Interpreter
 where
 
 import           Control.Applicative           ((<$>), (<*>))
-import           Text.ParserCombinators.Parsec
+import           Control.Monad.State.Lazy      
+import           Text.ParserCombinators.Parsec hiding (State)
 import           Data.Char
 import           Data.List
 import           MultiBimap
@@ -97,26 +98,31 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
 
 -- | Executes a language action. Given a context and an action, returns
 -- the new context after the action and a text output.
-act :: Context -> Action -> (Context, String)
-act context Comment           = (context,"")
-act context (Bind (s,le))     = (MultiBimap.insert (toBruijn context le) s context, "")
-act context (EvalBind (s,le)) = (MultiBimap.insert (simplifyAll $ toBruijn context le) s context, "")
-act context (Execute le)  = (context,
-                             unlines $
-                              [ show le ] ++
-                              [ unlines $ map showReduction $ simplifySteps $ toBruijn context le ] ++
-                              [ showCompleteExp context $ simplifyAll $ toBruijn context le ]
-                            )
+act :: Action -> State Context [String]
+act Comment =
+  return [""]
+act (Bind (s,le)) =
+  do modify (\ctx -> MultiBimap.insert (toBruijn ctx le) s ctx)
+     return [""]
+act (EvalBind (s,le)) =
+  do modify (\ctx -> MultiBimap.insert (simplifyAll $ toBruijn ctx le) s ctx)
+     return [""]
+act (Execute le) =
+  do context <- get
+     return [unlines $
+             [ show le ] ++
+             [ unlines $ map showReduction $ simplifySteps $ toBruijn context le ] ++
+             [ showCompleteExp context $ simplifyAll $ toBruijn context le ]
+            ]
 
--- TODO: Writer monad
+
 -- TODO: Use Text instead of String for efficiency
 -- TODO: Lists of string are inefficient
 -- | Executes multiple actions. Given a context and a set of actions, returns
 -- the new context after the sequence of actions and a text output.
-multipleAct :: Context -> [Action] -> (Context, [String])
-multipleAct context = foldl (\(ccontext,text) action ->
-                                (fst $ act ccontext action, text ++ [snd (act ccontext action)]))
-                      (context,[])
+multipleAct :: [Action] -> State Context [String]
+multipleAct actions = concat <$> mapM act actions
+
 
 
 -- | Shows an expression and the name that is bound to the expression

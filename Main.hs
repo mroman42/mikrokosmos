@@ -1,6 +1,7 @@
 module Main where
 
 import           Control.Monad.Trans
+import           Control.Monad.State
 import           System.Environment
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
@@ -52,16 +53,16 @@ interpreterLoop options context = do
       maybeloadfile <- lift $ loadFile filename
       case maybeloadfile of
         Nothing    -> outputStrLn "Error loading file"
-        Just actions -> case multipleAct context actions of
-                          (ccontext, outputs) -> do
+        Just actions -> case runState (multipleAct actions) context of
+                          (output, ccontext) -> do
                             outputStr formatFormula
-                            outputActions options outputs
+                            outputActions options output
                             outputStr end
                             interpreterLoop options ccontext
-    Interpret action -> case act context action of
-                          (ccontext, output) -> do
+    Interpret action -> case runState (act action) context of
+                          (output, ccontext) -> do
                             outputStr formatFormula
-                            outputActions options [output]
+                            outputActions options output
                             outputStr end
                             interpreterLoop options ccontext
 
@@ -102,8 +103,8 @@ executeFile filename = do
   maybeloadfile <- loadFile filename
   case maybeloadfile of
     Nothing    -> putStrLn "Error loading file"
-    Just actions -> case multipleAct emptyContext actions of
-                      (_, outputs) -> mapM_ (putStr . format) outputs
+    Just actions -> case runState (multipleAct actions) emptyContext of
+                      (outputs, _) -> mapM_ (putStr . format) outputs
                       where
                         format :: String -> String
                         format "" = ""
