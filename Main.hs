@@ -1,14 +1,10 @@
 module Main where
 
 import           Control.Monad.Trans
-import           Data.List
 import           System.Environment
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec
 import           Format
-import           MultiBimap
-import           NamedLambda
-import           Lambda
 import           Interpreter
 
 -- | A filename is a string containing the directory path and
@@ -68,44 +64,6 @@ interpreterLoop options context = do
                             outputActions options [output]
                             outputStr end
                             interpreterLoop options ccontext
-
-
-
--- | Executes a language action. Given a context and an action, returns
--- the new context after the action and a text output.
-act :: Context -> Action -> (Context, String)
-act context Comment           = (context,"")
-act context (Bind (s,le))     = (MultiBimap.insert (toBruijn context le) s context, "")
-act context (EvalBind (s,le)) = (MultiBimap.insert (simplifyAll $ toBruijn context le) s context, "")
-act context (Execute le)  = (context,
-                             unlines $
-                              [ show le ] ++
-                              [ unlines $ map showReduction $ simplifySteps $ toBruijn context le ] ++
-                              [ showCompleteExp context $ simplifyAll $ toBruijn context le ]
-                            )
-
--- | Shows an expression and the name that is bound to the expression
--- in the current context
-showCompleteExp :: Context -> Exp -> String
-showCompleteExp context expr = case getExpressionName context expr of
-  Nothing      -> show expr
-  Just expName -> show expr ++ formatName ++ " ⇒ " ++ expName ++ end
-
--- | Given an expression, returns its name if it is bounded to any.
-getExpressionName :: Context -> Exp -> Maybe String
-getExpressionName context expr = case MultiBimap.lookup expr context of
-  [] -> Nothing
-  xs -> Just $ intercalate ", " xs
-
--- TODO: Writer monad
--- TODO: Use Text instead of String for efficiency
--- TODO: Lists of string are inefficient
--- | Executes multiple actions. Given a context and a set of actions, returns
--- the new context after the sequence of actions and a text output.
-multipleAct :: Context -> [Action] -> (Context, [String])
-multipleAct context = foldl (\(ccontext,text) action ->
-                                (fst $ act ccontext action, text ++ [snd (act ccontext action)]))
-                      (context,[])
 
 
 

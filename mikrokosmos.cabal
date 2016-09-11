@@ -18,7 +18,9 @@ extra-source-files:  std.mkr
 source-repository head
   type:           git
   location:       git://github.com/M42/mikrokosmos.git
-                     
+
+
+                       
 executable mikrokosmos
   main-is:             Main.hs
   build-depends:       base >=4.7 && <5,
