@@ -127,8 +127,9 @@ multipleAct actions = concat <$> mapM act actions
 -- in the current context
 showCompleteExp :: Context -> Exp -> String
 showCompleteExp context expr = case getExpressionName context expr of
-  Nothing      -> show expr
-  Just expName -> show expr ++ formatName ++ " ⇒ " ++ expName ++ end
+  Nothing      -> show (nameExp expr)
+  Just expName -> show (nameExp expr) ++ formatName ++ " ⇒ " ++ expName ++ end
+
 
 -- | Given an expression, returns its name if it is bounded to any.
 getExpressionName :: Context -> Exp -> Maybe String
