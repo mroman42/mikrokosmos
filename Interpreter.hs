@@ -99,8 +99,7 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
 -- | Executes a language action. Given a context and an action, returns
 -- the new context after the action and a text output.
 act :: Action -> State Context [String]
-act Comment =
-  return [""]
+act Comment = return [""]
 act (Bind (s,le)) =
   do modify (\ctx -> MultiBimap.insert (toBruijn ctx le) s ctx)
      return [""]
@@ -117,7 +116,6 @@ act (Execute le) =
 
 
 -- TODO: Use Text instead of String for efficiency
--- TODO: Lists of string are inefficient
 -- | Executes multiple actions. Given a context and a set of actions, returns
 -- the new context after the sequence of actions and a text output.
 multipleAct :: [Action] -> State Context [String]

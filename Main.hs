@@ -43,7 +43,7 @@ interpreterLoop options context = do
   case interpreteraction of
     EmptyLine -> interpreterLoop options context
     Quit -> return ()
-    Error -> outputStrLn "Error"
+    Error -> outputStrLn "Unknown command" >> interpreterLoop options context
     SetVerbose -> do
       outputStrLn $ "verbose mode: " ++ if getVerbose options then "off" else "on"
       interpreterLoop (changeVerbose options) context
@@ -55,15 +55,11 @@ interpreterLoop options context = do
         Nothing    -> outputStrLn "Error loading file"
         Just actions -> case runState (multipleAct actions) context of
                           (output, ccontext) -> do
-                            outputStr formatFormula
                             outputActions options output
-                            outputStr end
                             interpreterLoop options ccontext
     Interpret action -> case runState (act action) context of
                           (output, ccontext) -> do
-                            outputStr formatFormula
                             outputActions options output
-                            outputStr end
                             interpreterLoop options ccontext
 
 
@@ -72,7 +68,10 @@ interpreterLoop options context = do
 -- | Outputs results from actions. Given a list of options and outputs,
 -- formats and prints them in console.
 outputActions :: InterpreterOptions -> [String] -> InputT IO ()
-outputActions options = mapM_ (outputStr . format)
+outputActions options output = do
+    outputStr formatFormula
+    mapM_ (outputStr . format) output
+    outputStr end
   where
     format :: String -> String
     format "" = ""
