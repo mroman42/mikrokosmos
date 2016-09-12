@@ -11,6 +11,7 @@ module NamedLambda
   ( NamedLambda (LambdaVariable, LambdaAbstraction, LambdaApplication)
   , lambdaexp
   , toBruijn
+  , nameExp
   )
 where
 
@@ -20,6 +21,7 @@ import qualified Data.Map.Strict               as Map
 import           Lambda
 import           MultiBimap
 import           Data.Maybe
+import           Control.Monad
 
 type Context  = MultiBimap Exp String
 
@@ -110,3 +112,22 @@ toBruijn :: Context     -- ^ Variable context
          -> NamedLambda -- ^ Initial lambda expression with named variables
          -> Exp
 toBruijn = tobruijn Map.empty
+
+
+
+-- | Translates a deBruijn expression into a lambda expression
+-- with named variables, given a list of used and unused variable names.
+nameIndexes :: [String] -> [String] -> Exp -> NamedLambda
+nameIndexes _    _   (Var 0)    = LambdaVariable "undefined"
+nameIndexes used _   (Var n)    = LambdaVariable (used !! pred (fromInteger n))
+nameIndexes used new (Lambda e) = LambdaAbstraction (head new) (nameIndexes (head new:used) (tail new) e)
+nameIndexes used new (App f g)  = LambdaApplication (nameIndexes used new f) (nameIndexes used new g)
+
+-- | Gives names to every variable in a deBruijn expression using
+-- alphabetic order.
+nameExp :: Exp -> NamedLambda
+nameExp = nameIndexes [] variableNames
+
+-- | A list of all possible variable names in lexicographical order.
+variableNames :: [String]
+variableNames = concatMap (`replicateM` ['a'..'z']) [1..]
