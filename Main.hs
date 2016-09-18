@@ -43,9 +43,16 @@ interpreterLoop options context = do
   case interpreteraction of
     EmptyLine -> interpreterLoop options context
     Quit -> return ()
-    Error -> outputStrLn "Unknown command" >> interpreterLoop options context
+    Error -> do
+      outputStr formatFormula
+      outputStrLn "Unknown command"
+      outputStr end
+      interpreterLoop options context
     SetVerbose -> do
-      outputStrLn $ "verbose mode: " ++ if getVerbose options then "off" else "on"
+      outputStrLn $
+        formatFormula ++
+        "verbose mode: " ++ if getVerbose options then "off" else "on" ++
+        end
       interpreterLoop (changeVerbose options) context
     SetColors  -> interpreterLoop (changeColor options) context
     Help -> outputStr helpText >> interpreterLoop options context
