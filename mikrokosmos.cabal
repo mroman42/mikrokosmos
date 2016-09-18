@@ -36,9 +36,7 @@ executable mikrokosmos
                        Lambda
                        NamedLambda
                        MultiBimap
+                       Interpreter
                        
   default-language:    Haskell2010
   ghc-options:         -Wall
-
-
-                   
