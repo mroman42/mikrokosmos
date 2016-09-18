@@ -44,9 +44,9 @@ insert k v (MkMultiBimap left right) =
 
 -- | Lookup a key in the multi-bimap, returning the list of
 -- associated values.
-lookup :: (Ord k, Ord v) => k -> MultiBimap k v -> [v]
+lookup :: (Ord k) => k -> MultiBimap k v -> [v]
 lookup k (MkMultiBimap left _) = MM.lookup k left
 
 -- | Lookup a right value in the multi-bimap, returning the associated key.
-lookupR :: (Ord k, Ord v) => v -> MultiBimap k v -> Maybe k
+lookupR :: (Ord v) => v -> MultiBimap k v -> Maybe k
 lookupR v (MkMultiBimap _ right) = M.lookup v right
