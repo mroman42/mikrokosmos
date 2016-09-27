@@ -18,12 +18,20 @@ cabal update
 cabal install mikrokosmos
 ```
 
-However, you can also install it by cloning the git repository and using [cabal](https://www.haskell.org/cabal/):
+You can also install it by cloning the git repository and using [cabal](https://www.haskell.org/cabal/):
 
 ``` bash
 git clone https://github.com/M42/mikrokosmos.git
 cd mikrokosmos
 cabal install
+```
+
+If you have `ghc` version 8 or greater you can also compile it directly using:
+
+``` bash
+git clone https://github.com/M42/mikrokosmos.git
+cd mikrokosmos
+ghc Main.hs
 ```
 
 ## First steps
@@ -34,9 +42,7 @@ you can write lambda expressions to evaluate them:
 ![First steps](https://cloud.githubusercontent.com/assets/5337877/18649151/337c6782-7ebe-11e6-9701-495c2cb40675.gif)
 
 You can write expressions using `\var.` to denote a lambda abstraction on the `var` variable and
-you can bind names to expressions using `=`. *But why am I getting this weird output?* Well, the interpreter
-outputs the lambda expressions in [De Bruijn notation](https://en.wikipedia.org/wiki/De_Bruijn_notation); it is more
-compact and the interpreter works internally with it. However, as you can see in the image, whenever the interpreter finds a known constant, it labels the expression with its name.
+you can bind names to expressions using `=`. As you can see in the image, whenever the interpreter finds a known constant, it labels the expression with its name.
 
 If you need help at any moment, you can type `:help` into the prompt to get a summary of the available options:
 
@@ -58,6 +64,8 @@ It can be activated and deactivated writing `:verbose`, and it will show you eve
 the expression, coloring the substitution at every step.
 
 ![Verbose mode](https://cloud.githubusercontent.com/assets/5337877/18882803/060a2dec-84e1-11e6-9dfa-9c08957b559e.gif)
+
+It uses [DeBruijn notation](https://en.wikipedia.org/wiki/De_Bruijn_notation) to show the substitutions, because this is the internal representation used by the interpreter. The term in red is being substituted by the term in yellow. 
 
 ## Advanced data structures
 
