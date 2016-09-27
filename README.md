@@ -57,14 +57,14 @@ If you want to check how the lambda reductions are being performed you can use t
 It can be activated and deactivated writing `:verbose`, and it will show you every step on the reduction of
 the expression, coloring the substitution at every step.
 
-![Verbose mode](https://cloud.githubusercontent.com/assets/5337877/18394177/e4925bd4-76b8-11e6-886e-6bd33fe02e88.png)
+![Verbose mode](https://cloud.githubusercontent.com/assets/5337877/18882803/060a2dec-84e1-11e6-9dfa-9c08957b559e.gif)
 
 ## Advanced data structures
 
 There are representations of structures such as linked lists or trees in the standard library. 
 You can use them to do a bit of your usual functional programming:
 
-![Trees](https://cloud.githubusercontent.com/assets/5337877/18394894/5cd41d1e-76bc-11e6-9564-8817992392af.png)
+![Trees](https://cloud.githubusercontent.com/assets/5337877/18883269/d7c3d616-84e2-11e6-9fc9-aa6e3df606f9.gif)
 
 Oh! And you can insert comments with `#`, both in the interpreter and in the files the interpreter can load.
 
