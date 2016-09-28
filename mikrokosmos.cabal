@@ -1,5 +1,5 @@
 name:                mikrokosmos
-version:             0.1.0
+version:             0.2.0
 synopsis:            Lambda calculus interpreter
 description:         A didactic untyped lambda calculus interpreter.
 homepage:            https://github.com/M42/mikrokosmos
@@ -12,7 +12,7 @@ category:            Language
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
-tested-with:         GHC == 7.8.3
+tested-with:         GHC == 8.0.1
 extra-source-files:  std.mkr
                                           
 source-repository head

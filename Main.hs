@@ -24,12 +24,13 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    [] -> runInputT defaultSettings (outputStrLn initialText
-                                  >> interpreterLoop defaultOptions emptyContext)
+    [] -> runInputT defaultSettings ( outputStrLn initialText
+                                      >> interpreterLoop defaultOptions emptyContext
+                                    )
     [filename] -> executeFile filename
     _ -> putStrLn "Wrong number of arguments"
 
--- TODO: State Monad
+
 -- | Interpreter awaiting for an instruction.
 interpreterLoop :: InterpreterOptions -> Context -> InputT IO ()
 interpreterLoop options context = do
