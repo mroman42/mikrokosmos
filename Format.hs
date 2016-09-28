@@ -99,5 +99,5 @@ helpText = unlines [
 initialText :: String
 initialText = unlines [
   formatIntro ++ "Welcome to the Mikrokosmos Lambda Interpreter!" ++ end,
-  formatFormula ++ "Version 0.1.0. GNU General Public License Version 3." ++ end
+  formatFormula ++ "Version 0.2.0. GNU General Public License Version 3." ++ end
   ]
