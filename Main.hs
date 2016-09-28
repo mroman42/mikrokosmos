@@ -2,9 +2,10 @@ module Main where
 
 import           Control.Monad.Trans
 import           Control.Monad.State
+import           Control.Exception
 import           System.Environment
 import           System.Console.Haskeline
-import           Text.ParserCombinators.Parsec
+import           Text.ParserCombinators.Parsec hiding (try)
 import           Format
 import           Interpreter
 
@@ -59,7 +60,9 @@ interpreterLoop options context = do
     Load filename -> do
       maybeloadfile <- lift $ loadFile filename
       case maybeloadfile of
-        Nothing    -> outputStrLn "Error loading file"
+        Nothing -> do
+          outputStrLn "Error loading file"
+          interpreterLoop options context
         Just actions -> case runState (multipleAct actions) context of
                           (output, ccontext) -> do
                             outputActions options output
@@ -95,12 +98,15 @@ outputActions options output = do
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
   putStrLn filename
-  input <- readFile filename
-  let parsing = map (parse actionParser "") $ filter (/="") $ lines input
-  let actions = map (\x -> case x of
-                             Left _  -> Nothing
-                             Right a -> Just a) parsing
-  return $ sequence actions
+  input <- try $ (readFile filename) :: IO (Either IOException String)
+  case input of
+    Left _ -> return Nothing
+    Right inputs -> do
+      let parsing = map (parse actionParser "") $ filter (/="") $ lines inputs
+      let actions = map (\x -> case x of
+                                 Left _  -> Nothing
+                                 Right a -> Just a) parsing
+      return $ sequence actions
 
 -- | Executes the commands inside a file. A .mkr file can contain a sequence of
 --   expressions and variable bindings, and it is interpreted sequentially.
