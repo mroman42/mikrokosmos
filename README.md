@@ -76,6 +76,17 @@ You can use them to do a bit of your usual functional programming:
 
 Oh! And you can insert comments with `#`, both in the interpreter and in the files the interpreter can load.
 
+## Recursion
+
+We can use and define fixpoint operators in order to define recursive functions. The problem they have is that they can not be evaluated without arguments into a closed form, so we have to delay the evaluation of the expression when we bind
+it. To do this, we use the `!=` operator, which binds an expression to a variable without evaluating it.
+
+``` text
+fix != (\f.(\x.f (x x)) (\x.f (x x)))
+fact != fix (\f.\n.iszero n (succ 0) (mult n (f (pred n))))
+fib != fix (\f.\n.iszero n 1 (plus (f (pred n)) (f (pred (pred n)))))
+```
+
 ### References & interesting links
 * [Build you a Haskell - Stephen Diehl](http://dev.stephendiehl.com/fun/003_lambda_calculus.html)  
 * [Haskell from Scratch - Jekor](https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B)   
