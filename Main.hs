@@ -9,10 +9,6 @@ import           Format
 import           Interpreter
 import           Options hiding (defaultOptions)
 
--- | A filename is a string containing the directory path and
--- the real name of the file.
-type Filename = String
-
 
 -- Lambda interpreter
 -- The actions of the interpreter are written here. It allows to execute normal
