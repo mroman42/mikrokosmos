@@ -30,7 +30,8 @@ executable mikrokosmos
                        parsec >=3,
                        ansi-terminal,
                        multimap,
-                       HUnit >=1.0
+                       HUnit >=1.0,
+                       options
                        
   other-modules:       Format
                        Lambda
