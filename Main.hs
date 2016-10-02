@@ -16,8 +16,8 @@ type Filename = String
 
 -- Lambda interpreter
 -- The actions of the interpreter are written here. It allows to execute normal
--- actions (bindings and evaluation), and interpreter specific actions, as
--- "quit" or "load".
+-- actions (bindings and evaluation), and interpreter specific actions, as "quit"
+-- or "load".
 
 -- | Runs the interpreter with default settings and an empty context.
 main :: IO ()
