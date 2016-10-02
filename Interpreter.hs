@@ -7,14 +7,20 @@ This module contains auxiliary logic, types and representations of
 the internal state of the interpreter.
 -}
 module Interpreter
-  ( Context
+  (
+  -- * Evaluation contexts
+    Context
   , emptyContext
+  
+  -- * Interpreter and environment options
   , InterpreterOptions (InterpreterOptions)
   , defaultOptions
   , changeVerbose
   , changeColor
   , getVerbose
   , getColor
+
+  -- * Interpreter actions
   , InterpreterAction (..)
   , interpreteractionParser
   , act
@@ -115,12 +121,10 @@ act (Execute le) =
             ]
 
 
--- TODO: Use Text instead of String for efficiency
 -- | Executes multiple actions. Given a context and a set of actions, returns
 -- the new context after the sequence of actions and a text output.
 multipleAct :: [Action] -> State Context [String]
 multipleAct actions = concat <$> mapM act actions
-
 
 
 -- | Shows an expression and the name that is bound to the expression
