@@ -3,11 +3,11 @@ module Main where
 import           Control.Monad.Trans
 import           Control.Monad.State
 import           Control.Exception
-import           System.Environment
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec hiding (try)
 import           Format
 import           Interpreter
+import           Options hiding (defaultOptions)
 
 -- | A filename is a string containing the directory path and
 -- the real name of the file.
@@ -21,14 +21,22 @@ type Filename = String
 
 -- | Runs the interpreter with default settings and an empty context.
 main :: IO ()
-main = do
-  args <- getArgs
-  case args of
-    [] -> runInputT defaultSettings ( outputStrLn initialText
-                                      >> interpreterLoop defaultOptions emptyContext
-                                    )
-    [filename] -> executeFile filename
-    _ -> putStrLn "Wrong number of arguments"
+main =
+  -- Uses the Options library, which requires the program to start with
+  -- runCommand. The flags are stored in opts and other command line arguments
+  -- are stored in args.
+  runCommand $ \opts args -> do
+
+  -- Reads the flags
+  case flagVersion opts of
+    True -> putStrLn versionText
+    False ->
+      case args of
+        [] -> runInputT defaultSettings ( outputStrLn initialText
+                                          >> interpreterLoop defaultOptions emptyContext
+                                        )
+        [filename] -> executeFile filename
+        _ -> putStrLn "Wrong number of arguments"
 
 
 -- | Interpreter awaiting for an instruction.
@@ -122,3 +130,19 @@ executeFile filename = do
                         format :: String -> String
                         format "" = ""
                         format s = (++"\n") . last . lines $ s
+
+
+-- Flags
+-- | Flags datatype
+data MainFlags = MainFlags
+  { flagExec :: String
+  , flagVersion :: Bool
+  }
+
+instance Options MainFlags where
+  -- | Flags definition
+  defineOptions = pure MainFlags
+    <*> simpleOption "exec" ""
+    "A file to execute and show its results"
+    <*> simpleOption "version" False
+    "Show program version"
