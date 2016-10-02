@@ -9,16 +9,21 @@ as bold or italics. It also stores the texts showed by the interpreter.
 -}
 
 module Format
-  ( formatFormula
+  (
+  -- * Formatting
+    formatFormula
   , formatIntro
   , formatPrompt
   , formatName
   , formatSubs1
   , formatSubs2
   , end
+
+  -- * Interpreter texts
   , promptText
   , helpText
   , initialText
+  , versionText
   )
 where
 
@@ -101,6 +106,10 @@ initialText = unlines [
   formatIntro ++ "Welcome to the Mikrokosmos Lambda Interpreter!" ++ end,
   formatFormula ++ "Version " ++ version ++ ". GNU General Public License Version 3." ++ end
   ]
+
+-- | Version complete text
+versionText :: String
+versionText = "Mikrokosmos, version " ++ version
 
 -- | Version
 version :: String
