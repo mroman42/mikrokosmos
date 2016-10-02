@@ -16,6 +16,7 @@ import           Options hiding (defaultOptions)
 -- actions (bindings and evaluation), and interpreter specific actions, as "quit"
 -- or "load".
 
+
 -- | Runs the interpreter with default settings and an empty context.
 main :: IO ()
 main =
@@ -39,6 +40,8 @@ main =
 -- | Interpreter awaiting for an instruction.
 interpreterLoop :: Environment -> InputT IO ()
 interpreterLoop environment = do
+  -- Gets the user input on the interpreter
+  -- and parses it to a concrete action.
   minput <- getInputLine promptText
   let interpreteraction =
         case minput of
@@ -47,22 +50,17 @@ interpreterLoop environment = do
           Just input -> case parse interpreteractionParser "" input of
             Left _  -> Error
             Right a -> a
+
+  -- Executes the parsed action, every action may affect the
+  -- context in a way, and returns the control to the interpreter. 
   case interpreteraction of
-    EmptyLine -> interpreterLoop environment
-    Quit -> return ()
-    Error -> do
-      outputStr formatFormula
-      outputStrLn "Unknown command"
-      outputStr end
-      interpreterLoop environment
-    SetVerbose -> do
-      outputStrLn $
-        formatFormula ++
-        "verbose mode: " ++ if getVerbose environment then "off" else "on" ++
-        end
-      interpreterLoop (changeVerbose environment)
-    SetColors  -> interpreterLoop (changeColor environment)
-    Help -> outputStr helpText >> interpreterLoop environment
+    -- Interprets and action
+    Interpret action -> case runState (act action) environment of
+                          (output, newenv) -> do
+                            outputActions newenv output
+                            interpreterLoop newenv
+
+    -- Loads a file given the filename
     Load filename -> do
       maybeloadfile <- lift $ loadFile filename
       case maybeloadfile of
@@ -73,16 +71,39 @@ interpreterLoop environment = do
                           (output, newenv) -> do
                             outputActions newenv output
                             interpreterLoop newenv
-    Interpret action -> case runState (act action) environment of
-                          (output, newenv) -> do
-                            outputActions newenv output
-                            interpreterLoop newenv
+    
+    -- Ignores the empty line
+    EmptyLine -> interpreterLoop environment
+    
+    -- Exists the interpreter
+    Quit -> return ()
+
+    -- Unknown command
+    Error -> do
+      outputStr formatFormula
+      outputStrLn "Unknown command"
+      outputStr end
+      interpreterLoop environment
+
+    -- Sets the verbose option
+    SetVerbose -> do
+      outputStrLn $
+        formatFormula ++
+        "verbose mode: " ++ if getVerbose environment then "off" else "on" ++
+        end
+      interpreterLoop (changeVerbose environment)
+      
+    -- Sets the color option
+    SetColors -> interpreterLoop (changeColor environment)
+    
+    -- Prints the help
+    Help -> outputStr helpText >> interpreterLoop environment
 
 
 
 
 -- | Outputs results from actions. Given a list of options and outputs,
--- formats and prints them in console.
+--   formats and prints them in console.
 outputActions :: Environment -> [String] -> InputT IO ()
 outputActions environment output = do
     outputStr formatFormula
@@ -97,10 +118,9 @@ outputActions environment output = do
 
 
 
-
 -- Loading and reading files
 -- | Loads the given filename and returns the complete list of actions.
--- Returns Nothing if there is an error reading or parsing the file.
+--   Returns Nothing if there is an error reading or parsing the file.
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
   putStrLn filename
