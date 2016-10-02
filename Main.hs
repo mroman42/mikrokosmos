@@ -7,6 +7,7 @@ import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec hiding (try)
 import           Format
 import           Interpreter
+import           Environment
 import           Options hiding (defaultOptions)
 
 
@@ -29,15 +30,15 @@ main =
     False ->
       case args of
         [] -> runInputT defaultSettings ( outputStrLn initialText
-                                          >> interpreterLoop defaultOptions emptyContext
+                                          >> interpreterLoop defaultEnv
                                         )
         [filename] -> executeFile filename
         _ -> putStrLn "Wrong number of arguments"
 
 
 -- | Interpreter awaiting for an instruction.
-interpreterLoop :: InterpreterOptions -> Context -> InputT IO ()
-interpreterLoop options context = do
+interpreterLoop :: Environment -> InputT IO ()
+interpreterLoop environment = do
   minput <- getInputLine promptText
   let interpreteraction =
         case minput of
@@ -47,43 +48,43 @@ interpreterLoop options context = do
             Left _  -> Error
             Right a -> a
   case interpreteraction of
-    EmptyLine -> interpreterLoop options context
+    EmptyLine -> interpreterLoop environment
     Quit -> return ()
     Error -> do
       outputStr formatFormula
       outputStrLn "Unknown command"
       outputStr end
-      interpreterLoop options context
+      interpreterLoop environment
     SetVerbose -> do
       outputStrLn $
         formatFormula ++
-        "verbose mode: " ++ if getVerbose options then "off" else "on" ++
+        "verbose mode: " ++ if getVerbose environment then "off" else "on" ++
         end
-      interpreterLoop (changeVerbose options) context
-    SetColors  -> interpreterLoop (changeColor options) context
-    Help -> outputStr helpText >> interpreterLoop options context
+      interpreterLoop (changeVerbose environment)
+    SetColors  -> interpreterLoop (changeColor environment)
+    Help -> outputStr helpText >> interpreterLoop environment
     Load filename -> do
       maybeloadfile <- lift $ loadFile filename
       case maybeloadfile of
         Nothing -> do
           outputStrLn "Error loading file"
-          interpreterLoop options context
-        Just actions -> case runState (multipleAct actions) context of
-                          (output, ccontext) -> do
-                            outputActions options output
-                            interpreterLoop options ccontext
-    Interpret action -> case runState (act action) context of
-                          (output, ccontext) -> do
-                            outputActions options output
-                            interpreterLoop options ccontext
+          interpreterLoop environment
+        Just actions -> case runState (multipleAct actions) environment of
+                          (output, newenv) -> do
+                            outputActions newenv output
+                            interpreterLoop newenv
+    Interpret action -> case runState (act action) environment of
+                          (output, newenv) -> do
+                            outputActions newenv output
+                            interpreterLoop newenv
 
 
 
 
 -- | Outputs results from actions. Given a list of options and outputs,
 -- formats and prints them in console.
-outputActions :: InterpreterOptions -> [String] -> InputT IO ()
-outputActions options output = do
+outputActions :: Environment -> [String] -> InputT IO ()
+outputActions environment output = do
     outputStr formatFormula
     mapM_ (outputStr . format) output
     outputStr end
@@ -91,8 +92,8 @@ outputActions options output = do
     format :: String -> String
     format "" = ""
     format s
-      | not (getVerbose options) = (++"\n") . last . lines $ s
-      | otherwise             = s
+      | not (getVerbose environment) = (++"\n") . last . lines $ s
+      | otherwise                    = s
 
 
 
@@ -120,7 +121,7 @@ executeFile filename = do
   maybeloadfile <- loadFile filename
   case maybeloadfile of
     Nothing    -> putStrLn "Error loading file"
-    Just actions -> case runState (multipleAct actions) emptyContext of
+    Just actions -> case runState (multipleAct actions) defaultEnv of
                       (outputs, _) -> mapM_ (putStr . format) outputs
                       where
                         format :: String -> String

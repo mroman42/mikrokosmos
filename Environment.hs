@@ -22,6 +22,9 @@ module Environment
   , addBind
   , changeColor
   , changeVerbose
+
+  -- * Filename
+  , Filename
   )
 where
 
