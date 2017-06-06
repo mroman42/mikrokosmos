@@ -1,17 +1,19 @@
 module Tests where
 
-import Test.HUnit
-import Main hiding (main)
-import Control.Monad (void)
+import Test.Tasty
+import Test.Tasty.HUnit
+
+import Data.List
+import Data.Ord
 
 
-testSimplId :: Test
-testSimplId = TestCase $ assertEqual
-  "Simplifies the identity"
-  (Lambda (Var 1))
-  (simplifyall $ App (Lambda (Var 1)) (Lambda (Var 1)))
+main = defaultMain tests
 
-main :: IO ()            
-main = void $ runTestTT $ TestList
-       [ TestLabel "Identity" testSimplId
-       ]
+tests :: TestTree
+tests = testGroup "Tests" [unitTests]
+
+unitTests :: TestTree
+unitTests = testGroup "Unit tests"
+  [ testCase "Simple testing unit test" $
+    [1,2,3] `compare` [1,2] @?= GT
+  ]
