@@ -113,4 +113,4 @@ versionText = "Mikrokosmos, version " ++ version
 
 -- | Version
 version :: String
-version = "0.2.0"
+version = "Untyped λ 0.2.0"
