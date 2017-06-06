@@ -7,17 +7,15 @@ import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec hiding (try)
 import           Format
 import           Interpreter
+import           Environment
 import           Options hiding (defaultOptions)
-
--- | A filename is a string containing the directory path and
--- the real name of the file.
-type Filename = String
 
 
 -- Lambda interpreter
 -- The actions of the interpreter are written here. It allows to execute normal
 -- actions (bindings and evaluation), and interpreter specific actions, as "quit"
 -- or "load".
+
 
 -- | Runs the interpreter with default settings and an empty context.
 main :: IO ()
@@ -33,15 +31,17 @@ main =
     False ->
       case args of
         [] -> runInputT defaultSettings ( outputStrLn initialText
-                                          >> interpreterLoop defaultOptions emptyContext
+                                          >> interpreterLoop defaultEnv
                                         )
         [filename] -> executeFile filename
         _ -> putStrLn "Wrong number of arguments"
 
 
 -- | Interpreter awaiting for an instruction.
-interpreterLoop :: InterpreterOptions -> Context -> InputT IO ()
-interpreterLoop options context = do
+interpreterLoop :: Environment -> InputT IO ()
+interpreterLoop environment = do
+  -- Gets the user input on the interpreter
+  -- and parses it to a concrete action.
   minput <- getInputLine promptText
   let interpreteraction =
         case minput of
@@ -50,44 +50,62 @@ interpreterLoop options context = do
           Just input -> case parse interpreteractionParser "" input of
             Left _  -> Error
             Right a -> a
+
+  -- Executes the parsed action, every action may affect the
+  -- context in a way, and returns the control to the interpreter. 
   case interpreteraction of
-    EmptyLine -> interpreterLoop options context
-    Quit -> return ()
-    Error -> do
-      outputStr formatFormula
-      outputStrLn "Unknown command"
-      outputStr end
-      interpreterLoop options context
-    SetVerbose -> do
-      outputStrLn $
-        formatFormula ++
-        "verbose mode: " ++ if getVerbose options then "off" else "on" ++
-        end
-      interpreterLoop (changeVerbose options) context
-    SetColors  -> interpreterLoop (changeColor options) context
-    Help -> outputStr helpText >> interpreterLoop options context
+    -- Interprets and action
+    Interpret action -> case runState (act action) environment of
+                          (output, newenv) -> do
+                            outputActions newenv output
+                            interpreterLoop newenv
+
+    -- Loads a file given the filename
     Load filename -> do
       maybeloadfile <- lift $ loadFile filename
       case maybeloadfile of
         Nothing -> do
           outputStrLn "Error loading file"
-          interpreterLoop options context
-        Just actions -> case runState (multipleAct actions) context of
-                          (output, ccontext) -> do
-                            outputActions options output
-                            interpreterLoop options ccontext
-    Interpret action -> case runState (act action) context of
-                          (output, ccontext) -> do
-                            outputActions options output
-                            interpreterLoop options ccontext
+          interpreterLoop environment
+        Just actions -> case runState (multipleAct actions) environment of
+                          (output, newenv) -> do
+                            outputActions newenv output
+                            interpreterLoop newenv
+    
+    -- Ignores the empty line
+    EmptyLine -> interpreterLoop environment
+    
+    -- Exists the interpreter
+    Quit -> return ()
+
+    -- Unknown command
+    Error -> do
+      outputStr formatFormula
+      outputStrLn "Unknown command"
+      outputStr end
+      interpreterLoop environment
+
+    -- Sets the verbose option
+    SetVerbose -> do
+      outputStrLn $
+        formatFormula ++
+        "verbose mode: " ++ if getVerbose environment then "off" else "on" ++
+        end
+      interpreterLoop (changeVerbose environment)
+      
+    -- Sets the color option
+    SetColors -> interpreterLoop (changeColor environment)
+    
+    -- Prints the help
+    Help -> outputStr helpText >> interpreterLoop environment
 
 
 
 
 -- | Outputs results from actions. Given a list of options and outputs,
--- formats and prints them in console.
-outputActions :: InterpreterOptions -> [String] -> InputT IO ()
-outputActions options output = do
+--   formats and prints them in console.
+outputActions :: Environment -> [String] -> InputT IO ()
+outputActions environment output = do
     outputStr formatFormula
     mapM_ (outputStr . format) output
     outputStr end
@@ -95,15 +113,14 @@ outputActions options output = do
     format :: String -> String
     format "" = ""
     format s
-      | not (getVerbose options) = (++"\n") . last . lines $ s
-      | otherwise             = s
-
+      | not (getVerbose environment) = (++"\n") . last . lines $ s
+      | otherwise                    = s
 
 
 
 -- Loading and reading files
 -- | Loads the given filename and returns the complete list of actions.
--- Returns Nothing if there is an error reading or parsing the file.
+--   Returns Nothing if there is an error reading or parsing the file.
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
   putStrLn filename
@@ -124,7 +141,7 @@ executeFile filename = do
   maybeloadfile <- loadFile filename
   case maybeloadfile of
     Nothing    -> putStrLn "Error loading file"
-    Just actions -> case runState (multipleAct actions) emptyContext of
+    Just actions -> case runState (multipleAct actions) defaultEnv of
                       (outputs, _) -> mapM_ (putStr . format) outputs
                       where
                         format :: String -> String
