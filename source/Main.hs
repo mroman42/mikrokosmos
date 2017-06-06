@@ -54,7 +54,7 @@ interpreterLoop environment = do
   -- Executes the parsed action, every action may affect the
   -- context in a way, and returns the control to the interpreter. 
   case interpreteraction of
-    -- Interprets and action
+    -- Interprets an action
     Interpret action -> case runState (act action) environment of
                           (output, newenv) -> do
                             outputActions newenv output
