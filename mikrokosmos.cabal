@@ -32,7 +32,9 @@ executable mikrokosmos
                        ansi-terminal,
                        multimap,
                        HUnit >=1.0,
-                       options
+                       options,
+                       tasty,
+                       tasty-hunit
                        
   other-modules:       Format
                        Lambda
