@@ -3,6 +3,7 @@ module Main where
 import           Control.Monad.Trans
 import           Control.Monad.State
 import           Control.Exception
+import           Data.List
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec hiding (try)
 import           Format
@@ -147,6 +148,15 @@ executeFile filename = do
                         format :: String -> String
                         format "" = ""
                         format s = (++"\n") . last . lines $ s
+
+
+-- | Reads module dependencies
+readFileDependencies :: String -> IO (Maybe [String])
+readFileDependencies filename = do
+  input <- try $ (readFile filename) :: IO (Either IOException String)
+  case input of
+    Left _ -> return Nothing
+    Right inputs -> return $ Just (filter (isPrefixOf "#INCLUDE ") $ filter (/="") $ lines inputs)
 
 
 -- Flags
