@@ -1,0 +1,29 @@
+#INCLUDE logic
+
+## Data structures
+# Pairs
+pair   = \x.\y.\z.z x y
+first  = \p.p true
+second = \p.p false
+
+# Lists
+# Uses the right-fold representation of lists.
+# The representation of a list is its foldr function.
+cons = \h.\t.\c.\n.(c h (t c n))
+nil = \c.\n.n
+
+# Folds
+foldr  = \o.\n.\l.(l o n)
+sum    = (foldr plus 0)
+prod   = (foldr mult (succ 0))
+length = (foldr (\h.\t.succ t) 0)
+
+# Map
+# Writes map as a foldr.
+map    = (\f.(foldr (\h.\t.cons (f h) t) nil))
+filter = \p.(foldr (\h.\t.((p h) (cons h t) t)) nil)
+
+# Trees
+# Uses the fold representation of a binary tree
+# Its nil is the same one as the list representation
+node = \x.\l.\r.\f.\n.(f x (l f n) (r f n))
