@@ -1,7 +1,6 @@
 #INCLUDE arithmetic
 #INCLUDE logic
 
-## Natural numbers
 # List of 100 first natural numbers
 1 = succ 0
 2 = succ 1
