@@ -85,7 +85,7 @@ end  = setSGRCode []
 -- | Prompt line. It is shown when the interpreter asks the user
 --   to introduce a new command.
 promptText :: String
-promptText = formatPrompt ++ "mikroλ> " ++ end
+promptText = formatPrompt ++ "mikro> " ++ end
 
 -- | Help line. It is shown when the user uses the :help command.
 helpText :: String
