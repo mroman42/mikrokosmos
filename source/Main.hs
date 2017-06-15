@@ -151,12 +151,34 @@ executeFile filename = do
 
 
 -- | Reads module dependencies
-readFileDependencies :: String -> IO (Maybe [String])
+readFileDependencies :: Filename -> IO [Modulename]
 readFileDependencies filename = do
   input <- try $ (readFile filename) :: IO (Either IOException String)
   case input of
-    Left _ -> return Nothing
-    Right inputs -> return $ Just (filter (isPrefixOf "#INCLUDE ") $ filter (/="") $ lines inputs)
+    Left _ -> return []
+    Right inputs -> return $
+      map (drop 9) (filter (isPrefixOf "#INCLUDE ") $ filter (/="") $ lines inputs)
+
+-- | Reads all the dependencies from a module list
+readAllModuleDeps :: [Modulename] -> IO [Modulename]
+readAllModuleDeps modulenames = do
+  files <- mapM findFilename modulenames
+  deps <- mapM readFileDependencies files
+  return $ concat deps
+
+-- | Read module dependencies recursively
+readAllModuleDepsRecursively :: [Modulename] -> IO [Modulename]
+readAllModuleDepsRecursively modulenames = do
+  newmodulenames <- readAllModuleDeps modulenames
+  if modulenames == newmodulenames
+    then return modulenames
+    else readAllModuleDepsRecursively newmodulenames
+
+  
+
+-- | Given a module name, returns the filename associated with it
+findFilename :: Modulename -> IO Filename
+findFilename s = return $ "lib/" ++ s ++ ".mkr"
 
 
 -- Flags
