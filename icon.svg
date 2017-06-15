@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.1 r"
-   sodipodi:docname="logo.svg">
+   sodipodi:docname="icon.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="331.66373"
-     inkscape:cy="596.27319"
+     inkscape:zoom="3.959798"
+     inkscape:cx="85.91679"
+     inkscape:cy="919.54007"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -56,18 +56,26 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <ellipse
-       style="fill:#d40000;stroke-width:0.11585389"
-       id="path3682"
-       cx="34.301331"
-       cy="34.719246"
-       rx="34.112354"
-       ry="34.24157" />
+    <path
+       sodipodi:type="star"
+       style="fill:#d40000;fill-opacity:1;stroke-width:0.45103043"
+       id="path23"
+       sodipodi:sides="6"
+       sodipodi:cx="36.198366"
+       sodipodi:cy="32.238796"
+       sodipodi:r1="36.363235"
+       sodipodi:r2="31.491486"
+       sodipodi:arg1="-1.0516502"
+       sodipodi:arg2="-0.52805144"
+       inkscape:flatsided="true"
+       inkscape:rounded="0.04"
+       inkscape:randomized="0"
+       d="M 54.239582,0.66666667 C 55.502467,1.3883154 72.554763,30.622369 72.561239,32.076884 72.567716,33.531399 55.776431,62.916147 54.520022,63.649014 53.263613,64.38188 19.420032,64.532575 18.157147,63.810926 16.894262,63.089277 -0.15803426,33.855223 -0.16451075,32.400708 -0.17098723,30.946193 16.620298,1.5614452 17.876707,0.82857885 19.133115,0.09571255 52.976697,-0.05498203 54.239582,0.66666667 Z" />
     <flowRoot
        xml:space="preserve"
        id="flowRoot3684"
        style="font-style:normal;font-weight:normal;font-size:192px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,-49.892858,-41.955357)"><flowRegion
+       transform="matrix(0.26458333,0,0,0.26458333,-47.888337,-44.561235)"><flowRegion
          id="flowRegion3686"
          style="font-size:192px;line-height:1"><rect
            id="rect3688"
