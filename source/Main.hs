@@ -65,7 +65,6 @@ interpreterLoop environment = do
     Load modulename -> do
       modules <- lift $ (nub <$> readAllModuleDepsRecursively [modulename])
       files <- lift $ mapM findFilename modules
-      lift $ print files
       maybeactions <- (fmap concat) <$> sequence <$> (lift $ mapM loadFile files)
       case maybeactions of
         Nothing -> do
@@ -127,7 +126,7 @@ outputActions environment output = do
 --   Returns Nothing if there is an error reading or parsing the file.
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
-  putStrLn filename
+  putStrLn $ "Loading " ++ filename ++ "..."
   input <- try $ (readFile filename) :: IO (Either IOException String)
   case input of
     Left _ -> return Nothing
