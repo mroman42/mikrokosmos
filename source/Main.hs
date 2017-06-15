@@ -3,6 +3,7 @@ module Main where
 import           Control.Monad.Trans
 import           Control.Monad.State
 import           Control.Exception
+import           Data.List
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec hiding (try)
 import           Format
@@ -60,10 +61,12 @@ interpreterLoop environment = do
                             outputActions newenv output
                             interpreterLoop newenv
 
-    -- Loads a file given the filename
-    Load filename -> do
-      maybeloadfile <- lift $ loadFile filename
-      case maybeloadfile of
+    -- Loads a module and its dependencies given its name
+    Load modulename -> do
+      modules <- lift $ (nub <$> readAllModuleDepsRecursively [modulename])
+      files <- lift $ mapM findFilename modules
+      maybeactions <- (fmap concat) <$> sequence <$> (lift $ mapM loadFile files)
+      case maybeactions of
         Nothing -> do
           outputStrLn "Error loading file"
           interpreterLoop environment
@@ -123,7 +126,7 @@ outputActions environment output = do
 --   Returns Nothing if there is an error reading or parsing the file.
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
-  putStrLn filename
+  putStrLn $ "Loading " ++ filename ++ "..."
   input <- try $ (readFile filename) :: IO (Either IOException String)
   case input of
     Left _ -> return Nothing
@@ -147,6 +150,36 @@ executeFile filename = do
                         format :: String -> String
                         format "" = ""
                         format s = (++"\n") . last . lines $ s
+
+
+-- | Reads module dependencies
+readFileDependencies :: Filename -> IO [Modulename]
+readFileDependencies filename = do
+  input <- try $ (readFile filename) :: IO (Either IOException String)
+  case input of
+    Left _ -> return []
+    Right inputs -> return $
+      map (drop 9) (filter (isPrefixOf "#INCLUDE ") $ filter (/="") $ lines inputs)
+
+-- | Reads all the dependencies from a module list
+readAllModuleDeps :: [Modulename] -> IO [Modulename]
+readAllModuleDeps modulenames = do
+  files <- mapM findFilename modulenames
+  deps <- mapM readFileDependencies files
+  return $ concat deps
+
+-- | Read module dependencies recursively
+readAllModuleDepsRecursively :: [Modulename] -> IO [Modulename]
+readAllModuleDepsRecursively modulenames = do
+  newmodulenames <- readAllModuleDeps modulenames
+  let allmodulenames = nub (newmodulenames ++ modulenames)
+  if modulenames == allmodulenames
+    then return modulenames
+    else readAllModuleDepsRecursively allmodulenames
+
+-- | Given a module name, returns the filename associated with it
+findFilename :: Modulename -> IO Filename
+findFilename s = return $ "lib/" ++ s ++ ".mkr"
 
 
 -- Flags
