@@ -23,8 +23,9 @@ module Environment
   , changeColor
   , changeVerbose
 
-  -- * Filename
+  -- * Filenames and Modulenames
   , Filename
+  , Modulename
   )
 where
 
@@ -35,6 +36,10 @@ import           Lambda
 -- | A filename is a string containing the directory path and
 -- the real name of the file.
 type Filename = String
+
+-- | A modulename is a string naming a module.
+type Modulename = String
+
 
 data Environment = Environment
   { context :: Context
