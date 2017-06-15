@@ -61,10 +61,13 @@ interpreterLoop environment = do
                             outputActions newenv output
                             interpreterLoop newenv
 
-    -- Loads a file given the filename
-    Load filename -> do
-      maybeloadfile <- lift $ loadFile filename
-      case maybeloadfile of
+    -- Loads a module and its dependencies given its name
+    Load modulename -> do
+      modules <- lift $ (nub <$> readAllModuleDepsRecursively [modulename])
+      files <- lift $ mapM findFilename modules
+      lift $ print files
+      maybeactions <- (fmap concat) <$> sequence <$> (lift $ mapM loadFile files)
+      case maybeactions of
         Nothing -> do
           outputStrLn "Error loading file"
           interpreterLoop environment
@@ -170,11 +173,10 @@ readAllModuleDeps modulenames = do
 readAllModuleDepsRecursively :: [Modulename] -> IO [Modulename]
 readAllModuleDepsRecursively modulenames = do
   newmodulenames <- readAllModuleDeps modulenames
-  if modulenames == newmodulenames
+  let allmodulenames = nub (newmodulenames ++ modulenames)
+  if modulenames == allmodulenames
     then return modulenames
-    else readAllModuleDepsRecursively newmodulenames
-
-  
+    else readAllModuleDepsRecursively allmodulenames
 
 -- | Given a module name, returns the filename associated with it
 findFilename :: Modulename -> IO Filename
