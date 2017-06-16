@@ -58,8 +58,13 @@ defaultEnv = Environment
   }
 
 
+-- | Adds a name binding to the environment
 addBind :: Environment -> String -> Exp -> Environment
-addBind env s e = env {context = MultiBimap.insert e s (context env)}
+addBind env s e =
+  -- If the binding already exists, it changes nothing
+  if elem s (MultiBimap.lookup e $ context env)
+    then env
+    else env {context = MultiBimap.insert e s (context env)}
 
 -- | Gets the color configuration
 getColor :: Environment -> Bool
