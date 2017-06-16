@@ -1,0 +1,148 @@
+#+TITLE: Mikroskosmos
+#+SUBTITLE: User's guide
+
+* Mikrokosmos
+
+https://raw.githubusercontent.com/M42/mikrokosmos/master/icon.svg.png
+
+*Mikrokosmos* is an untyped lambda calculus interpreter, borrowing its
+name from the series of progressive piano études /[[https://www.youtube.com/watch?v=VEsMk3DAzWM][Mikrokosmos]]/ written
+by /Bela Bartok/. It aims to provide students with a tool to learn and
+understand [[https://en.wikipedia.org/wiki/Lambda_calculus#Informal_description][lambda calculus]].
+
+* Installation
+Mikrokosmos is installable from [[http://hackage.haskell.org/][Hackage]]; you can install it directly
+from =cabal= using
+
+#+BEGIN_EXAMPLE
+    cabal update
+    cabal install mikrokosmos
+#+END_EXAMPLE
+
+You can also install it by cloning the git repository and using
+[[https://www.haskell.org/cabal/][cabal]], as in
+
+#+BEGIN_SRC sh
+    git clone https://github.com/M42/mikrokosmos.git
+    cd mikrokosmos
+    cabal install
+#+END_SRC
+
+If you have =ghc= version 8 or greater you can also compile it directly
+as
+
+#+BEGIN_SRC sh
+    git clone https://github.com/M42/mikrokosmos.git
+    cd mikrokosmos
+    ghc Main.hs
+#+END_SRC
+
+but you will need to check for dependencies first.
+
+** Libraries
+
+* First steps
+   :PROPERTIES:
+   :CUSTOM_ID: first-steps
+   :END:
+
+Once installed, you can open the interpreter typing =mikrokosmos= in
+your terminal. It will show you a prompt where you can write lambda
+expressions to evaluate them:
+
+#+CAPTION: First steps
+[[https://cloud.githubusercontent.com/assets/5337877/18649151/337c6782-7ebe-11e6-9701-495c2cb40675.gif]]
+
+You can write expressions using =\var.= to denote a lambda abstraction
+on the =var= variable and you can bind names to expressions using ===.
+As you can see in the image, whenever the interpreter finds a known
+constant, it labels the expression with its name.
+
+If you need help at any moment, you can type =:help= into the prompt to
+get a summary of the available options:
+
+#+CAPTION: Help screen
+[[https://cloud.githubusercontent.com/assets/5337877/18882511/bfc84c34-84df-11e6-8215-870b29e49b8f.gif]]
+
+* The standard library
+   :PROPERTIES:
+   :CUSTOM_ID: the-standard-library
+   :END:
+
+Mikrokosmos comes bundled with a standard library in a file called
+=std.mkr=; if it was not the case for you, you can download the
+[[https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr][library]]
+from the git repository. It allows you to experiment with
+[[https://en.wikipedia.org/wiki/Church_encoding][Church encoding]] of
+booleans, integers and much more. You can load it with =:load std.mkr=,
+given the file is in your working directory; after that, you can use a
+lot of new constants:
+
+#+CAPTION: Standard library
+[[https://cloud.githubusercontent.com/assets/5337877/18663278/1a6374e2-7f1e-11e6-99b5-279de7428a10.gif]]
+
+All this is written in lambda calculus! You can check the definitions on
+the =std.mkr= file.
+
+* Debugging and verbose mode
+   :PROPERTIES:
+   :CUSTOM_ID: debugging-and-verbose-mode
+   :END:
+
+If you want to check how the lambda reductions are being performed you
+can use the *verbose mode*. It can be activated and deactivated writing
+=:verbose=, and it will show you every step on the reduction of the
+expression, coloring the substitution at every step.
+
+#+CAPTION: Verbose mode
+[[https://cloud.githubusercontent.com/assets/5337877/18882803/060a2dec-84e1-11e6-9dfa-9c08957b559e.gif]]
+
+It uses [[https://en.wikipedia.org/wiki/De_Bruijn_notation][DeBruijn
+notation]] to show the substitutions, because this is the internal
+representation used by the interpreter. The term in red is being
+substituted by the term in yellow.
+
+* Advanced data structures
+   :PROPERTIES:
+   :CUSTOM_ID: advanced-data-structures
+   :END:
+
+There are representations of structures such as linked lists or trees in
+the standard library. You can use them to do a bit of your usual
+functional programming:
+
+#+CAPTION: Trees
+[[https://cloud.githubusercontent.com/assets/5337877/18883269/d7c3d616-84e2-11e6-9fc9-aa6e3df606f9.gif]]
+
+Oh! And you can insert comments with =#=, both in the interpreter and in
+the files the interpreter can load.
+
+* Recursion
+   :PROPERTIES:
+   :CUSTOM_ID: recursion
+   :END:
+
+We can use and define fixpoint operators in order to define recursive
+functions. The problem they have is that they can not be evaluated
+without arguments into a closed form, so we have to delay the evaluation
+of the expression when we bind it. To do this, we use the =!== operator,
+which binds an expression to a variable without evaluating it.
+
+#+BEGIN_EXAMPLE
+    fix != (\f.(\x.f (x x)) (\x.f (x x)))
+    fact != fix (\f.\n.iszero n (succ 0) (mult n (f (pred n))))
+    fib != fix (\f.\n.iszero n 1 (plus (f (pred n)) (f (pred (pred n)))))
+#+END_EXAMPLE
+
+** References & interesting links
+    :PROPERTIES:
+    :CUSTOM_ID: references-interesting-links
+    :END:
+
+-  [[http://dev.stephendiehl.com/fun/003_lambda_calculus.html][Build you
+   a Haskell - Stephen Diehl]]\\
+-  [[https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B][Haskell
+   from Scratch - Jekor]]\\
+-  [[https://github.com/goldfirere/glambda][The Glambda interpreter]]\\
+-  [[http://www.mscs.dal.ca/~selinger/papers/lambdanotes.pdf][Lecture
+   notes on the lambda calculus - Peter Selinger]]
