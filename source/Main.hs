@@ -4,6 +4,7 @@ import           Control.Monad.Trans
 import           Control.Monad.State
 import           Control.Exception
 import           Data.List
+import           System.Directory
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec hiding (try)
 import           Format
@@ -179,7 +180,17 @@ readAllModuleDepsRecursively modulenames = do
 
 -- | Given a module name, returns the filename associated with it
 findFilename :: Modulename -> IO Filename
-findFilename s = return $ "lib/" ++ s ++ ".mkr"
+findFilename s = do
+  appdir <- getAppUserDataDirectory "mikrokosmos"
+  homedir <- getHomeDirectory
+
+  -- Looks for the module in the common locations
+  head <$> filterM doesFileExist
+    [ "lib/" ++ s ++ ".mkr"
+    , "./" ++ s ++ ".mkr"
+    , appdir ++ "/" ++ s ++ ".mkr"
+    , homedir ++ "/" ++ s ++ ".mkr"
+    ]
 
 
 -- Flags
