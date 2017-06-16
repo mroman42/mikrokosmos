@@ -34,7 +34,8 @@ executable mikrokosmos
                        HUnit >=1.0,
                        options,
                        tasty,
-                       tasty-hunit
+                       tasty-hunit,
+                       directory >= 1.0
                        
   other-modules:       Format
                        Lambda
