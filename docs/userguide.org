@@ -1,9 +1,10 @@
 #+TITLE: Mikroskosmos
-#+SUBTITLE: User's guide
+#+SUBTITLE: User's guide v0.2
+#+SETUPFILE: html.setup
 
 * Mikrokosmos
 
-https://raw.githubusercontent.com/M42/mikrokosmos/master/icon.svg.png
+[[./icon.svg.png]]
 
 *Mikrokosmos* is an untyped lambda calculus interpreter, borrowing its
 name from the series of progressive piano études /[[https://www.youtube.com/watch?v=VEsMk3DAzWM][Mikrokosmos]]/ written
@@ -28,6 +29,14 @@ You can also install it by cloning the git repository and using
     cabal install
 #+END_SRC
 
+or using [[https://docs.haskellstack.org/en/stable/README/][stack]]
+
+#+BEGIN_SRC sh
+    git clone https://github.com/M42/mikrokosmos.git
+    cd mikrokosmos
+    stack install
+#+END_SRC
+
 If you have =ghc= version 8 or greater you can also compile it directly
 as
 
@@ -40,12 +49,12 @@ as
 but you will need to check for dependencies first.
 
 ** Libraries
+Mikrokosmos comes bundled with a set of lambda calculus libraries.
+You can find them in =./lib=. To load them into the interpreter, they
+must be placed under your home directory in a folder called =~/.mikrokosmos=,
+or, more easily, in the current working directory.
 
 * First steps
-   :PROPERTIES:
-   :CUSTOM_ID: first-steps
-   :END:
-
 Once installed, you can open the interpreter typing =mikrokosmos= in
 your terminal. It will show you a prompt where you can write lambda
 expressions to evaluate them:
@@ -65,68 +74,50 @@ get a summary of the available options:
 [[https://cloud.githubusercontent.com/assets/5337877/18882511/bfc84c34-84df-11e6-8215-870b29e49b8f.gif]]
 
 * The standard library
-   :PROPERTIES:
-   :CUSTOM_ID: the-standard-library
-   :END:
-
 Mikrokosmos comes bundled with a standard library in a file called
 =std.mkr=; if it was not the case for you, you can download the
-[[https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr][library]]
-from the git repository. It allows you to experiment with
-[[https://en.wikipedia.org/wiki/Church_encoding][Church encoding]] of
-booleans, integers and much more. You can load it with =:load std.mkr=,
-given the file is in your working directory; after that, you can use a
-lot of new constants:
+[[https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr][library]] from the git repository. It allows you to experiment with
+[[https://en.wikipedia.org/wiki/Church_encoding][Church encoding]] of booleans, integers and much more. You can load it
+with =:load std.mkr=, given the file is in your working directory;
+after that, you can use a lot of new constants:
 
 #+CAPTION: Standard library
 [[https://cloud.githubusercontent.com/assets/5337877/18663278/1a6374e2-7f1e-11e6-99b5-279de7428a10.gif]]
 
-All this is written in lambda calculus! You can check the definitions on
-the =std.mkr= file.
+All of this is written in lambda calculus! You can check the
+definitions on the =std.mkr= file.
 
 * Debugging and verbose mode
-   :PROPERTIES:
-   :CUSTOM_ID: debugging-and-verbose-mode
-   :END:
-
-If you want to check how the lambda reductions are being performed you
-can use the *verbose mode*. It can be activated and deactivated writing
+The *verbose mode* makes the interpreter show every beta reduction it
+performs. It is useful if you want to check the step-by-step execution
+of your lambda functions. It can be activated and deactivated writing
 =:verbose=, and it will show you every step on the reduction of the
 expression, coloring the substitution at every step.
 
 #+CAPTION: Verbose mode
 [[https://cloud.githubusercontent.com/assets/5337877/18882803/060a2dec-84e1-11e6-9dfa-9c08957b559e.gif]]
 
-It uses [[https://en.wikipedia.org/wiki/De_Bruijn_notation][DeBruijn
-notation]] to show the substitutions, because this is the internal
-representation used by the interpreter. The term in red is being
-substituted by the term in yellow.
+The internal representation of the interpreter uses [[https://en.wikipedia.org/wiki/De_Bruijn_notation][DeBruijn notation]]. 
+At every step, the term in red is being substituted by the term in yellow.
 
 * Advanced data structures
-   :PROPERTIES:
-   :CUSTOM_ID: advanced-data-structures
-   :END:
-
-There are representations of structures such as linked lists or trees in
-the standard library. You can use them to do a bit of your usual
-functional programming:
+There are representations of structures such as linked lists or trees
+in the standard library. You can use them to write more complex
+operations
 
 #+CAPTION: Trees
 [[https://cloud.githubusercontent.com/assets/5337877/18883269/d7c3d616-84e2-11e6-9fc9-aa6e3df606f9.gif]]
 
-Oh! And you can insert comments with =#=, both in the interpreter and in
-the files the interpreter can load.
+Comments must start with a =#=, both in the interpreter and in the
+module code.
 
 * Recursion
-   :PROPERTIES:
-   :CUSTOM_ID: recursion
-   :END:
-
 We can use and define fixpoint operators in order to define recursive
 functions. The problem they have is that they can not be evaluated
-without arguments into a closed form, so we have to delay the evaluation
-of the expression when we bind it. To do this, we use the =!== operator,
-which binds an expression to a variable without evaluating it.
+without arguments into a closed form, so we have to delay the
+evaluation of the expression when we bind it. To do this, we use the
+=!== operator, which binds an expression to a variable without
+evaluating it.
 
 #+BEGIN_EXAMPLE
     fix != (\f.(\x.f (x x)) (\x.f (x x)))
@@ -134,15 +125,11 @@ which binds an expression to a variable without evaluating it.
     fib != fix (\f.\n.iszero n 1 (plus (f (pred n)) (f (pred (pred n)))))
 #+END_EXAMPLE
 
-** References & interesting links
-    :PROPERTIES:
-    :CUSTOM_ID: references-interesting-links
-    :END:
+* References & interesting links
+The following are interesting links for those who want to learn more
+about lambda-calculus or how this interpreter has been built.
 
--  [[http://dev.stephendiehl.com/fun/003_lambda_calculus.html][Build you
-   a Haskell - Stephen Diehl]]\\
--  [[https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B][Haskell
-   from Scratch - Jekor]]\\
--  [[https://github.com/goldfirere/glambda][The Glambda interpreter]]\\
--  [[http://www.mscs.dal.ca/~selinger/papers/lambdanotes.pdf][Lecture
-   notes on the lambda calculus - Peter Selinger]]
+ - [[http://www.mscs.dal.ca/~selinger/papers/lambdanotes.pdf][Lecture notes on the lambda calculus - Peter Selinger]]
+ - [[https://github.com/goldfirere/glambda][The Glambda interpreter]]
+ - [[http://dev.stephendiehl.com/fun/003_lambda_calculus.html][Build you a Haskell - Stephen Diehl]]
+ - [[https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B][Haskell from Scratch - Jekor]]
