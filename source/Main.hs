@@ -26,7 +26,7 @@ main =
   -- runCommand. The flags are stored in opts and other command line arguments
   -- are stored in args.
   runCommand $ \opts args -> do
-
+  
   -- Reads the flags
   case flagVersion opts of
     True -> putStrLn versionText
@@ -62,11 +62,14 @@ interpreterLoop environment = do
                             outputActions newenv output
                             interpreterLoop newenv
 
-    -- Loads a module and its dependencies given its name
+    -- Loads a module and its dependencies given its name.
+    -- Avoids repeated modules keeping only their first ocurrence.
     Load modulename -> do
       modules <- lift $ (nub <$> readAllModuleDepsRecursively [modulename])
       files <- lift $ mapM findFilename modules
-      maybeactions <- (fmap concat) <$> sequence <$> (lift $ mapM loadFile files)
+
+      -- Concats all the module contents
+      maybeactions <- (fmap concat) . sequence <$> (lift $ mapM loadFile files)
       case maybeactions of
         Nothing -> do
           outputStrLn "Error loading file"
