@@ -130,7 +130,7 @@ outputActions environment output = do
 --   Returns Nothing if there is an error reading or parsing the file.
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
-  putStrLn $ "Loading " ++ filename ++ "..."
+  putStrLn $ formatLoading ++ "Loading " ++ filename ++ "..." ++ end
   input <- try $ (readFile filename) :: IO (Either IOException String)
   case input of
     Left _ -> return Nothing

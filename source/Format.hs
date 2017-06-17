@@ -13,6 +13,7 @@ module Format
   -- * Formatting
     formatFormula
   , formatIntro
+  , formatLoading
   , formatPrompt
   , formatName
   , formatSubs1
@@ -57,6 +58,10 @@ formatFormula = setSGRCode [SetConsoleIntensity NormalIntensity, SetColor Foregr
 -- | Sequence of characters that signals the format of the introduction to the terminal.
 formatIntro :: String
 formatIntro = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground Dull promptColor]
+
+-- | Sequence of characters that signals the format of the loading of a module to the terminal.
+formatLoading :: String
+formatLoading = formatIntro
 
 -- | Sequence of characters that signals the format of the prompt to the terminal.
 formatPrompt :: String
