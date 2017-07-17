@@ -93,12 +93,12 @@ interpreterLoop environment = do
       interpreterLoop environment
 
     -- Sets the verbose option
-    SetVerbose -> do
+    SetVerbose setting -> do
       outputStrLn $
         formatFormula ++
-        "verbose mode: " ++ if getVerbose environment then "off" else "on" ++
+        "verbose mode: " ++ if setting then "on" else "off" ++
         end
-      interpreterLoop (changeVerbose environment)
+      interpreterLoop (changeVerbose environment setting)
       
     -- Sets the color option
     SetColors -> interpreterLoop (changeColor environment)

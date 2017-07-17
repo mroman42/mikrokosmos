@@ -29,13 +29,13 @@ import           Lambda
 
 
 -- | Interpreter action. It can be a language action (binding and evaluation)
--- or an interpreter specific one, such as "quit". 
+-- or an interpreter specific one, such as "quit".
 data InterpreterAction = Interpret Action -- ^ Language action
                        | EmptyLine        -- ^ Empty line, it will be ignored
                        | Error            -- ^ Error on the interpreter
                        | Quit             -- ^ Close the interpreter
                        | Load String      -- ^ Load the given file
-                       | SetVerbose       -- ^ Changes verbosity
+                       | SetVerbose Bool  -- ^ Changes verbosity
                        | SetColors        -- ^ Changes colors
                        | Help             -- ^ Shows help
 
@@ -133,7 +133,13 @@ helpParser = string ":help" >> return Help
 
 -- | Parses a change in verbosity.
 verboseParser :: Parser InterpreterAction
-verboseParser = string ":verbose" >> return SetVerbose
+verboseParser = choice
+  [ try verboseonParser
+  , try verboseoffParser
+  ]
+  where
+    verboseonParser  = string ":verbose on" >> return (SetVerbose True)
+    verboseoffParser = string ":verbose off" >> return (SetVerbose False)
 
 -- | Parses a "load-file" command.
 loadParser :: Parser InterpreterAction
