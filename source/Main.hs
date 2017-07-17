@@ -87,7 +87,7 @@ interpreterLoop environment = do
 
     -- Unknown command
     Error -> do
-      outputStr formatFormula
+      outputStr (if getColor environment then formatFormula else "")
       outputStrLn "Unknown command"
       outputStr end
       interpreterLoop environment
@@ -95,7 +95,7 @@ interpreterLoop environment = do
     -- Sets the verbose option
     SetVerbose setting -> do
       outputStrLn $
-        formatFormula ++
+        (if getColor environment then formatFormula else "") ++
         "verbose mode: " ++ if setting then "on" else "off" ++
         end
       interpreterLoop (changeVerbose environment setting)
@@ -103,7 +103,7 @@ interpreterLoop environment = do
     -- Sets the color option
     SetColor setting -> do
       outputStrLn $
-        formatFormula ++
+        (if getColor environment then formatFormula else "") ++
         "color mode: " ++ if setting then "on" else "off" ++
         end
       interpreterLoop (changeColor environment setting)
@@ -118,7 +118,7 @@ interpreterLoop environment = do
 --   formats and prints them in console.
 outputActions :: Environment -> [String] -> InputT IO ()
 outputActions environment output = do
-    outputStr formatFormula
+    outputStr (if getColor environment then formatFormula else "")
     mapM_ (outputStr . format) output
     outputStr end
   where
