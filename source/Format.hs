@@ -44,11 +44,11 @@ nameColor = Green
 
 -- | Substitutions are marked with this color
 substColor :: Color
-substColor = Red
+substColor = Cyan
 
 -- | To-be-substituted expressions are marked with this color
 subst2Color :: Color
-subst2Color = Yellow
+subst2Color = Cyan
 
 
 -- Format sequences
@@ -79,7 +79,7 @@ formatSubs1 = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground
 -- | Sequence of characters that signals the format of a expression which will
 --   be substituted in the next reduction step to the terminal.
 formatSubs2 :: String
-formatSubs2 = setSGRCode [SetColor Foreground Dull subst2Color]
+formatSubs2 = setSGRCode [SetConsoleIntensity FaintIntensity, SetColor Foreground Dull subst2Color]
 
 -- | Sequence of characters that cleans all the format.
 end :: String
