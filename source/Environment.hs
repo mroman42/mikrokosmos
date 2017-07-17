@@ -79,8 +79,8 @@ changeVerbose :: Environment -> Bool -> Environment
 changeVerbose options setting = options {verbose = setting}
 
 -- | Sets the color configuration on/off
-changeColor :: Environment -> Environment
-changeColor options = options {color = not $ color options}
+changeColor :: Environment -> Bool -> Environment
+changeColor options setting = options {color = setting}
 
 -- | Given an expression, returns its name if it is bounded to any.
 getExpressionName :: Environment -> Exp -> Maybe String
