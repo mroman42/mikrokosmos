@@ -75,8 +75,8 @@ getVerbose :: Environment -> Bool
 getVerbose = verbose
 
 -- | Sets the verbose configuration on/off.
-changeVerbose :: Environment -> Environment
-changeVerbose options = options {verbose = not $ verbose options}
+changeVerbose :: Environment -> Bool -> Environment
+changeVerbose options setting = options {verbose = setting}
 
 -- | Sets the color configuration on/off
 changeColor :: Environment -> Environment
