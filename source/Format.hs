@@ -18,6 +18,7 @@ module Format
   , formatName
   , formatSubs1
   , formatSubs2
+  , decolor
   , end
 
   -- * Interpreter texts
@@ -29,8 +30,8 @@ module Format
 where
 
 import System.Console.ANSI
-
-
+import Data.List
+import Data.Monoid
 
 -- Colors
 -- | Prompt messages color
@@ -84,6 +85,26 @@ formatSubs2 = setSGRCode [SetColor Foreground Dull subst2Color]
 end :: String
 end  = setSGRCode []
 
+
+-- | Removes all the ocurrences of a string from the other
+removeString :: String -> String -> String
+removeString _ "" = ""
+removeString t s@(c:sc)
+  | t `isPrefixOf` s = removeString t (drop (length t) s)
+  | otherwise = c : removeString t sc
+
+-- | Removes all color from a string
+decolor :: String -> String
+decolor = appEndo $ mconcat $ map (Endo . removeString)
+  [ formatSubs1
+  , formatSubs2
+  , formatFormula
+  , formatIntro
+  , formatName
+  , formatPrompt
+  , formatLoading
+  , end
+  ]
 
 
 

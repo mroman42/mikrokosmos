@@ -36,7 +36,7 @@ data InterpreterAction = Interpret Action -- ^ Language action
                        | Quit             -- ^ Close the interpreter
                        | Load String      -- ^ Load the given file
                        | SetVerbose Bool  -- ^ Changes verbosity
-                       | SetColors        -- ^ Changes colors
+                       | SetColor Bool    -- ^ Changes colors
                        | Help             -- ^ Shows help
 
 -- | Language action. The language has a number of possible valid statements;
@@ -91,6 +91,7 @@ interpreteractionParser = choice
   , try quitParser
   , try loadParser
   , try verboseParser
+  , try colorParser
   , try helpParser
   ]
 
@@ -140,6 +141,17 @@ verboseParser = choice
   where
     verboseonParser  = string ":verbose on" >> return (SetVerbose True)
     verboseoffParser = string ":verbose off" >> return (SetVerbose False)
+
+-- | Parses a change in color.
+colorParser :: Parser InterpreterAction
+colorParser = choice
+  [ try coloronParser
+  , try coloroffParser
+  ]
+  where
+    coloronParser  = string ":color on" >> return (SetColor True)
+    coloroffParser = string ":color off" >> return (SetColor False)
+
 
 -- | Parses a "load-file" command.
 loadParser :: Parser InterpreterAction

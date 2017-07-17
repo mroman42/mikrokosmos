@@ -101,7 +101,12 @@ interpreterLoop environment = do
       interpreterLoop (changeVerbose environment setting)
       
     -- Sets the color option
-    SetColors -> interpreterLoop (changeColor environment)
+    SetColor setting -> do
+      outputStrLn $
+        formatFormula ++
+        "color mode: " ++ if setting then "on" else "off" ++
+        end
+      interpreterLoop (changeColor environment setting)
     
     -- Prints the help
     Help -> outputStr helpText >> interpreterLoop environment
@@ -117,9 +122,14 @@ outputActions environment output = do
     mapM_ (outputStr . format) output
     outputStr end
   where
-    format :: String -> String
-    format "" = ""
-    format s
+    format = formatColor . formatVerbose
+
+    formatColor s
+      | getColor environment = s
+      | otherwise = unlines $ map decolor $ lines s
+    
+    formatVerbose "" = ""
+    formatVerbose s
       | not (getVerbose environment) = (++"\n") . last . lines $ s
       | otherwise                    = s
 
