@@ -76,9 +76,14 @@ multipleAct actions = concat <$> mapM act actions
 -- | Shows an expression and the name that is bound to the expression
 -- in the current context
 showCompleteExp :: Environment -> Exp -> String
-showCompleteExp environment expr = case getExpressionName environment expr of
-  Nothing      -> show (nameExp expr) ++ formatName ++ " ⇒⇒ " ++ show (skiabs (nameExp expr)) ++ end
-  Just expName -> show (nameExp expr) ++ formatName ++ " ⇒ " ++ expName ++ " ⇒⇒ " ++ show (skiabs (nameExp expr)) ++ end
+showCompleteExp environment expr = let
+      lambdaname = show $ nameExp expr
+      skiname = formatSubs2 ++ " ⇒ " ++ (show $ skiabs $ nameExp expr) ++ end
+  in
+  case getExpressionName environment expr of
+    Nothing      -> lambdaname ++ skiname
+    Just expName -> lambdaname ++ skiname ++ formatName ++ " ⇒ " ++ expName ++ end 
+    
 
 
 
