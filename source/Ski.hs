@@ -28,8 +28,14 @@ showski :: Ski -> String
 showski S = "S"
 showski K = "K"
 showski I = "I"
-showski (Comb x y) = "(" ++ showski x ++ showski y ++ ")"
 showski (Cte _) = "?"
+showski (Comb x S) = showski x ++ showski S
+showski (Comb x K) = showski x ++ showski K
+showski (Comb x I) = showski x ++ showski I
+showski (Comb x (Cte c)) = showski x ++ showski (Cte c)
+showski (Comb x (Comb u v)) = showski x ++ "(" ++ showski (Comb u v) ++ ")"
+
+
 
 -- | SKI abstraction of a named lambda term. From a lambda expression
 -- creates a SKI equivalent expression. The following algorithm is a
