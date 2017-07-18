@@ -45,7 +45,7 @@ bracketabs :: String -> Ski -> Ski
 bracketabs _ S = Comb K S
 bracketabs _ K = Comb K K
 bracketabs _ I = Comb K I
-bracketabs x (Cte y) = if x == y then I else Comb K (Cte x)
+bracketabs x (Cte y) = if x == y then I else Comb K (Cte y)
 bracketabs x (Comb u (Cte y))
   | freein x u && x == y = u
   | freein x u           = Comb K (Comb u (Cte y))
