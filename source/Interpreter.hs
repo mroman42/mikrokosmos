@@ -26,6 +26,7 @@ import           Format
 import           Environment
 import           NamedLambda
 import           Lambda
+import           Ski
 
 
 -- | Interpreter action. It can be a language action (binding and evaluation)
@@ -62,7 +63,7 @@ act (Execute le) =
      return [unlines $
               [ show le ] ++
               [ unlines $ map showReduction $ simplifySteps $ toBruijn (context env) le ] ++
-              [ showCompleteExp env $ simplifyAll $ toBruijn (context env) le ]
+              [ showCompleteExp env $ simplifyAll $ toBruijn (context env) le ] 
             ]
 
 
@@ -76,8 +77,8 @@ multipleAct actions = concat <$> mapM act actions
 -- in the current context
 showCompleteExp :: Environment -> Exp -> String
 showCompleteExp environment expr = case getExpressionName environment expr of
-  Nothing      -> show (nameExp expr)
-  Just expName -> show (nameExp expr) ++ formatName ++ " ⇒ " ++ expName ++ end
+  Nothing      -> show (nameExp expr) ++ formatName ++ " ⇒⇒ " ++ show (skiabs (nameExp expr)) ++ end
+  Just expName -> show (nameExp expr) ++ formatName ++ " ⇒ " ++ expName ++ " ⇒⇒ " ++ show (skiabs (nameExp expr)) ++ end
 
 
 
