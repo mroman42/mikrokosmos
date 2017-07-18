@@ -1,5 +1,24 @@
-#INCLUDE arithmetic
 #INCLUDE logic
+
+## Arithmethic
+# This library uses Church numerals to represent natural numbers
+# Succesor of a natural number is defined with 0
+succ = \n.\f.\x.f (n f x)
+0 = \f.\x.x
+
+# Basic operations on natural numbers
+plus = \m.\n.\f.\x.m f (n f x)
+mult = \m.\n.\f.\x.m (n f) x
+
+# Substraction
+pred  = \n.\f.\x.n (\g.(\h.h (g f))) (\u.x) (\u.u)
+minus = \m.\n.(n pred) m
+
+# Predicates on natural numbers
+iszero = \n.(n (\x.false) true)
+leq    = \m.\n.(iszero (minus m n))
+eq     = \m.\n.(and (leq m n) (leq n m))
+
 
 # List of 100 first natural numbers
 1 = succ 0
