@@ -14,6 +14,7 @@ module Lambda
   , simplifyAll
   , simplifySteps
   , showReduction
+--  , freein
   )
 where
 
@@ -128,3 +129,10 @@ incrementFreeVars n (Lambda e) = Lambda (incrementFreeVars (succ n) e)
 incrementFreeVars n (Var m)
   | m > n     = Var (succ m)
   | otherwise = Var m
+
+
+-- | Determines if the given variable is free on the expression.
+-- freein :: Integer -> Exp -> Bool
+-- freein n (Var m)    = n == m
+-- freein n (Lambda e) = freein (succ n) e
+-- freein n (App u v)  = (freein n u) && (freein n v)
