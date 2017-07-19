@@ -1,0 +1,3 @@
+[submodule "jupyter-mikrokosmos"]
+	path = jupyter-mikrokosmos
+	url = git@github.com:M42/jupyter-mikrokosmos.git
