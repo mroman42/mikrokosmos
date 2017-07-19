@@ -51,12 +51,14 @@ but you will need to check for dependencies first.
 
 ** Libraries
 Mikrokosmos comes bundled with a set of lambda calculus libraries.
-You can find them in =./lib=. To load them into the interpreter, they
-must be placed under your home directory in a folder called =~/.mikrokosmos=,
-or, more easily, in the current working directory.
+You can find them in the =./lib= folder of the git repository. 
+
+To load them into the interpreter, they must be placed under your home
+directory in a folder called =~/.mikrokosmos=, or, more easily, in the
+current working directory.
 
 ** Jupyter kernel
-The jupyter kernel can be found in the =jupyter-mikrokosmos= folder.
+The [[https://jupyter.org/][Jupyter]] kernel can be found in the =jupyter-mikrokosmos= folder.
 Three files are needed for it to work.
 
  * =kernel.js= and =kernel.json= must be placed in one of the following
@@ -76,44 +78,52 @@ Three files are needed for it to work.
    #+END_SRC
 
 * First steps
-Once installed, you can open the interpreter typing =mikrokosmos= in
-your terminal. It will show you a prompt where you can write lambda
-expressions to evaluate them:
+** First steps on the command line interpreter
+Once [[*Mikrokosmos][installed]], the interpreter can be opened by executing
+=mikrokosmos= in a terminal. It will open a prompt where lambda expressions
+can be evaluated:
 
 #+CAPTION: First steps
 [[https://cloud.githubusercontent.com/assets/5337877/18649151/337c6782-7ebe-11e6-9701-495c2cb40675.gif]]
 
-You can write expressions using =\var.= to denote a lambda abstraction
-on the =var= variable and you can bind names to expressions using ===.
+You can write expressions using =\x.= to denote a lambda abstraction
+on the =x= variable and you can bind names to expressions using ===.
 As you can see in the image, whenever the interpreter finds a known
 constant, it labels the expression with its name.
 
-If you need help at any moment, you can type =:help= into the prompt to
-get a summary of the available options:
+If you need help with at any moment, you can type =:help= into the prompt to
+get a summary of the available interpreter options
 
-#+CAPTION: Help screen
-[[https://cloud.githubusercontent.com/assets/5337877/18882511/bfc84c34-84df-11e6-8215-870b29e49b8f.gif]]
+#+BEGIN_EXAMPLE
+Commands available from the prompt:
+	<expression>	 evaluates the expression
+	:quit       	 quits the interpreter
+	:load <file>	 loads the given .mkr library or script
+	:verbose    	 sets verbose mode on/off
+	:help       	 shows this help
+#+END_EXAMPLE
 
-* The standard library
-Mikrokosmos comes bundled with a standard library in a file called
-=std.mkr=; if it was not the case for you, you can download the
-[[https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr][library]] from the git repository. It allows you to experiment with
-[[https://en.wikipedia.org/wiki/Church_encoding][Church encoding]] of booleans, integers and much more. You can load it
-with =:load std.mkr=, given the file is in your working directory;
-after that, you can use a lot of new constants:
+** First steps with the Jupyter kernel
+If Jupyter and the Mikrokosmos Jupyter kernel are installed, a Jupyter
+Notebook server can be started by executing =jupyter notebook=. You can
+see more information in how to use a Jupyter notebook server [[http://jupyter.readthedocs.io/en/latest/running.html][here]].
 
-#+CAPTION: Standard library
-[[https://cloud.githubusercontent.com/assets/5337877/18663278/1a6374e2-7f1e-11e6-99b5-279de7428a10.gif]]
+Once a notebook is opened, the mikrokosmos kernel can be selected in the
+menu =Kernel > Change kernel > IMikrokosmos=.
 
-All of this is written in lambda calculus! You can check the
-definitions on the =std.mkr= file.
+#+CAPTION: Jupyter Notebook using the Mikrokosmos kernel
+[[./images/jupyternotebook.png]]
 
-* Debugging and verbose mode
+Multiple expressions can be evaluated in one cell. Each line will be evaluated
+separately.
+* The Mikrokosmos interpreter
+** Verbose mode
 The *verbose mode* makes the interpreter show every beta reduction it
 performs. It is useful if you want to check the step-by-step execution
-of your lambda functions. It can be activated and deactivated writing
-=:verbose=, and it will show you every step on the reduction of the
-expression, coloring the substitution at every step.
+of your lambda functions. It can be activated and deactivated by
+executing =:verbose on= and =:verbose off=, and it will show you every
+step on the reduction of the expression, coloring the substitution at
+every step.
 
 #+CAPTION: Verbose mode
 [[https://cloud.githubusercontent.com/assets/5337877/18882803/060a2dec-84e1-11e6-9dfa-9c08957b559e.gif]]
@@ -121,7 +131,49 @@ expression, coloring the substitution at every step.
 The internal representation of the interpreter uses [[https://en.wikipedia.org/wiki/De_Bruijn_notation][DeBruijn notation]]. 
 At every step, the term in red is being substituted by the term in yellow.
 
-* Advanced data structures
+** SKI mode
+The SKI mode shows every lambda expression in terms of SKI combinators.
+It can be activated and deactivated by executing =:ski on= and =:ski off=.
+
+** Color mode
+Colored output is activated by default as it is very useful in
+combination with the [[*Verbose mode][verbose mode]]. It can be deactivated however by
+executing =:color off= in the interpreter; =:color on= will activate
+the color again.
+* The Mikrokosmos language
+WIP!
+
+** Comments
+Comments must start with a =#=, both in the interpreter and in the
+module code.
+
+* Standard libraries
+Mikrokosmos comes bundled with a set of libraries in the =./lib=
+folder; if your installation does not provide you the libraries, you
+can download the [[https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr][library]] from the git repository. The installation
+of libraries is discussed [[*Libraries][here]].
+
+** Loading libraries
+The reserved keyword =:load= is used to load libraries. If the library
+name is =foo.mkr=, it will be loaded using =:load foo=. The standard
+libraries are
+
+ * =:load std= loads all the standard libraries.
+ * =:load logic= loads simple boolean logic operators and constants, such
+   as =true=, =and= or =ifelse=.
+ * =:load nat= loads integer arithmetic operators such as =plus=, =zero=
+   or =mult=.
+ * =:load ski= loads SKI combinators.
+ * =:load fixpoint= loads recursive functions and the fixpoint Y combinator.
+ * =:load datastructures= loads lists and binary trees.
+
+#+CAPTION: Standard library
+[[https://cloud.githubusercontent.com/assets/5337877/18663278/1a6374e2-7f1e-11e6-99b5-279de7428a10.gif]]
+
+All of this is written in pure lambda calculus! You can check the
+definitions on the =.mkr= files.
+
+** Advanced data structures
 There are representations of structures such as linked lists or trees
 in the standard library. You can use them to write more complex
 operations
@@ -129,10 +181,7 @@ operations
 #+CAPTION: Trees
 [[https://cloud.githubusercontent.com/assets/5337877/18883269/d7c3d616-84e2-11e6-9fc9-aa6e3df606f9.gif]]
 
-Comments must start with a =#=, both in the interpreter and in the
-module code.
-
-* Recursion
+** Recursion
 We can use and define fixpoint operators in order to define recursive
 functions. The problem they have is that they can not be evaluated
 without arguments into a closed form, so we have to delay the
