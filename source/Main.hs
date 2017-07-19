@@ -107,6 +107,15 @@ interpreterLoop environment = do
         "color mode: " ++ if setting then "on" else "off" ++
         end
       interpreterLoop (changeColor environment setting)
+
+    -- Sets the ski option
+    SetSki setting -> do
+      outputStrLn $
+        (if getColor environment then formatFormula else "") ++
+        "ski mode: " ++ if setting then "on" else "off" ++
+        end
+      interpreterLoop (changeSkioutput environment setting)
+
     
     -- Prints the help
     Help -> outputStr helpText >> interpreterLoop environment
@@ -126,7 +135,7 @@ outputActions environment output = do
 
     formatColor s
       | getColor environment = s
-      | otherwise = unlines $ map decolor $ lines s
+      | otherwise            = unlines $ map decolor $ lines s
     
     formatVerbose "" = ""
     formatVerbose s

@@ -38,6 +38,7 @@ data InterpreterAction = Interpret Action -- ^ Language action
                        | Load String      -- ^ Load the given file
                        | SetVerbose Bool  -- ^ Changes verbosity
                        | SetColor Bool    -- ^ Changes colors
+                       | SetSki Bool      -- ^ Changes ski output
                        | Help             -- ^ Shows help
 
 -- | Language action. The language has a number of possible valid statements;
@@ -78,7 +79,9 @@ multipleAct actions = concat <$> mapM act actions
 showCompleteExp :: Environment -> Exp -> String
 showCompleteExp environment expr = let
       lambdaname = show $ nameExp expr
-      skiname = formatSubs2 ++ " ⇒ " ++ (show $ skiabs $ nameExp expr) ++ end
+      skiname = if getSki environment
+                 then formatSubs2 ++ " ⇒ " ++ (show $ skiabs $ nameExp expr) ++ end
+                 else ""
   in
   case getExpressionName environment expr of
     Nothing      -> lambdaname ++ skiname
@@ -98,6 +101,7 @@ interpreteractionParser = choice
   , try loadParser
   , try verboseParser
   , try colorParser
+  , try skiOutputParser
   , try helpParser
   ]
 
@@ -157,6 +161,17 @@ colorParser = choice
   where
     coloronParser  = string ":color on" >> return (SetColor True)
     coloroffParser = string ":color off" >> return (SetColor False)
+
+-- | Parses a change in ski output.
+skiOutputParser :: Parser InterpreterAction
+skiOutputParser = choice
+  [ try skionParser
+  , try skioffParser
+  ]
+  where
+    skionParser  = string ":ski on" >> return (SetSki True)
+    skioffParser = string ":ski off" >> return (SetSki False)
+
 
 
 -- | Parses a "load-file" command.
