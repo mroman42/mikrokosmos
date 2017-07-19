@@ -12,38 +12,39 @@ by /Bela Bartok/. It aims to provide students with a tool to learn and
 understand [[https://en.wikipedia.org/wiki/Lambda_calculus#Informal_description][lambda calculus]].
 
 * Installation
+** Mikrokosmos
 Mikrokosmos is installable from [[http://hackage.haskell.org/][Hackage]]; you can install it directly
 from =cabal= using
 
 #+BEGIN_EXAMPLE
-    cabal update
-    cabal install mikrokosmos
+  cabal update
+  cabal install mikrokosmos
 #+END_EXAMPLE
 
 You can also install it by cloning the git repository and using
 [[https://www.haskell.org/cabal/][cabal]], as in
 
 #+BEGIN_SRC sh
-    git clone https://github.com/M42/mikrokosmos.git
-    cd mikrokosmos
-    cabal install
+  git clone https://github.com/M42/mikrokosmos.git
+  cd mikrokosmos
+  cabal install
 #+END_SRC
 
 or using [[https://docs.haskellstack.org/en/stable/README/][stack]]
 
 #+BEGIN_SRC sh
-    git clone https://github.com/M42/mikrokosmos.git
-    cd mikrokosmos
-    stack install
+  git clone https://github.com/M42/mikrokosmos.git
+  cd mikrokosmos
+  stack install
 #+END_SRC
 
 If you have =ghc= version 8 or greater you can also compile it directly
 as
 
 #+BEGIN_SRC sh
-    git clone https://github.com/M42/mikrokosmos.git
-    cd mikrokosmos
-    ghc Main.hs
+  git clone https://github.com/M42/mikrokosmos.git
+  cd mikrokosmos
+  ghc Main.hs
 #+END_SRC
 
 but you will need to check for dependencies first.
@@ -53,6 +54,26 @@ Mikrokosmos comes bundled with a set of lambda calculus libraries.
 You can find them in =./lib=. To load them into the interpreter, they
 must be placed under your home directory in a folder called =~/.mikrokosmos=,
 or, more easily, in the current working directory.
+
+** Jupyter kernel
+The jupyter kernel can be found in the =jupyter-mikrokosmos= folder.
+Three files are needed for it to work.
+
+ * =kernel.js= and =kernel.json= must be placed in one of the following
+   paths
+
+   #+BEGIN_SRC bash
+   ~/.local/share/jupyter/kernels/jupyter-mikrokosmos/
+   /usr/share/jupyter/kernels/jupyter-mikrokosmos/
+   #+END_SRC
+
+ * the =mikrokosmoskernel.py= file must available for Python on the
+   working directory, or, more generally, on the [[https://docs.python.org/2/library/sys.html#sys.path][sys-path]]. This can be
+   achieved simply by installing it with pip as
+
+   #+BEGIN_SRC bash
+   sudo pip install imikrokosmos
+   #+END_SRC
 
 * First steps
 Once installed, you can open the interpreter typing =mikrokosmos= in
