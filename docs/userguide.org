@@ -68,6 +68,13 @@ Three files are needed for it to work.
    ~/.local/share/jupyter/kernels/jupyter-mikrokosmos/
    /usr/share/jupyter/kernels/jupyter-mikrokosmos/
    #+END_SRC
+   
+   this can be achieved with
+
+   #+BEGIN_SRC bash
+   cd mikrokosmos
+   sudo jupyter kernelspec install jupyter-mikrokosmos
+   #+END_SRC
 
  * the =mikrokosmoskernel.py= file must available for Python on the
    working directory, or, more generally, on the [[https://docs.python.org/2/library/sys.html#sys.path][sys-path]]. This can be
@@ -198,7 +205,7 @@ libraries are
  * =:load datastructures= loads lists and binary trees.
 
 #+CAPTION: Standard library
-[[https://cloud.githubusercontent.com/assets/5337877/18663278/1a6374e2-7f1e-11e6-99b5-279de7428a10.gif]]
+[[./images/stdlib.png]]
 
 All of this is written in pure lambda calculus! You can check the
 definitions on the =.mkr= files.
