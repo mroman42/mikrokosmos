@@ -11,3 +11,4 @@
 /dist/*
 *.o
 .stack-work/*
+docs/ltximg/*
