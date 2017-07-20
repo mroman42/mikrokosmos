@@ -117,6 +117,21 @@ menu =Kernel > Change kernel > IMikrokosmos=.
 Multiple expressions can be evaluated in one cell. Each line will be evaluated
 separately.
 * The Mikrokosmos interpreter
+The interpreter acts as a REPL where commands and expressions can be evaluated.
+The following options are available both to the command line interpreter and to
+the Jupyter kernel.
+
+The =:help= option shows all the available commands
+
+#+BEGIN_EXAMPLE
+Commands available from the prompt:
+	<expression>	 evaluates the expression
+	:quit       	 quits the interpreter
+	:load <file>	 loads the given .mkr library or script
+	:verbose    	 sets verbose mode on/off
+	:help       	 shows this help
+#+END_EXAMPLE
+
 ** Verbose mode
 The *verbose mode* makes the interpreter show every beta reduction it
 performs. It is useful if you want to check the step-by-step execution
@@ -126,10 +141,11 @@ step on the reduction of the expression, coloring the substitution at
 every step.
 
 #+CAPTION: Verbose mode
-[[https://cloud.githubusercontent.com/assets/5337877/18882803/060a2dec-84e1-11e6-9dfa-9c08957b559e.gif]]
+[[./images/verbose.png]] 
 
 The internal representation of the interpreter uses [[https://en.wikipedia.org/wiki/De_Bruijn_notation][DeBruijn notation]]. 
-At every step, the term in red is being substituted by the term in yellow.
+At every step, the term being substituted and its substitution are
+signalled.
 
 ** SKI mode
 The SKI mode shows every lambda expression in terms of SKI combinators.
@@ -140,8 +156,22 @@ Colored output is activated by default as it is very useful in
 combination with the [[*Verbose mode][verbose mode]]. It can be deactivated however by
 executing =:color off= in the interpreter; =:color on= will activate
 the color again.
+
 * The Mikrokosmos language
-WIP!
+The mikrokosmos language aims to be a minimal implementation of pure
+lambda calculus.
+
+** Lambda expressions
+A lambda abstraction $(\lambda x. x)$ can be written as =\x.x=. Combinations
+of alphanumeric characters are valid free variable names. Application
+of lambda expressions is written by yuxtaposition.
+
+** Bindings
+A expression can be bound to a name using the === operator as follows
+
+#+BEGIN_EXAMPLE
+plus = \a.\b.\c.\d.((a c) ((b c) d))
+#+END_EXAMPLE
 
 ** Comments
 Comments must start with a =#=, both in the interpreter and in the
@@ -194,6 +224,11 @@ evaluating it.
     fact != fix (\f.\n.iszero n (succ 0) (mult n (f (pred n))))
     fib != fix (\f.\n.iszero n 1 (plus (f (pred n)) (f (pred (pred n)))))
 #+END_EXAMPLE
+
+** Writing libraries
+You can write your own libraries as =*.mkr= files. Each line of
+a library is interpreted in the same way it would be interpreted
+on the command line interpreter.
 
 * References & interesting links
 The following are interesting links for those who want to learn more
