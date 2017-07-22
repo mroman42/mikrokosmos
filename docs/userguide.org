@@ -239,20 +239,6 @@ operations
 #+CAPTION: Trees
 [[https://cloud.githubusercontent.com/assets/5337877/18883269/d7c3d616-84e2-11e6-9fc9-aa6e3df606f9.gif]]
 
-** Recursion
-We can use and define fixpoint operators in order to define recursive
-functions. The problem they have is that they can not be evaluated
-without arguments into a closed form, so we have to delay the
-evaluation of the expression when we bind it. To do this, we use the
-=!== operator, which binds an expression to a variable without
-evaluating it.
-
-#+BEGIN_EXAMPLE
-    fix != (\f.(\x.f (x x)) (\x.f (x x)))
-    fact != fix (\f.\n.iszero n (succ 0) (mult n (f (pred n))))
-    fib != fix (\f.\n.iszero n 1 (plus (f (pred n)) (f (pred (pred n)))))
-#+END_EXAMPLE
-
 ** Writing libraries
 You can write your own libraries as =*.mkr= files. Each line of
 a library is interpreted in the same way it would be interpreted
