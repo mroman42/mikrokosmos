@@ -12,3 +12,12 @@
 *.o
 .stack-work/*
 docs/ltximg/*
+*.aux
+*.log
+*.pyg
+*.tex
+*.toc
+*.out
+*/.
+*/.ipynb_checkpoints/*
+*/_minted-userguide/*
