@@ -21,6 +21,7 @@ from =cabal= using
   cabal install mikrokosmos
 #+END_EXAMPLE
 
+Binaries are available from the [[https://github.com/M42/mikrokosmos/releases][GitHub repository]].
 You can also install it by cloning the git repository and using
 [[https://www.haskell.org/cabal/][cabal]], as in
 
@@ -55,11 +56,27 @@ You can find them in the =./lib= folder of the git repository.
 
 To load them into the interpreter, they must be placed under your home
 directory in a folder called =~/.mikrokosmos=, or, more easily, in the
-current working directory.
+current working directory. Mikrokosmos looks for libraries on the following
+list of directories
+
+#+BEGIN_EXAMPLE
+~/
+~/.mikrokosmos/
+./
+./lib/
+#+END_EXAMPLE
 
 ** Jupyter kernel
-The [[https://jupyter.org/][Jupyter]] kernel can be found in the =jupyter-mikrokosmos= folder.
-Three files are needed for it to work.
+The [[https://jupyter.org/][Jupyter]] kernel can be installed with
+
+#+BEGIN_SRC bash
+sudo pip install imikrokosmos
+#+END_SRC
+
+*** Manual installation
+It is possible to install the kernel putting the files under
+=jupyter-mikrokosmos= on their directories. Three files are needed for
+it to work.
 
  * =kernel.js= and =kernel.json= must be placed in one of the following
    paths
@@ -69,7 +86,7 @@ Three files are needed for it to work.
    /usr/share/jupyter/kernels/jupyter-mikrokosmos/
    #+END_SRC
    
-   this can be achieved with
+   this can be achieved automatically with
 
    #+BEGIN_SRC bash
    cd mikrokosmos
@@ -83,6 +100,9 @@ Three files are needed for it to work.
    #+BEGIN_SRC bash
    sudo pip install imikrokosmos
    #+END_SRC
+
+   You can check the value of =sys.path= on your python interpreter and
+   copy manually the script to one of those locations.
 
 * First steps
 ** First steps on the command line interpreter
@@ -166,7 +186,8 @@ the color again.
 
 * The Mikrokosmos language
 The mikrokosmos language aims to be a minimal implementation of pure
-lambda calculus.
+lambda calculus. A tutorial on the language can be found on
+=tutorial.ipynb=.
 
 ** Lambda expressions
 A lambda abstraction $(\lambda x. x)$ can be written as =\x.x=. Combinations
