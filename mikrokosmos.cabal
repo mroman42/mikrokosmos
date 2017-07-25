@@ -44,6 +44,7 @@ executable mikrokosmos
                        Interpreter
                        Environment
                        Ski
+                       Types
                        
   default-language:    Haskell2010
   ghc-options:         -Wall

@@ -27,6 +27,7 @@ import           Environment
 import           NamedLambda
 import           Lambda
 import           Ski
+import           Types
 
 
 -- | Interpreter action. It can be a language action (binding and evaluation)
@@ -83,10 +84,15 @@ showCompleteExp environment expr = let
       skiname = if getSki environment
                  then formatSubs2 ++ " ⇒ " ++ (show $ skiabs $ nameExp expr) ++ end
                  else ""
+      typename = if getTypes environment
+                  then formatSubs2 ++ " :: " ++ (case typeinference expr of
+                                                   Just s -> show s
+                                                   Nothing -> "Type error!") ++ end
+                  else ""
   in
   case getExpressionName environment expr of
-    Nothing      -> lambdaname ++ skiname
-    Just expName -> lambdaname ++ skiname ++ formatName ++ " ⇒ " ++ expName ++ end 
+    Nothing      -> lambdaname ++ skiname ++ typename
+    Just expName -> lambdaname ++ skiname ++ formatName ++ " ⇒ " ++ expName ++ typename ++ end 
     
 
 
