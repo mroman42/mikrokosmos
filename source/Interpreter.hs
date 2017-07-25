@@ -39,6 +39,7 @@ data InterpreterAction = Interpret Action -- ^ Language action
                        | SetVerbose Bool  -- ^ Changes verbosity
                        | SetColor Bool    -- ^ Changes colors
                        | SetSki Bool      -- ^ Changes ski output
+                       | SetTypes Bool    -- ^ Changes type configuration
                        | Help             -- ^ Shows help
 
 -- | Language action. The language has a number of possible valid statements;
@@ -102,6 +103,7 @@ interpreteractionParser = choice
   , try verboseParser
   , try colorParser
   , try skiOutputParser
+  , try typesParser
   , try helpParser
   ]
 
@@ -171,6 +173,16 @@ skiOutputParser = choice
   where
     skionParser  = string ":ski on" >> return (SetSki True)
     skioffParser = string ":ski off" >> return (SetSki False)
+
+-- | Parses a change in ski output.
+typesParser :: Parser InterpreterAction
+typesParser = choice
+  [ try typesonParser
+  , try typesoffParser
+  ]
+  where
+    typesonParser  = string ":types on" >> return (SetTypes True)
+    typesoffParser = string ":types off" >> return (SetTypes False)
 
 
 
