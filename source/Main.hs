@@ -116,7 +116,14 @@ interpreterLoop environment = do
         end
       interpreterLoop (changeSkioutput environment setting)
 
-    
+    -- Sets the types option
+    SetTypes setting -> do
+      outputStrLn $
+        (if getColor environment then formatFormula else "") ++
+        "types: " ++ if setting then "on" else "off" ++
+        end
+      interpreterLoop (changeTypes environment setting)
+
     -- Prints the help
     Help -> outputStr helpText >> interpreterLoop environment
 
