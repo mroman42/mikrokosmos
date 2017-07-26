@@ -36,6 +36,7 @@ data InterpreterAction = Interpret Action -- ^ Language action
                        | EmptyLine        -- ^ Empty line, it will be ignored
                        | Error            -- ^ Error on the interpreter
                        | Quit             -- ^ Close the interpreter
+                       | Restart          -- ^ Restarts the environment
                        | Load String      -- ^ Load the given file
                        | SetVerbose Bool  -- ^ Changes verbosity
                        | SetColor Bool    -- ^ Changes colors
@@ -111,6 +112,7 @@ interpreteractionParser :: Parser InterpreterAction
 interpreteractionParser = choice
   [ try interpretParser
   , try quitParser
+  , try restartParser
   , try loadParser
   , try verboseParser
   , try colorParser
@@ -151,6 +153,10 @@ commentParser = string "#" >> many anyChar >> return Comment
 -- | Parses a "quit" command.
 quitParser :: Parser InterpreterAction
 quitParser = string ":quit" >> return Quit
+
+-- | Parses a "restart" command.
+restartParser :: Parser InterpreterAction
+restartParser = string ":restart" >> return Restart
 
 -- | Parses a "help" command.
 helpParser :: Parser InterpreterAction
