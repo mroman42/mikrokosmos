@@ -127,11 +127,14 @@ helpText :: String
 helpText = unlines [
   formatFormula ++
   "Commands available from the prompt:",
-  "\t<expression>\t evaluates the expression",
-  "\t:quit       \t quits the interpreter",
-  "\t:load <file>\t loads the given .mkr library or script",
-  "\t:verbose    \t sets verbose mode on/off",
-  "\t:help       \t shows this help"
+  "\t<expression>\t\t evaluates the expression",
+  "\t:quit       \t\t quits the interpreter",
+  "\t:load <file>\t\t loads the given .mkr library or script",
+  "\t:verbose <on/off> \t sets verbose mode on/off",
+  "\t:color <on/off> \t sets color mode on/off",
+  "\t:ski <on/off> \t\t sets ski mode on/off",
+  "\t:types <on/off> \t untyped/simply typed lambda calculus",
+  "\t:help       \t\t shows this help"
   ++ end
   ]
 
