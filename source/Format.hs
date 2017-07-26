@@ -18,6 +18,7 @@ module Format
   , formatName
   , formatSubs1
   , formatSubs2
+  , formatType
   , decolor
   , end
 
@@ -50,6 +51,9 @@ substColor = Cyan
 subst2Color :: Color
 subst2Color = Cyan
 
+-- | Types are marked with this color
+typeColor :: Color
+typeColor = Yellow
 
 -- Format sequences
 -- | Sequence of characters that signals the format of a formula to the terminal.
@@ -80,6 +84,11 @@ formatSubs1 = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground
 --   be substituted in the next reduction step to the terminal.
 formatSubs2 :: String
 formatSubs2 = setSGRCode [SetConsoleIntensity FaintIntensity, SetColor Foreground Dull subst2Color]
+
+-- | Sequence of characters that signals the format of a type to the terminal.
+formatType :: String
+formatType = setSGRCode [SetConsoleIntensity NormalIntensity, SetColor Foreground Dull typeColor]
+
 
 -- | Sequence of characters that cleans all the format.
 end :: String

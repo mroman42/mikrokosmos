@@ -84,15 +84,17 @@ showCompleteExp environment expr = let
       skiname = if getSki environment
                  then formatSubs2 ++ " ⇒ " ++ (show $ skiabs $ nameExp expr) ++ end
                  else ""
+      inferredtype = typeinference expr
       typename = if getTypes environment
-                  then formatSubs2 ++ " :: " ++ (case typeinference expr of
+                  then formatType ++ " :: " ++ (case inferredtype of
                                                    Just s -> show s
                                                    Nothing -> "Type error!") ++ end
                   else ""
+      expName = case getExpressionName environment expr of
+                  Nothing -> ""
+                  Just exname -> formatName ++ " ⇒ " ++ exname ++ end
   in
-  case getExpressionName environment expr of
-    Nothing      -> lambdaname ++ skiname ++ typename
-    Just expName -> lambdaname ++ skiname ++ formatName ++ " ⇒ " ++ expName ++ typename ++ end 
+      lambdaname ++ skiname ++ expName ++ typename ++ end
     
 
 
