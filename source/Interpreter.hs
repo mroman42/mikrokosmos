@@ -27,6 +27,7 @@ import           Environment
 import           NamedLambda
 import           Lambda
 import           Ski
+import           Types
 
 
 -- | Interpreter action. It can be a language action (binding and evaluation)
@@ -35,10 +36,12 @@ data InterpreterAction = Interpret Action -- ^ Language action
                        | EmptyLine        -- ^ Empty line, it will be ignored
                        | Error            -- ^ Error on the interpreter
                        | Quit             -- ^ Close the interpreter
+                       | Restart          -- ^ Restarts the environment
                        | Load String      -- ^ Load the given file
                        | SetVerbose Bool  -- ^ Changes verbosity
                        | SetColor Bool    -- ^ Changes colors
                        | SetSki Bool      -- ^ Changes ski output
+                       | SetTypes Bool    -- ^ Changes type configuration
                        | Help             -- ^ Shows help
 
 -- | Language action. The language has a number of possible valid statements;
@@ -59,9 +62,13 @@ act (Bind (s,le)) =
 act (EvalBind (s,le)) =
   do modify (\env -> addBind env s (simplifyAll $ toBruijn (context env) le))
      return [""]
-act (Execute le) =
-  do env <- get
-     return [unlines $
+act (Execute le) = do
+     env <- get
+     let typed = getTypes env
+     let illtyped = typed && typeinference (toBruijn (context env) le) == Nothing
+     
+     return $ if illtyped then [formatType ++ "Error: not typable expression" ++ end ++ "\n"] else
+            [ unlines $
               [ show le ] ++
               [ unlines $ map showReduction $ simplifySteps $ toBruijn (context env) le ] ++
               [ showCompleteExp env $ simplifyAll $ toBruijn (context env) le ] 
@@ -82,10 +89,17 @@ showCompleteExp environment expr = let
       skiname = if getSki environment
                  then formatSubs2 ++ " ⇒ " ++ (show $ skiabs $ nameExp expr) ++ end
                  else ""
+      inferredtype = typeinference expr
+      typename = if getTypes environment
+                  then formatType ++ " :: " ++ (case inferredtype of
+                                                   Just s -> show s
+                                                   Nothing -> "Type error!") ++ end
+                  else ""
+      expName = case getExpressionName environment expr of
+                  Nothing -> ""
+                  Just exname -> formatName ++ " ⇒ " ++ exname ++ end
   in
-  case getExpressionName environment expr of
-    Nothing      -> lambdaname ++ skiname
-    Just expName -> lambdaname ++ skiname ++ formatName ++ " ⇒ " ++ expName ++ end 
+      lambdaname ++ skiname ++ expName ++ typename ++ end
     
 
 
@@ -98,10 +112,12 @@ interpreteractionParser :: Parser InterpreterAction
 interpreteractionParser = choice
   [ try interpretParser
   , try quitParser
+  , try restartParser
   , try loadParser
   , try verboseParser
   , try colorParser
   , try skiOutputParser
+  , try typesParser
   , try helpParser
   ]
 
@@ -138,6 +154,10 @@ commentParser = string "#" >> many anyChar >> return Comment
 quitParser :: Parser InterpreterAction
 quitParser = string ":quit" >> return Quit
 
+-- | Parses a "restart" command.
+restartParser :: Parser InterpreterAction
+restartParser = string ":restart" >> return Restart
+
 -- | Parses a "help" command.
 helpParser :: Parser InterpreterAction
 helpParser = string ":help" >> return Help
@@ -171,6 +191,16 @@ skiOutputParser = choice
   where
     skionParser  = string ":ski on" >> return (SetSki True)
     skioffParser = string ":ski off" >> return (SetSki False)
+
+-- | Parses a change in ski output.
+typesParser :: Parser InterpreterAction
+typesParser = choice
+  [ try typesonParser
+  , try typesoffParser
+  ]
+  where
+    typesonParser  = string ":types on" >> return (SetTypes True)
+    typesoffParser = string ":types off" >> return (SetTypes False)
 
 
 

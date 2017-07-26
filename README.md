@@ -4,7 +4,7 @@
   <img src ="https://raw.githubusercontent.com/M42/mikrokosmos/master/docs/icon.svg.png" />
 </p>
 
-**Mikrokosmos** is an untyped lambda calculus interpreter, borrowing its name from the series of
+**Mikrokosmos** is a λ-calculus interpreter, borrowing its name from the series of
 progressive piano études *[Mikrokosmos](https://www.youtube.com/watch?v=VEsMk3DAzWM)* written by *Bela Bartok*. 
 It aims to provide students with a tool to learn and understand lambda calculus.
 

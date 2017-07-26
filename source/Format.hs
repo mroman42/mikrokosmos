@@ -18,6 +18,7 @@ module Format
   , formatName
   , formatSubs1
   , formatSubs2
+  , formatType
   , decolor
   , end
 
@@ -50,6 +51,9 @@ substColor = Cyan
 subst2Color :: Color
 subst2Color = Cyan
 
+-- | Types are marked with this color
+typeColor :: Color
+typeColor = Yellow
 
 -- Format sequences
 -- | Sequence of characters that signals the format of a formula to the terminal.
@@ -80,6 +84,11 @@ formatSubs1 = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground
 --   be substituted in the next reduction step to the terminal.
 formatSubs2 :: String
 formatSubs2 = setSGRCode [SetConsoleIntensity FaintIntensity, SetColor Foreground Dull subst2Color]
+
+-- | Sequence of characters that signals the format of a type to the terminal.
+formatType :: String
+formatType = setSGRCode [SetConsoleIntensity NormalIntensity, SetColor Foreground Dull typeColor]
+
 
 -- | Sequence of characters that cleans all the format.
 end :: String
@@ -118,11 +127,14 @@ helpText :: String
 helpText = unlines [
   formatFormula ++
   "Commands available from the prompt:",
-  "\t<expression>\t evaluates the expression",
-  "\t:quit       \t quits the interpreter",
-  "\t:load <file>\t loads the given .mkr library or script",
-  "\t:verbose    \t sets verbose mode on/off",
-  "\t:help       \t shows this help"
+  "\t<expression>\t\t evaluates the expression",
+  "\t:quit       \t\t quits the interpreter",
+  "\t:load <file>\t\t loads the given .mkr library or script",
+  "\t:verbose <on/off> \t sets verbose mode on/off",
+  "\t:color <on/off> \t sets color mode on/off",
+  "\t:ski <on/off> \t\t sets ski mode on/off",
+  "\t:types <on/off> \t untyped/simply typed lambda calculus",
+  "\t:help       \t\t shows this help"
   ++ end
   ]
 
@@ -139,4 +151,4 @@ versionText = "Mikrokosmos, version " ++ version
 
 -- | Version
 version :: String
-version = "0.3.0"
+version = "0.4.0"

@@ -1,5 +1,5 @@
 name:                mikrokosmos
-version:             0.3.0
+version:             0.4.0
 synopsis:            Lambda calculus interpreter
 description:         A didactic untyped lambda calculus interpreter.
 homepage:            https://github.com/M42/mikrokosmos
@@ -44,6 +44,7 @@ executable mikrokosmos
                        Interpreter
                        Environment
                        Ski
+                       Types
                        
   default-language:    Haskell2010
   ghc-options:         -Wall
