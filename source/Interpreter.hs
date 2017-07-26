@@ -61,9 +61,13 @@ act (Bind (s,le)) =
 act (EvalBind (s,le)) =
   do modify (\env -> addBind env s (simplifyAll $ toBruijn (context env) le))
      return [""]
-act (Execute le) =
-  do env <- get
-     return [unlines $
+act (Execute le) = do
+     env <- get
+     let typed = getTypes env
+     let illtyped = typed && typeinference (toBruijn (context env) le) == Nothing
+     
+     return $ if illtyped then [formatType ++ "Error: not typable expression" ++ end ++ "\n"] else
+            [ unlines $
               [ show le ] ++
               [ unlines $ map showReduction $ simplifySteps $ toBruijn (context env) le ] ++
               [ showCompleteExp env $ simplifyAll $ toBruijn (context env) le ] 
