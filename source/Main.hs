@@ -85,6 +85,9 @@ interpreterLoop environment = do
     -- Exists the interpreter
     Quit -> return ()
 
+    -- Restarts the interpreter context
+    Restart -> interpreterLoop defaultEnv
+
     -- Unknown command
     Error -> do
       outputStr (if getColor environment then formatFormula else "")
@@ -116,7 +119,14 @@ interpreterLoop environment = do
         end
       interpreterLoop (changeSkioutput environment setting)
 
-    
+    -- Sets the types option
+    SetTypes setting -> do
+      outputStrLn $
+        (if getColor environment then formatFormula else "") ++
+        "types: " ++ if setting then "on" else "off" ++
+        end
+      interpreterLoop (changeTypes environment setting)
+
     -- Prints the help
     Help -> outputStr helpText >> interpreterLoop environment
 

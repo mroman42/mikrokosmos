@@ -17,6 +17,7 @@ module Environment
   , getVerbose
   , getColor
   , getSki
+  , getTypes
   , getExpressionName
   
   -- * Modifying the environment
@@ -24,6 +25,7 @@ module Environment
   , changeColor
   , changeVerbose
   , changeSkioutput
+  , changeTypes
 
   -- * Filenames and Modulenames
   , Filename
@@ -49,6 +51,7 @@ data Environment = Environment
   , verbose :: Bool
   , color :: Bool
   , skioutput :: Bool
+  , types :: Bool
   }
 
 -- | Default environment for the interpreter.
@@ -59,6 +62,7 @@ defaultEnv = Environment
   , verbose     = False
   , color       = True
   , skioutput   = False
+  , types       = False
   }
 
 
@@ -78,9 +82,13 @@ getColor = color
 getVerbose :: Environment -> Bool
 getVerbose = verbose
 
--- | Gets the verbose configuration
+-- | Gets the ski output configuration
 getSki :: Environment -> Bool
 getSki = skioutput
+
+-- | Gets the types configuration
+getTypes :: Environment -> Bool
+getTypes = types
 
 -- | Sets the verbose configuration on/off.
 changeVerbose :: Environment -> Bool -> Environment
@@ -93,6 +101,11 @@ changeColor options setting = options {color = setting}
 -- | Sets the ski output configuration on/off
 changeSkioutput :: Environment -> Bool -> Environment
 changeSkioutput options setting = options {skioutput = setting}
+
+-- | Sets the types output configuration on/off
+changeTypes :: Environment -> Bool -> Environment
+changeTypes options setting = options {types = setting}
+
 
 -- | Given an expression, returns its name if it is bounded to any.
 getExpressionName :: Environment -> Exp -> Maybe String
