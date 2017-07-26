@@ -110,6 +110,7 @@ decolor = appEndo $ mconcat $ map (Endo . removeString)
   , formatFormula
   , formatIntro
   , formatName
+  , formatType
   , formatPrompt
   , formatLoading
   , end
