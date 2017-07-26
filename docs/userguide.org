@@ -152,11 +152,14 @@ The =:help= option shows all the available commands
 
 #+BEGIN_EXAMPLE
 Commands available from the prompt:
-	<expression>	 evaluates the expression
-	:quit       	 quits the interpreter
-	:load <file>	 loads the given .mkr library or script
-	:verbose    	 sets verbose mode on/off
-	:help       	 shows this help
+	<expression>		 evaluates the expression
+	:quit       		 quits the interpreter
+	:load <file>		 loads the given .mkr library or script
+	:verbose <on/off> 	 sets verbose mode on/off
+	:color <on/off> 	 sets color mode on/off
+	:ski <on/off> 		 sets ski mode on/off
+	:types <on/off> 	 untyped/simply typed lambda calculus
+	:help       		 shows this help
 #+END_EXAMPLE
 
 ** Verbose mode
@@ -183,6 +186,22 @@ Colored output is activated by default as it is very useful in
 combination with the [[*Verbose mode][verbose mode]]. It can be deactivated however by
 executing =:color off= in the interpreter; =:color on= will activate
 the color again.
+
+** Simply typed \lambda-calculus
+Mikrokosmos uses untyped \lambda-calculus by default, but you can activate
+the *simply-typed \lambda-calculus* interpreter using =:types on=. The syntax
+is the same on both; but the differences with the untyped version are that
+
+  * every term will be displayed with its type.
+  * non-typable expressions will not be computed. Instead, an error message
+    will be showed if a type cannot be found for the expression.
+  * every computation terminates. Non-terminating computation cannot be
+    expressed on simply-typed lambda calculus.
+
+In particular, Mikrokosmos can be used to check proofs on the implicational
+fragment of the intuitionistic propositional logic.
+
+[[./images/types.png]]
 
 * The Mikrokosmos language
 The mikrokosmos language aims to be a minimal implementation of pure
