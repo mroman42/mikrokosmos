@@ -162,46 +162,22 @@ restartParser = string ":restart" >> return Restart
 helpParser :: Parser InterpreterAction
 helpParser = string ":help" >> return Help
 
--- | Parses a change in verbosity.
-verboseParser :: Parser InterpreterAction
-verboseParser = choice
-  [ try verboseonParser
-  , try verboseoffParser
+-- | Parses a change in a setting
+settingParser :: (Bool -> InterpreterAction) -> String -> Parser InterpreterAction
+settingParser setSetting settingname = choice
+  [ try settingonParser
+  , try settingoffParser
   ]
   where
-    verboseonParser  = string ":verbose on" >> return (SetVerbose True)
-    verboseoffParser = string ":verbose off" >> return (SetVerbose False)
+    settingonParser  = string (settingname ++ " on")  >> return (setSetting True)
+    settingoffParser = string (settingname ++ " off") >> return (setSetting False)
 
--- | Parses a change in color.
-colorParser :: Parser InterpreterAction
-colorParser = choice
-  [ try coloronParser
-  , try coloroffParser
-  ]
-  where
-    coloronParser  = string ":color on" >> return (SetColor True)
-    coloroffParser = string ":color off" >> return (SetColor False)
-
--- | Parses a change in ski output.
-skiOutputParser :: Parser InterpreterAction
-skiOutputParser = choice
-  [ try skionParser
-  , try skioffParser
-  ]
-  where
-    skionParser  = string ":ski on" >> return (SetSki True)
-    skioffParser = string ":ski off" >> return (SetSki False)
-
--- | Parses a change in ski output.
-typesParser :: Parser InterpreterAction
-typesParser = choice
-  [ try typesonParser
-  , try typesoffParser
-  ]
-  where
-    typesonParser  = string ":types on" >> return (SetTypes True)
-    typesoffParser = string ":types off" >> return (SetTypes False)
-
+-- | Multiple setting parsers
+verboseParser, colorParser, skiOutputParser, typesParser :: Parser InterpreterAction
+verboseParser   = settingParser SetVerbose ":verbose"
+colorParser     = settingParser SetColor   ":color"
+skiOutputParser = settingParser SetSki     ":ski"
+typesParser     = settingParser SetTypes   ":types"
 
 
 -- | Parses a "load-file" command.
