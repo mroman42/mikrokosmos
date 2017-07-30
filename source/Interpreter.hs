@@ -67,7 +67,7 @@ act (Execute le) = do
      let typed = getTypes env
      let illtyped = typed && typeinference (toBruijn (context env) le) == Nothing
      
-     return $ if illtyped then [formatType ++ "Error: not typable expression" ++ end ++ "\n"] else
+     return $ if illtyped then [formatType ++ "Error: not typeable expression" ++ end ++ "\n"] else
             [ unlines $
               [ show le ] ++
               [ unlines $ map showReduction $ simplifySteps $ toBruijn (context env) le ] ++
