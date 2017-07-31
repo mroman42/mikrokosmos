@@ -37,9 +37,15 @@ instance Show Type where
   show (Arrow (Tvar x) (Tvar y)) = show (Tvar x) ++ " → "  ++ show (Tvar y)
   show (Arrow (Tvar x) b       ) = show (Tvar x) ++ " → "  ++ show b
   show (Arrow a        (Tvar y)) = "(" ++ show a ++ ") → " ++ show (Tvar y)
-  show (Arrow a        b       ) = "(" ++ show a ++ ") → " ++ show b
-  show (Times a b) = show a ++ " × " ++ show b
-  show (Union a b) = show a ++ " + " ++ show b
+  show (Arrow a b) = "(" ++ show a ++ ") → " ++ show b
+  show (Times (Tvar x) (Tvar y)) = show (Tvar x) ++ " × "  ++ show (Tvar y)
+  show (Times (Tvar x) b       ) = show (Tvar x) ++ " × ("  ++ show b ++ ")"
+  show (Times a        (Tvar y)) = "(" ++ show a ++ ") × " ++ show (Tvar y)
+  show (Times a b) = "(" ++ show a  ++ ") × (" ++ show b ++ ")"
+  show (Union (Tvar x) (Tvar y)) = show (Tvar x) ++ " + "  ++ show (Tvar y)
+  show (Union (Tvar x) b       ) = show (Tvar x) ++ " + ("  ++ show b ++ ")"
+  show (Union a        (Tvar y)) = "(" ++ show a ++ ") + " ++ show (Tvar y)
+  show (Union a b) = "(" ++ show a  ++ ") + (" ++ show b ++ ")"
   show (Unitty) = "⊤"
   show (Bottom) = "⊥"
   
