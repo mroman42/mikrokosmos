@@ -142,6 +142,7 @@ typeinfer (a:x:vars) ctx (Lambda p) b = do
   return (tau . sigma)
 
 
+
 -- | Type inference of a lambda expression.
 typeinference :: Exp -> Maybe Type
 typeinference e = normalize <$> (typeinfer variables emptyctx e (Tvar 0) <*> pure (Tvar 0))
@@ -163,6 +164,12 @@ normalizeTemplate sub n (Tvar m) = case Map.lookup m sub of
                                     Nothing -> (Map.insert m n sub, succ n)
 normalizeTemplate sub n (Arrow a b) =
   let (nsub, nn) = normalizeTemplate sub n a in normalizeTemplate nsub nn b
+normalizeTemplate sub n (Times a b) =
+  let (nsub, nn) = normalizeTemplate sub n a in normalizeTemplate nsub nn b
+normalizeTemplate sub n (Union a b) =
+  let (nsub, nn) = normalizeTemplate sub n a in normalizeTemplate nsub nn b
+normalizeTemplate sub n Unitty = (sub, n)
+normalizeTemplate sub n Bottom = (sub, n)
 
 -- | Applies a set of variable substitutions to a type to normalize it.
 applynormalization :: Map.Map Integer Integer -> Type -> Type
@@ -170,6 +177,12 @@ applynormalization sub (Tvar m) = case Map.lookup m sub of
                                     Just n -> (Tvar n)
                                     Nothing -> (Tvar m)
 applynormalization sub (Arrow a b) = Arrow (applynormalization sub a) (applynormalization sub b)
+applynormalization sub (Times a b) = Times (applynormalization sub a) (applynormalization sub b)
+applynormalization sub (Union a b) = Union (applynormalization sub a) (applynormalization sub b)
+applynormalization _ Unitty = Unitty
+applynormalization _ Bottom = Bottom
+
+
 
 -- | Normalizes a type, that is, substitutes the set of type variables for
 -- the smaller possible ones.
