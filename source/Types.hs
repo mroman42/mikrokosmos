@@ -132,8 +132,9 @@ typeinfer (x:vars) ctx (App p q) b = do
     odds [_] = []
     odds (_:e:xs) = e : odds xs
     evens [] = []
-    evens [a] = [a]
+    evens [e] = [e]
     evens (e:_:xs) = e : evens xs
+
 
 typeinfer (a:x:vars) ctx (Lambda p) b = do
   sigma <- unify b (Arrow (Tvar a) (Tvar x))
@@ -141,7 +142,57 @@ typeinfer (a:x:vars) ctx (Lambda p) b = do
   tau   <- typeinfer vars nctx p (sigma $ Tvar x)
   return (tau . sigma)
 
+typeinfer (x:y:vars) ctx (Pair m n) a = do
+  sigma <- unify a (Times (Tvar x) (Tvar y))
+  tau   <- typeinfer (evens vars) (applyctx sigma         ctx) m (sigma (Tvar x))
+  rho   <- typeinfer (odds  vars) (applyctx (tau . sigma) ctx) n (tau (sigma (Tvar y)))
+  return (rho . tau . sigma)
+  where
+    odds [] = []
+    odds [_] = []
+    odds (_:e:xs) = e : odds xs
+    evens [] = []
+    evens [e] = [e]
+    evens (e:_:xs) = e : evens xs
 
+
+typeinfer (y:vars) ctx (Pi1 m) a = typeinfer vars ctx m (Times a (Tvar y))
+typeinfer (x:vars) ctx (Pi2 m) b = typeinfer vars ctx m (Times (Tvar x) b)
+
+typeinfer (x:y:vars) ctx (Inl m) a = do
+  sigma <- unify a (Union (Tvar x) (Tvar y))
+  tau   <- typeinfer vars (applyctx sigma ctx) m (sigma (Tvar x))
+  return (tau . sigma)
+
+typeinfer (x:y:vars) ctx (Inr m) a = do
+  sigma <- unify a (Union (Tvar x) (Tvar y))
+  tau   <- typeinfer vars (applyctx sigma ctx) m (sigma (Tvar y))
+  return (tau . sigma)
+
+typeinfer (x:y:vars) ctx (Caseof m f g) a = do
+  sigma <- typeinfer (third1 vars) ctx                          f (Arrow (Tvar x) a)
+  tau   <- typeinfer (third2 vars) (applyctx sigma ctx)         g (Arrow (sigma $ Tvar y) (sigma a))
+  rho   <- typeinfer (third3 vars) (applyctx (tau . sigma) ctx) m (Union (tau . sigma $ Tvar x) (tau . sigma $ Tvar y))
+  return (rho . tau . sigma)
+  where
+    third1 [] = []
+    third1 [_] = []
+    third1 [_,_] = []
+    third1 (_:_:e:xs) = e : third1 xs
+    third2 [] = []
+    third2 [_] = []
+    third2 [_,e] = [e]
+    third2 (_:e:_:xs) = e : third2 xs
+    third3 [] = []
+    third3 [e] = [e]
+    third3 [e,_] = [e]
+    third3 (e:_:_:xs) = e : third3 xs
+
+typeinfer _ _ Unit a = unify Unitty a
+
+typeinfer vars ctx (Abort m) _ = typeinfer vars ctx m Bottom
+
+  
 
 -- | Type inference of a lambda expression.
 typeinference :: Exp -> Maybe Type
