@@ -65,6 +65,14 @@ defaultEnv = Environment
   , types       = False
   }
 
+-- | Get current settings
+getColor, getVerbose, getSki, getTypes :: Environment -> Bool
+getColor   = color
+getVerbose = verbose
+getSki     = skioutput
+getTypes   = types
+
+
 
 -- | Adds a name binding to the environment
 addBind :: Environment -> String -> Exp -> Environment
@@ -73,22 +81,6 @@ addBind env s e =
   if elem s (MultiBimap.lookup e $ context env)
     then env
     else env {context = MultiBimap.insert e s (context env)}
-
--- | Gets the color configuration
-getColor :: Environment -> Bool
-getColor = color
-
--- | Gets the verbose configuration
-getVerbose :: Environment -> Bool
-getVerbose = verbose
-
--- | Gets the ski output configuration
-getSki :: Environment -> Bool
-getSki = skioutput
-
--- | Gets the types configuration
-getTypes :: Environment -> Bool
-getTypes = types
 
 -- | Sets the verbose configuration on/off.
 changeVerbose :: Environment -> Bool -> Environment
