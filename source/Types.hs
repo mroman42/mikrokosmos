@@ -24,17 +24,25 @@ type Substitution = Type -> Type
 
 -- | A type template is a free type variable or an arrow between two
 -- types; that is, the function type.
-data Type         = Tvar Variable | Arrow Type Type
+data Type         = Tvar Variable
+                  | Arrow Type Type
+                  | Times Type Type
+                  | Union Type Type
+                  | Unitty
+                  | Bottom
   deriving (Eq)
 
 instance Show Type where
   show (Tvar t)                  = typevariableNames !! (fromInteger t)
-  show (Arrow (Tvar x) (Tvar y)) = show (Tvar x) ++ " -> "  ++ show (Tvar y)
-  show (Arrow (Tvar x) b       ) = show (Tvar x) ++ " -> "  ++ show b
-  show (Arrow a        (Tvar y)) = "(" ++ show a ++ ") -> " ++ show (Tvar y)
-  show (Arrow a        b       ) = "(" ++ show a ++ ") -> " ++ show b
-
-
+  show (Arrow (Tvar x) (Tvar y)) = show (Tvar x) ++ " → "  ++ show (Tvar y)
+  show (Arrow (Tvar x) b       ) = show (Tvar x) ++ " → "  ++ show b
+  show (Arrow a        (Tvar y)) = "(" ++ show a ++ ") → " ++ show (Tvar y)
+  show (Arrow a        b       ) = "(" ++ show a ++ ") → " ++ show b
+  show (Times a b) = show a ++ " × " ++ show b
+  show (Union a b) = show a ++ " + " ++ show b
+  show (Unitty) = "⊤"
+  show (Bottom) = "⊥"
+  
 -- | Creates the substitution given by the change of a variable for
 -- the given type.
 subs :: Variable -> Type -> Substitution
@@ -42,11 +50,19 @@ subs x typ (Tvar y)
   | x == y    = typ
   | otherwise = Tvar y
 subs x typ (Arrow a b) = Arrow (subs x typ a) (subs x typ b)
+subs x typ (Times a b) = Times (subs x typ a) (subs x typ b)
+subs x typ (Union a b) = Union (subs x typ a) (subs x typ b)
+subs _ _ Unitty = Unitty
+subs _ _ Bottom = Bottom
 
 -- | Returns true if the given variable appears on the type.
 occurs :: Variable -> Type -> Bool
 occurs x (Tvar y)    = x == y
 occurs x (Arrow a b) = occurs x a || occurs x b
+occurs x (Times a b) = occurs x a || occurs x b
+occurs x (Union a b) = occurs x a || occurs x b
+occurs _ (Unitty)    = False
+occurs _ (Bottom)    = False
 
 -- | Unifies two types with their most general unifier. Returns the substitution
 -- that transforms any of the types into the unifier.
@@ -64,6 +80,17 @@ unify (Arrow a b) (Arrow c d) = do
   p <- unify b d
   q <- unify (p a) (p c)
   return (q . p)
+unify (Times a b) (Times c d) = do
+  p <- unify b d
+  q <- unify (p a) (p c)
+  return (q . p)
+unify (Union a b) (Union c d) = do
+  p <- unify b d
+  q <- unify (p a) (p c)
+  return (q . p)
+unify Unitty Unitty = Just id
+unify Bottom Bottom = Just id
+unify _ _ = Nothing
 
 -- | Apply a substitution to all the types on a type context.
 applyctx :: Substitution -> Context -> Context
@@ -87,7 +114,7 @@ typeinfer :: [Variable] -- ^ List of fresh variables
           -> Type       -- ^ Constraint
           -> Maybe Substitution
           
-typeinfer [] _ _ _ = Nothing
+typeinfer []  _ _ _ = Nothing
 typeinfer [_] _ _ _ = Nothing
 
 typeinfer _ ctx (Var n) b
