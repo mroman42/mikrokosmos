@@ -60,7 +60,15 @@ lambdaexp = foldl1 LambdaApplication <$> (spaces >> sepBy1 simpleexp spaces)
 -- potentially complex lambda expression enclosed in parentheses.
 simpleexp :: Parser NamedLambda
 simpleexp = choice
-  [ try lambdaAbstractionParser
+  [ try pairParser
+  , try pi1Parser
+  , try pi2Parser
+  , try inlParser
+  , try inrParser
+  , try caseParser
+  , try unitParser
+  , try abortParser
+  , try lambdaAbstractionParser
   , try variableParser
   , try (parens lambdaexp)
   ]
@@ -86,6 +94,31 @@ lambdaAbstractionParser = LambdaAbstraction <$>
 lambdaChar :: Char
 lambdaChar = '\\'
 
+pairParser :: Parser NamedLambda
+pairParser = parens (TypedPair <$> lambdaexp <*> (char ',' >> lambdaexp))
+
+pi1Parser :: Parser NamedLambda
+pi1Parser = TypedPi1 <$> (string "fst " >> lambdaexp)
+
+pi2Parser :: Parser NamedLambda
+pi2Parser = TypedPi2 <$> (string "snd " >> lambdaexp)
+
+inlParser :: Parser NamedLambda
+inlParser = TypedInl <$> (string "inl " >> lambdaexp)
+
+inrParser :: Parser NamedLambda
+inrParser = TypedInr <$> (string "inr " >> lambdaexp)
+
+caseParser :: Parser NamedLambda
+caseParser = TypedCase <$> (string "case " >> simpleexp) <*> (string " of " >> simpleexp) <*> (string ";" >> simpleexp)
+
+unitParser :: Parser NamedLambda
+unitParser = char '*' >> return TypedUnit
+
+abortParser :: Parser NamedLambda
+abortParser = TypedAbort <$> (string "abort " >> lambdaexp)
+
+
 -- | Shows a lambda expression with named variables.
 -- Parentheses are ignored; they are written only around applications.
 showNamedLambda :: NamedLambda -> String
@@ -99,7 +132,7 @@ showNamedLambda (TypedInl a)            = "(" ++ "inl " ++ showNamedLambda a ++ 
 showNamedLambda (TypedInr a)            = "(" ++ "inr " ++ showNamedLambda a ++ ")"
 showNamedLambda (TypedCase a b c)       = "(" ++ "case " ++ showNamedLambda a ++ " of " ++ showNamedLambda b ++ "; " ++ showNamedLambda c ++ ")"
 showNamedLambda (TypedUnit)             = "*"
-showNamedLambda (TypedAbort a)          = "(" ++ "abort" ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedAbort a)          = "(" ++ "abort " ++ showNamedLambda a ++ ")"
 
 instance Show NamedLambda where
   show = showNamedLambda
@@ -146,18 +179,18 @@ toBruijn = tobruijn Map.empty
 -- | Translates a deBruijn expression into a lambda expression
 -- with named variables, given a list of used and unused variable names.
 nameIndexes :: [String] -> [String] -> Exp -> NamedLambda
-nameIndexes _    _   (Var 0)    = LambdaVariable "undefined"
-nameIndexes used _   (Var n)    = LambdaVariable (used !! pred (fromInteger n))
-nameIndexes used new (Lambda e) = LambdaAbstraction (head new) (nameIndexes (head new:used) (tail new) e)
-nameIndexes used new (App f g)  = LambdaApplication (nameIndexes used new f) (nameIndexes used new g)
-nameIndexes used new (Pair a b) = TypedPair (nameIndexes used new a) (nameIndexes used new b)
-nameIndexes used new (Pi1 a)    = TypedPi1 (nameIndexes used new a)
-nameIndexes used new (Pi2 a)    = TypedPi2 (nameIndexes used new a)
-nameIndexes used new (Inl a)    = TypedInl (nameIndexes used new a)
-nameIndexes used new (Inr a)    = TypedInr (nameIndexes used new a)
+nameIndexes _    _   (Var 0)        = LambdaVariable "undefined"
+nameIndexes used _   (Var n)        = LambdaVariable (used !! pred (fromInteger n))
+nameIndexes used new (Lambda e)     = LambdaAbstraction (head new) (nameIndexes (head new:used) (tail new) e)
+nameIndexes used new (App f g)      = LambdaApplication (nameIndexes used new f) (nameIndexes used new g)
+nameIndexes used new (Pair a b)     = TypedPair (nameIndexes used new a) (nameIndexes used new b)
+nameIndexes used new (Pi1 a)        = TypedPi1 (nameIndexes used new a)
+nameIndexes used new (Pi2 a)        = TypedPi2 (nameIndexes used new a)
+nameIndexes used new (Inl a)        = TypedInl (nameIndexes used new a)
+nameIndexes used new (Inr a)        = TypedInr (nameIndexes used new a)
 nameIndexes used new (Caseof a b c) = TypedCase (nameIndexes used new a) (nameIndexes used new b) (nameIndexes used new c)
-nameIndexes _    _   (Unit)    = TypedUnit
-nameIndexes used new (Abort a) = TypedAbort (nameIndexes used new a)
+nameIndexes _    _   (Unit)         = TypedUnit
+nameIndexes used new (Abort a)      = TypedAbort (nameIndexes used new a)
 
 -- | Gives names to every variable in a deBruijn expression using
 -- alphabetic order.
