@@ -10,7 +10,7 @@ it is easier to do beta reduction with DeBruijn indexes.
 -}
 
 module Lambda
-  ( Exp (Var, Lambda, App)
+  ( Exp (Var, Lambda, App, Pair, Pi1, Pi2, Inl, Inr, Caseof, Unit, Abort)
   , simplifyAll
   , simplifySteps
   , showReduction
@@ -22,9 +22,17 @@ import Format
 
 -- DeBruijn Expressions
 -- | A lambda expression using DeBruijn indexes.
-data Exp = Var Integer -- ^ integer indexing the variable.
-         | Lambda Exp  -- ^ lambda abstraction
-         | App Exp Exp -- ^ function application
+data Exp = Var Integer        -- ^ integer indexing the variable.
+         | Lambda Exp         -- ^ lambda abstraction.
+         | App Exp Exp        -- ^ function application.
+         | Pair Exp Exp       -- ^ typed pair of expressions.
+         | Pi1 Exp            -- ^ typed first projection.
+         | Pi2 Exp            -- ^ typed second projection.
+         | Inl Exp            -- ^ typed left injection.
+         | Inr Exp            -- ^ typed right injection.
+         | Caseof Exp Exp Exp -- ^ typed case of.
+         | Unit               -- ^ typed unit element.
+         | Abort Exp          -- ^ typed absurd derivation.
          deriving (Eq, Ord)
 
 instance Show Exp where
@@ -33,17 +41,25 @@ instance Show Exp where
 
 -- | Shows an expression with DeBruijn indexes.
 showexp :: Exp -> String
-showexp (Var n)    = show n
-showexp (Lambda e) = "λ" ++ showexp e ++ ""
-showexp (App f g)  = "(" ++ showexp f ++ " " ++ showexp g ++ ")"
+showexp (Var n)        = show n
+showexp (Lambda e)     = "λ" ++ showexp e ++ ""
+showexp (App f g)      = "(" ++ showexp f ++ " " ++ showexp g ++ ")"
+showexp (Pair a b)     = "(" ++ showexp a ++ "," ++ showexp b ++ ")"
+showexp (Pi1 m)        = "(" ++ "fst " ++ showexp m ++ ")"
+showexp (Pi2 m)        = "(" ++ "snd " ++ showexp m ++ ")"
+showexp (Inl m)        = "(" ++ "inl " ++ showexp m ++ ")"
+showexp (Inr m)        = "(" ++ "inr " ++ showexp m ++ ")"
+showexp (Caseof m n p) = "(" ++ "case " ++ showexp m ++ " of " ++ showexp n ++ "; " ++ showexp p ++ ")"
+showexp (Unit)         = "()"
+showexp (Abort a)      = "(abort " ++ showexp a ++ ")"
 
 -- | Shows an expression coloring the next reduction.
 showReduction :: Exp -> String
 showReduction (Lambda e)         = "λ" ++ showReduction e
 showReduction (App (Lambda f) x) = betaColor (App (Lambda f) x)
 showReduction (Var e)            = show e
-showReduction (App rs x)         = "(" ++ showReduction rs ++ " "
-                                       ++ showReduction x ++ ")"
+showReduction (App rs x)         = "(" ++ showReduction rs ++ " " ++ showReduction x ++ ")"
+showReduction e                  = show e
 
 -- | Colors a beta reduction
 betaColor :: Exp -> String
@@ -56,14 +72,14 @@ betaColor (App (Lambda e) x) =
   ++ ")"
 betaColor e = show e
 
--- | Colors all the appearances of a given color
+-- | Colors all the appearances of a given index
 indexColor :: Integer -> Exp -> String
 indexColor n (Lambda e) = "λ" ++ indexColor (succ n) e
 indexColor n (App f g)  = "(" ++ indexColor n f ++ " " ++ indexColor n g ++ ")"
 indexColor n (Var m)
   | n == m    = formatSubs1 ++ show m ++ formatFormula
   | otherwise = show m
-
+indexColor _ e = show e
 
 
 
@@ -91,13 +107,26 @@ simplifySteps e
   where s = simplify e
 
 -- | Simplifies the expression recursively.
--- Applies only a beta reduction at each step.
+-- Applies only one parallel beta reduction at each step.
 simplify :: Exp -> Exp
-simplify (Lambda e)         = Lambda (simplify e)
-simplify (App (Lambda f) x) = betared (App (Lambda f) x)
-simplify (App (Var e) x)    = App (Var e) (simplify x)
-simplify (App (App f g) x)  = App (simplify (App f g)) x
-simplify (Var e)            = Var e
+simplify (Lambda e)           = Lambda (simplify e)
+simplify (App (Lambda f) x)   = betared (App (Lambda f) x)
+simplify (App (Var e) x)      = App (Var e) (simplify x)
+simplify (App (App f g) x)    = App (simplify (App f g)) x
+simplify (App a b)            = App (simplify a) (simplify b)
+simplify (Var e)              = Var e
+simplify (Pair a b)           = Pair (simplify a) (simplify b)
+simplify (Pi1 (Pair a _))     = a
+simplify (Pi1 m)              = Pi1 (simplify m)
+simplify (Pi2 (Pair _ b))     = b
+simplify (Pi2 m)              = Pi2 (simplify m)
+simplify (Inl m)              = Inl (simplify m)
+simplify (Inr m)              = Inr (simplify m)
+simplify (Caseof (Inl m) a _) = App a m
+simplify (Caseof (Inr m) _ b) = App b m
+simplify (Caseof a b c)       = Caseof (simplify a) (simplify b) (simplify c)
+simplify (Unit)               = Unit
+simplify (Abort a)            = Abort (simplify a)
 
 -- | Applies beta-reduction to a function application.
 -- Leaves the rest of the operations untouched.
@@ -112,6 +141,14 @@ substitute :: Integer -- ^ deBruijn index of the desired target
            -> Exp
 substitute n x (Lambda e) = Lambda (substitute (succ n) (incrementFreeVars 0 x) e)
 substitute n x (App f g)  = App (substitute n x f) (substitute n x g)
+substitute n x (Pair a b) = Pair (substitute n x a) (substitute n x b)
+substitute n x (Pi1 a) = Pi1 (substitute n x a)
+substitute n x (Pi2 a) = Pi2 (substitute n x a)
+substitute n x (Inl a) = Inl (substitute n x a)
+substitute n x (Inr a) = Inr (substitute n x a)
+substitute n x (Caseof a b c) = Caseof (substitute n x a) (substitute n x b) (substitute n x c)
+substitute _ _ (Unit) = Unit
+substitute n x (Abort a) = Abort (substitute n x a)
 substitute n x (Var m)
   -- The lambda is replaced directly
   | n == m    = x
@@ -129,6 +166,15 @@ incrementFreeVars n (Lambda e) = Lambda (incrementFreeVars (succ n) e)
 incrementFreeVars n (Var m)
   | m > n     = Var (succ m)
   | otherwise = Var m
+incrementFreeVars n (Pair a b) = Pair (incrementFreeVars n a) (incrementFreeVars n b)
+incrementFreeVars n (Pi1 a)    = Pi1 (incrementFreeVars n a)
+incrementFreeVars n (Pi2 a)    = Pi2 (incrementFreeVars n a)
+incrementFreeVars n (Inl a)    = Inl (incrementFreeVars n a)
+incrementFreeVars n (Inr a)    = Inr (incrementFreeVars n a)
+incrementFreeVars n (Caseof a b c) = Caseof (incrementFreeVars n a) (incrementFreeVars n b) (incrementFreeVars n c)
+incrementFreeVars _ (Unit)    = Unit
+incrementFreeVars n (Abort a) = Abort (incrementFreeVars n a)
+
 
 
 -- | Determines if the given variable is free on the expression.
