@@ -50,7 +50,7 @@ showexp (Pi2 m)        = "(" ++ "snd " ++ showexp m ++ ")"
 showexp (Inl m)        = "(" ++ "inl " ++ showexp m ++ ")"
 showexp (Inr m)        = "(" ++ "inr " ++ showexp m ++ ")"
 showexp (Caseof m n p) = "(" ++ "case " ++ showexp m ++ " of " ++ showexp n ++ "; " ++ showexp p ++ ")"
-showexp (Unit)         = "()"
+showexp (Unit)         = "*"
 showexp (Abort a)      = "(abort " ++ showexp a ++ ")"
 
 -- | Shows an expression coloring the next reduction.
