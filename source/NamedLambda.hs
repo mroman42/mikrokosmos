@@ -31,9 +31,17 @@ type Context  = MultiBimap Exp String
 -- it into an internal representation.
 
 -- | A lambda expression with named variables.
-data NamedLambda = LambdaVariable String                     -- ^ variable
-                 | LambdaAbstraction String NamedLambda      -- ^ lambda abstraction
-                 | LambdaApplication NamedLambda NamedLambda -- ^ function application
+data NamedLambda = LambdaVariable String                         -- ^ variable
+                 | LambdaAbstraction String NamedLambda          -- ^ lambda abstraction
+                 | LambdaApplication NamedLambda NamedLambda     -- ^ function application
+                 | TypedPair NamedLambda NamedLambda             -- ^ pair of expressions
+                 | TypedPi1  NamedLambda                         -- ^ first projection
+                 | TypedPi2  NamedLambda                         -- ^ second projection
+                 | TypedInl  NamedLambda                         -- ^ left injection
+                 | TypedInr  NamedLambda                         -- ^ right injection
+                 | TypedCase NamedLambda NamedLambda NamedLambda -- ^ case of expressions
+                 | TypedUnit                                     -- ^ unit
+                 | TypedAbort NamedLambda                        -- ^ abort
 
 -- | Parses a lambda expression with named variables.
 -- A lambda expression is a sequence of one or more autonomous
@@ -51,7 +59,11 @@ lambdaexp = foldl1 LambdaApplication <$> (spaces >> sepBy1 simpleexp spaces)
 -- at the top level. It can be a lambda abstraction, a variable or another
 -- potentially complex lambda expression enclosed in parentheses.
 simpleexp :: Parser NamedLambda
-simpleexp = choice [lambdaAbstractionParser, variableParser, parens lambdaexp]
+simpleexp = choice
+  [ try lambdaAbstractionParser
+  , try variableParser
+  , try (parens lambdaexp)
+  ]
 
 -- | The returned parser parenthesizes the given parser
 parens :: Parser a -> Parser a
@@ -80,6 +92,14 @@ showNamedLambda :: NamedLambda -> String
 showNamedLambda (LambdaVariable c)      = c
 showNamedLambda (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showNamedLambda e ++ ""
 showNamedLambda (LambdaApplication f g) = "(" ++ showNamedLambda f ++ " " ++ showNamedLambda g ++ ")"
+showNamedLambda (TypedPair a b)         = "(" ++ showNamedLambda a ++ "," ++ showNamedLambda b ++ ")"
+showNamedLambda (TypedPi1 a)            = "(" ++ "fst " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedPi2 a)            = "(" ++ "snd " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedInl a)            = "(" ++ "inl " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedInr a)            = "(" ++ "inr " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedCase a b c)       = "(" ++ "case " ++ showNamedLambda a ++ " of " ++ showNamedLambda b ++ "; " ++ showNamedLambda c ++ ")"
+showNamedLambda (TypedUnit)             = "*"
+showNamedLambda (TypedAbort a)          = "(" ++ "abort" ++ showNamedLambda a ++ ")"
 
 instance Show NamedLambda where
   show = showNamedLambda
@@ -105,6 +125,14 @@ tobruijn d context (LambdaVariable c) =
   case Map.lookup c d of
     Just n  -> Var n
     Nothing -> fromMaybe (Var 0) (MultiBimap.lookupR c context)
+tobruijn d context (TypedPair a b) = Pair (tobruijn d context a) (tobruijn d context b)
+tobruijn d context (TypedPi1 a) = Pi1 (tobruijn d context a)
+tobruijn d context (TypedPi2 a) = Pi2 (tobruijn d context a)
+tobruijn d context (TypedInl a) = Inl (tobruijn d context a)
+tobruijn d context (TypedInr a) = Inr (tobruijn d context a)
+tobruijn d context (TypedCase a b c) = Caseof (tobruijn d context a) (tobruijn d context b) (tobruijn d context c)
+tobruijn _ _       (TypedUnit) = Unit
+tobruijn d context (TypedAbort a) = Abort (tobruijn d context a)
 
 -- | Transforms a lambda expression with named variables to a deBruijn index expression.
 -- Uses only the dictionary of the variables in the current context. 
@@ -122,6 +150,14 @@ nameIndexes _    _   (Var 0)    = LambdaVariable "undefined"
 nameIndexes used _   (Var n)    = LambdaVariable (used !! pred (fromInteger n))
 nameIndexes used new (Lambda e) = LambdaAbstraction (head new) (nameIndexes (head new:used) (tail new) e)
 nameIndexes used new (App f g)  = LambdaApplication (nameIndexes used new f) (nameIndexes used new g)
+nameIndexes used new (Pair a b) = TypedPair (nameIndexes used new a) (nameIndexes used new b)
+nameIndexes used new (Pi1 a)    = TypedPi1 (nameIndexes used new a)
+nameIndexes used new (Pi2 a)    = TypedPi2 (nameIndexes used new a)
+nameIndexes used new (Inl a)    = TypedInl (nameIndexes used new a)
+nameIndexes used new (Inr a)    = TypedInr (nameIndexes used new a)
+nameIndexes used new (Caseof a b c) = TypedCase (nameIndexes used new a) (nameIndexes used new b) (nameIndexes used new c)
+nameIndexes _    _   (Unit)    = TypedUnit
+nameIndexes used new (Abort a) = TypedAbort (nameIndexes used new a)
 
 -- | Gives names to every variable in a deBruijn expression using
 -- alphabetic order.
