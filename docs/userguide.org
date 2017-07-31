@@ -193,7 +193,7 @@ the *simply-typed \lambda-calculus* interpreter using =:types on=. The syntax
 is the same on both; but the differences with the untyped version are that
 
   * every term will be displayed with its type.
-  * non-typable expressions will not be computed. Instead, an error message
+  * non-typeable expressions will not be computed. Instead, an error message
     will be showed if a type cannot be found for the expression.
   * every computation terminates. Non-terminating computation cannot be
     expressed on simply-typed lambda calculus.
