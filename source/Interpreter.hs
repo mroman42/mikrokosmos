@@ -66,8 +66,12 @@ act (Execute le) = do
      env <- get
      let typed = getTypes env
      let illtyped = typed && typeinference (toBruijn (context env) le) == Nothing
+     let notypes = not typed && usestypecons (toBruijn (context env) le)
      
-     return $ if illtyped then [formatType ++ "Error: not typeable expression" ++ end ++ "\n"] else
+     return $ if illtyped then [formatType ++ "Error: non typeable expression" ++ end ++ "\n"] else
+              if notypes then [formatType ++
+                  "Error: this expression uses type constructors. You may want to activate ':types on'."
+                  ++ end ++ "\n"] else
             [ unlines $
               [ show le ] ++
               [ unlines $ map showReduction $ simplifySteps $ toBruijn (context env) le ] ++
