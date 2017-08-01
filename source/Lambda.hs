@@ -14,6 +14,7 @@ module Lambda
   , simplifyAll
   , simplifySteps
   , showReduction
+  , usestypecons
 --  , freein
   )
 where
@@ -182,3 +183,9 @@ incrementFreeVars n (Abort a) = Abort (incrementFreeVars n a)
 -- freein n (Var m)    = n == m
 -- freein n (Lambda e) = freein (succ n) e
 -- freein n (App u v)  = (freein n u) && (freein n v)
+
+usestypecons :: Exp -> Bool
+usestypecons (Var _) = False
+usestypecons (App a b) = usestypecons a || usestypecons b
+usestypecons (Lambda b) = usestypecons b
+usestypecons _ = True
