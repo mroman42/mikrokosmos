@@ -8,3 +8,4 @@ caseof = \x.\y.\z.CASE x OF y;z
 
 unit = UNIT
 abort = \x.ABORT x
+absurd = \x.ABSURD x

@@ -10,7 +10,8 @@ instead of DeBruijn indexes. It contains parsing and printing fuctions.
 module NamedLambda
   ( NamedLambda (LambdaVariable, LambdaAbstraction, LambdaApplication,
                  TypedPair, TypedPi1, TypedPi2,
-                 TypedInl, TypedInr, TypedCase, TypedUnit, TypedAbort)
+                 TypedInl, TypedInr, TypedCase, TypedUnit, TypedAbort,
+                 TypedAbsurd)
   , lambdaexp
   , toBruijn
   , nameExp
@@ -44,6 +45,7 @@ data NamedLambda = LambdaVariable String                         -- ^ variable
                  | TypedCase NamedLambda NamedLambda NamedLambda -- ^ case of expressions
                  | TypedUnit                                     -- ^ unit
                  | TypedAbort NamedLambda                        -- ^ abort
+                 | TypedAbsurd NamedLambda                       -- ^ absurd
 
 -- | Parses a lambda expression with named variables.
 -- A lambda expression is a sequence of one or more autonomous
@@ -70,6 +72,7 @@ simpleexp = choice
   , try caseParser
   , try unitParser
   , try abortParser
+  , try absurdParser
   , try lambdaAbstractionParser
   , try variableParser
   , try (parens lambdaexp)
@@ -120,6 +123,8 @@ unitParser = string "UNIT" >> return TypedUnit
 abortParser :: Parser NamedLambda
 abortParser = TypedAbort <$> (string "ABORT " >> lambdaexp)
 
+absurdParser :: Parser NamedLambda
+absurdParser = TypedAbsurd <$> (string "ABSURD " >> lambdaexp)
 
 -- | Shows a lambda expression with named variables.
 -- Parentheses are ignored; they are written only around applications.
@@ -135,6 +140,7 @@ showNamedLambda (TypedInr a)            = "(" ++ "INR " ++ showNamedLambda a ++ 
 showNamedLambda (TypedCase a b c)       = "(" ++ "CASE " ++ showNamedLambda a ++ " of " ++ showNamedLambda b ++ "; " ++ showNamedLambda c ++ ")"
 showNamedLambda (TypedUnit)             = "UNIT"
 showNamedLambda (TypedAbort a)          = "(" ++ "ABORT " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedAbsurd a)          = "(" ++ "ABSURD " ++ showNamedLambda a ++ ")"
 
 instance Show NamedLambda where
   show = showNamedLambda
@@ -168,6 +174,7 @@ tobruijn d context (TypedInr a) = Inr (tobruijn d context a)
 tobruijn d context (TypedCase a b c) = Caseof (tobruijn d context a) (tobruijn d context b) (tobruijn d context c)
 tobruijn _ _       (TypedUnit) = Unit
 tobruijn d context (TypedAbort a) = Abort (tobruijn d context a)
+tobruijn d context (TypedAbsurd a) = Absurd (tobruijn d context a)
 
 -- | Transforms a lambda expression with named variables to a deBruijn index expression.
 -- Uses only the dictionary of the variables in the current context. 
@@ -193,6 +200,8 @@ nameIndexes used new (Inr a)        = TypedInr (nameIndexes used new a)
 nameIndexes used new (Caseof a b c) = TypedCase (nameIndexes used new a) (nameIndexes used new b) (nameIndexes used new c)
 nameIndexes _    _   (Unit)         = TypedUnit
 nameIndexes used new (Abort a)      = TypedAbort (nameIndexes used new a)
+nameIndexes used new (Absurd a)      = TypedAbsurd (nameIndexes used new a)
+
 
 -- | Gives names to every variable in a deBruijn expression using
 -- alphabetic order.

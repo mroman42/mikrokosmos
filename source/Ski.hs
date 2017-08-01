@@ -26,6 +26,7 @@ data Ski = S | K | I | Comb Ski Ski | Cte String
          | Scase
          | Sunit
          | Sabort
+         | Sabsurd
   deriving (Eq, Ord)
 
 instance Show Ski where
@@ -51,6 +52,7 @@ showski (Sinr) = "[INR]"
 showski (Scase) = "[CASEOF]"
 showski (Sunit) = "[UNIT]"
 showski (Sabort) = "[ABORT]"
+showski (Sabsurd) = "[ABSURD]"
 
 -- | SKI abstraction of a named lambda term. From a lambda expression
 -- creates a SKI equivalent expression. The following algorithm is a
@@ -67,6 +69,8 @@ skiabs (TypedInr a) = Comb Sinr (skiabs a)
 skiabs (TypedCase a b c) = Comb (Comb (Comb Scase (skiabs a)) (skiabs b)) (skiabs c)
 skiabs (TypedUnit) = Sunit
 skiabs (TypedAbort a) = Comb Sabort (skiabs a)
+skiabs (TypedAbsurd a) = Comb Sabsurd (skiabs a)
+
 
 -- | Bracket abstraction of a SKI term, as defined in Hindley-Seldin
 -- (2.18).
