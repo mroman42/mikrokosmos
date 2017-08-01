@@ -33,21 +33,18 @@ data Type         = Tvar Variable
   deriving (Eq)
 
 instance Show Type where
-  show (Tvar t)                  = typevariableNames !! (fromInteger t)
-  show (Arrow (Tvar x) (Tvar y)) = show (Tvar x) ++ " → "  ++ show (Tvar y)
-  show (Arrow (Tvar x) b       ) = show (Tvar x) ++ " → "  ++ show b
-  show (Arrow a        (Tvar y)) = "(" ++ show a ++ ") → " ++ show (Tvar y)
-  show (Arrow a b) = "(" ++ show a ++ ") → " ++ show b
-  show (Times (Tvar x) (Tvar y)) = show (Tvar x) ++ " × "  ++ show (Tvar y)
-  show (Times (Tvar x) b       ) = show (Tvar x) ++ " × ("  ++ show b ++ ")"
-  show (Times a        (Tvar y)) = "(" ++ show a ++ ") × " ++ show (Tvar y)
-  show (Times a b) = "(" ++ show a  ++ ") × (" ++ show b ++ ")"
-  show (Union (Tvar x) (Tvar y)) = show (Tvar x) ++ " + "  ++ show (Tvar y)
-  show (Union (Tvar x) b       ) = show (Tvar x) ++ " + ("  ++ show b ++ ")"
-  show (Union a        (Tvar y)) = "(" ++ show a ++ ") + " ++ show (Tvar y)
-  show (Union a b) = "(" ++ show a  ++ ") + (" ++ show b ++ ")"
-  show (Unitty) = "⊤"
-  show (Bottom) = "⊥"
+  show (Tvar t)    = typevariableNames !! (fromInteger t)
+  show (Arrow a b) = showparens a ++ " → " ++ show b
+  show (Times a b) = showparens a ++ " × " ++ showparens b
+  show (Union a b) = showparens a ++ " + " ++ showparens b
+  show (Unitty)    = "⊤"
+  show (Bottom)    = "⊥"
+
+showparens :: Type -> String
+showparens (Tvar t) = show (Tvar t)
+showparens Unitty = show Unitty
+showparens Bottom = show Bottom
+showparens m = "(" ++ show m ++ ")"
   
 -- | Creates the substitution given by the change of a variable for
 -- the given type.
