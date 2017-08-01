@@ -1,0 +1,10 @@
+pair = \x.\y.(x,y)
+fst = \x.FST x
+snd = \x.SND x
+
+inl = \x.INL x
+inr = \x.INR x
+caseof = \x.\y.\z.CASE x OF y;z
+
+unit = UNIT
+abort = \x.ABORT x
