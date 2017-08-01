@@ -195,6 +195,10 @@ typeinfer _ _ Unit a = unify Unitty a
 
 typeinfer vars ctx (Abort m) _ = typeinfer vars ctx m Bottom
 
+typeinfer vars ctx (Absurd m) a = do
+  sigma <- unify Bottom a
+  tau   <- typeinfer vars (applyctx sigma ctx) m Bottom
+  return (tau . sigma)
   
 
 -- | Type inference of a lambda expression.

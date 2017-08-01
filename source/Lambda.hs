@@ -10,7 +10,7 @@ it is easier to do beta reduction with DeBruijn indexes.
 -}
 
 module Lambda
-  ( Exp (Var, Lambda, App, Pair, Pi1, Pi2, Inl, Inr, Caseof, Unit, Abort)
+  ( Exp (Var, Lambda, App, Pair, Pi1, Pi2, Inl, Inr, Caseof, Unit, Abort, Absurd)
   , simplifyAll
   , simplifySteps
   , showReduction
@@ -33,7 +33,8 @@ data Exp = Var Integer        -- ^ integer indexing the variable.
          | Inr Exp            -- ^ typed right injection.
          | Caseof Exp Exp Exp -- ^ typed case of.
          | Unit               -- ^ typed unit element.
-         | Abort Exp          -- ^ typed absurd derivation.
+         | Abort Exp          -- ^ typed abort derivation.
+         | Absurd Exp         -- ^ typed absurd derivation.
          deriving (Eq, Ord)
 
 instance Show Exp where
@@ -53,6 +54,7 @@ showexp (Inr m)        = "(" ++ "inr " ++ showexp m ++ ")"
 showexp (Caseof m n p) = "(" ++ "case " ++ showexp m ++ " of " ++ showexp n ++ "; " ++ showexp p ++ ")"
 showexp (Unit)         = "*"
 showexp (Abort a)      = "(abort " ++ showexp a ++ ")"
+showexp (Absurd a)     = "(absurd " ++ showexp a ++ ")"
 
 -- | Shows an expression coloring the next reduction.
 showReduction :: Exp -> String
@@ -128,6 +130,7 @@ simplify (Caseof (Inr m) _ b) = App b m
 simplify (Caseof a b c)       = Caseof (simplify a) (simplify b) (simplify c)
 simplify (Unit)               = Unit
 simplify (Abort a)            = Abort (simplify a)
+simplify (Absurd a)           = Absurd (simplify a)
 
 -- | Applies beta-reduction to a function application.
 -- Leaves the rest of the operations untouched.
@@ -150,6 +153,7 @@ substitute n x (Inr a) = Inr (substitute n x a)
 substitute n x (Caseof a b c) = Caseof (substitute n x a) (substitute n x b) (substitute n x c)
 substitute _ _ (Unit) = Unit
 substitute n x (Abort a) = Abort (substitute n x a)
+substitute n x (Absurd a) = Absurd (substitute n x a)
 substitute n x (Var m)
   -- The lambda is replaced directly
   | n == m    = x
@@ -175,7 +179,7 @@ incrementFreeVars n (Inr a)    = Inr (incrementFreeVars n a)
 incrementFreeVars n (Caseof a b c) = Caseof (incrementFreeVars n a) (incrementFreeVars n b) (incrementFreeVars n c)
 incrementFreeVars _ (Unit)    = Unit
 incrementFreeVars n (Abort a) = Abort (incrementFreeVars n a)
-
+incrementFreeVars n (Absurd a) = Absurd (incrementFreeVars n a)
 
 
 -- | Determines if the given variable is free on the expression.
