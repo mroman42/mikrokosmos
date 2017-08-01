@@ -98,25 +98,25 @@ pairParser :: Parser NamedLambda
 pairParser = parens (TypedPair <$> lambdaexp <*> (char ',' >> lambdaexp))
 
 pi1Parser :: Parser NamedLambda
-pi1Parser = TypedPi1 <$> (string "fst " >> lambdaexp)
+pi1Parser = TypedPi1 <$> (string "FST " >> lambdaexp)
 
 pi2Parser :: Parser NamedLambda
-pi2Parser = TypedPi2 <$> (string "snd " >> lambdaexp)
+pi2Parser = TypedPi2 <$> (string "SND " >> lambdaexp)
 
 inlParser :: Parser NamedLambda
-inlParser = TypedInl <$> (string "inl " >> lambdaexp)
+inlParser = TypedInl <$> (string "INL " >> lambdaexp)
 
 inrParser :: Parser NamedLambda
-inrParser = TypedInr <$> (string "inr " >> lambdaexp)
+inrParser = TypedInr <$> (string "INR " >> lambdaexp)
 
 caseParser :: Parser NamedLambda
-caseParser = TypedCase <$> (string "case " >> simpleexp) <*> (string " of " >> simpleexp) <*> (string ";" >> simpleexp)
+caseParser = TypedCase <$> (string "CASE " >> simpleexp) <*> (string " OF " >> simpleexp) <*> (string ";" >> simpleexp)
 
 unitParser :: Parser NamedLambda
-unitParser = char '*' >> return TypedUnit
+unitParser = string "UNIT" >> return TypedUnit
 
 abortParser :: Parser NamedLambda
-abortParser = TypedAbort <$> (string "abort " >> lambdaexp)
+abortParser = TypedAbort <$> (string "ABORT " >> lambdaexp)
 
 
 -- | Shows a lambda expression with named variables.
@@ -126,13 +126,13 @@ showNamedLambda (LambdaVariable c)      = c
 showNamedLambda (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showNamedLambda e ++ ""
 showNamedLambda (LambdaApplication f g) = "(" ++ showNamedLambda f ++ " " ++ showNamedLambda g ++ ")"
 showNamedLambda (TypedPair a b)         = "(" ++ showNamedLambda a ++ "," ++ showNamedLambda b ++ ")"
-showNamedLambda (TypedPi1 a)            = "(" ++ "fst " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedPi2 a)            = "(" ++ "snd " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedInl a)            = "(" ++ "inl " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedInr a)            = "(" ++ "inr " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedCase a b c)       = "(" ++ "case " ++ showNamedLambda a ++ " of " ++ showNamedLambda b ++ "; " ++ showNamedLambda c ++ ")"
-showNamedLambda (TypedUnit)             = "*"
-showNamedLambda (TypedAbort a)          = "(" ++ "abort " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedPi1 a)            = "(" ++ "FST " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedPi2 a)            = "(" ++ "SND " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedInl a)            = "(" ++ "INL " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedInr a)            = "(" ++ "INR " ++ showNamedLambda a ++ ")"
+showNamedLambda (TypedCase a b c)       = "(" ++ "CASE " ++ showNamedLambda a ++ " of " ++ showNamedLambda b ++ "; " ++ showNamedLambda c ++ ")"
+showNamedLambda (TypedUnit)             = "UNIT"
+showNamedLambda (TypedAbort a)          = "(" ++ "ABORT " ++ showNamedLambda a ++ ")"
 
 instance Show NamedLambda where
   show = showNamedLambda
