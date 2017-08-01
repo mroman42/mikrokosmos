@@ -8,7 +8,9 @@ instead of DeBruijn indexes. It contains parsing and printing fuctions.
 -}
 
 module NamedLambda
-  ( NamedLambda (LambdaVariable, LambdaAbstraction, LambdaApplication)
+  ( NamedLambda (LambdaVariable, LambdaAbstraction, LambdaApplication,
+                 TypedPair, TypedPi1, TypedPi2,
+                 TypedInl, TypedInr, TypedCase, TypedUnit, TypedAbort)
   , lambdaexp
   , toBruijn
   , nameExp
