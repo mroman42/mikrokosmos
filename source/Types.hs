@@ -1,8 +1,6 @@
 module Types
-  ( Type (Tvar, Arrow)
-  , typeinfer
+  ( Type (Tvar, Arrow, Times, Union, Unitty, Bottom)
   , typeinference
-  , normalize
   )
 where
 
