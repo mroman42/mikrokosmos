@@ -62,22 +62,30 @@ act (Bind (s,le)) =
 act (EvalBind (s,le)) =
   do modify (\env -> addBind env s (simplifyAll $ toBruijn (context env) le))
      return [""]
-act (Execute le) = do
+act (Execute le) = executeExpression le
+
+-- | Executes a lambda expression. Given the context, returns the new
+-- context after the evaluation.
+executeExpression :: NamedLambda -> State Environment [String]
+executeExpression le = do
      env <- get
      let typed = getTypes env
-     let illtyped = typed && typeinference (toBruijn (context env) le) == Nothing
-     let notypes = not typed && usestypecons (toBruijn (context env) le)
+     let bruijn = toBruijn (context env) le
+     let illtyped = typed && typeinference bruijn == Nothing
+     let notypes = not typed && usestypecons bruijn
+     let verbose = getVerbose env
+     let completeexp = showCompleteExp env $ simplifyAll $ bruijn
      
-     return $ if illtyped then [formatType ++ "Error: non typeable expression" ++ end ++ "\n"] else
-              if notypes then [formatType ++
-                  "Error: this expression uses type constructors. You may want to activate ':types on'."
-                  ++ end ++ "\n"] else
-            [ unlines $
-              [ show le ] ++
-              [ unlines $ map showReduction $ simplifySteps $ toBruijn (context env) le ] ++
-              [ showCompleteExp env $ simplifyAll $ toBruijn (context env) le ] 
-            ]
-
+     return $
+       if illtyped then [errorNonTypeableText ++ "\n"] else
+       if notypes then [errorTypeConstructors ++ "\n"] else
+       if not verbose then [completeexp ++ "\n"] else
+         [unlines $
+           [show le] ++
+           [unlines $ map showReduction $ simplifySteps $ bruijn] ++
+           [completeexp]
+         ]
+  
 
 -- | Executes multiple actions. Given a context and a set of actions, returns
 -- the new context after the sequence of actions and a text output.

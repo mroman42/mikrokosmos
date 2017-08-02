@@ -27,6 +27,8 @@ module Format
   , helpText
   , initialText
   , versionText
+  , errorNonTypeableText
+  , errorTypeConstructors
   )
 where
 
@@ -117,6 +119,19 @@ decolor = appEndo $ mconcat $ map (Endo . removeString)
   ]
 
 
+-- | Non typeable expression error message.
+errorNonTypeableText :: String
+errorNonTypeableText =
+  formatType ++
+  "Error: non typeable expression"
+  ++ end
+
+-- | Type constructors on untyped lambda calculus error message.
+errorTypeConstructors :: String
+errorTypeConstructors =
+  formatType ++
+  "Error: this expression uses type constructors. You may want to activate ':types on'."
+  ++ end
 
 -- | Prompt line. It is shown when the interpreter asks the user
 --   to introduce a new command.
