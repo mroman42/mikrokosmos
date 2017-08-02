@@ -86,7 +86,9 @@ interpreterLoop environment = do
     Quit -> return ()
 
     -- Restarts the interpreter context
-    Restart -> interpreterLoop defaultEnv
+    Restart -> do
+      outputStrLn "Mikrokosmos context has been cleaned up"
+      interpreterLoop defaultEnv
 
     -- Unknown command
     Error -> do
