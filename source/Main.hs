@@ -98,41 +98,25 @@ interpreterLoop environment = do
       interpreterLoop environment
 
     -- Sets the verbose option
-    SetVerbose setting -> do
-      outputStrLn $
-        (if getColor environment then formatFormula else "") ++
-        "verbose mode: " ++ if setting then "on" else "off" ++
-        end
-      interpreterLoop (changeVerbose environment setting)
-      
-    -- Sets the color option
-    SetColor setting -> do
-      outputStrLn $
-        (if getColor environment then formatFormula else "") ++
-        "color mode: " ++ if setting then "on" else "off" ++
-        end
-      interpreterLoop (changeColor environment setting)
-
-    -- Sets the ski option
-    SetSki setting -> do
-      outputStrLn $
-        (if getColor environment then formatFormula else "") ++
-        "ski mode: " ++ if setting then "on" else "off" ++
-        end
-      interpreterLoop (changeSkioutput environment setting)
-
-    -- Sets the types option
-    SetTypes setting -> do
-      outputStrLn $
-        (if getColor environment then formatFormula else "") ++
-        "types: " ++ if setting then "on" else "off" ++
-        end
-      interpreterLoop (changeTypes environment setting)
+    SetVerbose setting -> setOption environment setting changeVerbose "verbose: "
+    SetColor   setting -> setOption environment setting changeColor "color mode: "
+    SetSki     setting -> setOption environment setting changeSkioutput "ski mode: "
+    SetTypes   setting -> setOption environment setting changeTypes "types: "
 
     -- Prints the help
     Help -> outputStr helpText >> interpreterLoop environment
 
 
+-- | Sets the given option on/off.
+setOption :: Environment -> Bool ->
+             (Environment -> Bool -> Environment) ->
+             String ->
+             InputT IO ()
+setOption environment setting change message = do
+  outputStrLn $
+    (if getColor environment then formatFormula else "") ++
+    message ++ if setting then "on" else "off" ++ end  
+  interpreterLoop (change environment setting)
 
 
 -- | Outputs results from actions. Given a list of options and outputs,
