@@ -75,8 +75,10 @@ executeExpression le = do
      let notypes = not typed && usestypecons bruijn
      let verbose = getVerbose env
      let completeexp = showCompleteExp env $ simplifyAll $ bruijn
+     let isopen = isOpenExp bruijn
      
      return $
+       if isopen then [errorUndefinedText ++ "\n"] else
        if illtyped then [errorNonTypeableText ++ "\n"] else
        if notypes then [errorTypeConstructors ++ "\n"] else
        if not verbose then [completeexp ++ "\n"] else
@@ -113,9 +115,6 @@ showCompleteExp environment expr = let
   in
       lambdaname ++ skiname ++ expName ++ typename ++ end
     
-
-
-
 
 
 -- Parsing of interpreter command line commands.

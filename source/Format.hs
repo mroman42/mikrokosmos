@@ -29,6 +29,7 @@ module Format
   , versionText
   , errorNonTypeableText
   , errorTypeConstructors
+  , errorUndefinedText
   )
 where
 
@@ -36,61 +37,28 @@ import System.Console.ANSI
 import Data.List
 import Data.Monoid
 
--- Colors
--- | Prompt messages color
-promptColor :: Color
+-- | Colors used on the prompt.
+promptColor, nameColor, substColor, subst2Color, typeColor, errorColor :: Color
 promptColor = Blue
-
--- | Named variables color
-nameColor :: Color
 nameColor = Green
-
--- | Substitutions are marked with this color
-substColor :: Color
 substColor = Cyan
-
--- | To-be-substituted expressions are marked with this color
-subst2Color :: Color
 subst2Color = Cyan
-
--- | Types are marked with this color
-typeColor :: Color
 typeColor = Yellow
+errorColor = Red
 
 -- Format sequences
 -- | Sequence of characters that signals the format of a formula to the terminal.
-formatFormula :: String
+formatFormula, formatIntro, formatLoading, formatPrompt, formatName  :: String
+formatSubs1, formatSubs2, formatType, formatError :: String
 formatFormula = setSGRCode [SetConsoleIntensity NormalIntensity, SetColor Foreground Dull promptColor]
-
--- | Sequence of characters that signals the format of the introduction to the terminal.
-formatIntro :: String
-formatIntro = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground Dull promptColor]
-
--- | Sequence of characters that signals the format of the loading of a module to the terminal.
-formatLoading :: String
+formatIntro   = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground Dull promptColor]
 formatLoading = formatIntro
-
--- | Sequence of characters that signals the format of the prompt to the terminal.
-formatPrompt :: String
-formatPrompt = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground Vivid promptColor]
-
--- | Sequence of characters that signals the format of a name to the terminal.
-formatName :: String
-formatName = setSGRCode [SetColor Foreground Dull nameColor]
-
--- | Sequence of characters that signals the format of a substitution to the terminal.
-formatSubs1 :: String
-formatSubs1 = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground Dull substColor]
-
--- | Sequence of characters that signals the format of a expression which will
---   be substituted in the next reduction step to the terminal.
-formatSubs2 :: String
-formatSubs2 = setSGRCode [SetConsoleIntensity FaintIntensity, SetColor Foreground Dull subst2Color]
-
--- | Sequence of characters that signals the format of a type to the terminal.
-formatType :: String
-formatType = setSGRCode [SetConsoleIntensity NormalIntensity, SetColor Foreground Dull typeColor]
-
+formatPrompt  = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground Vivid promptColor]
+formatName    = setSGRCode [SetColor Foreground Dull nameColor]
+formatSubs1   = setSGRCode [SetConsoleIntensity BoldIntensity, SetColor Foreground Dull substColor]
+formatSubs2   = setSGRCode [SetConsoleIntensity FaintIntensity, SetColor Foreground Dull subst2Color]
+formatType    = setSGRCode [SetConsoleIntensity NormalIntensity, SetColor Foreground Dull typeColor]
+formatError   = setSGRCode [SetConsoleIntensity NormalIntensity, SetColor Foreground Dull errorColor]
 
 -- | Sequence of characters that cleans all the format.
 end :: String
@@ -122,15 +90,22 @@ decolor = appEndo $ mconcat $ map (Endo . removeString)
 -- | Non typeable expression error message.
 errorNonTypeableText :: String
 errorNonTypeableText =
-  formatType ++
+  formatError ++
   "Error: non typeable expression"
   ++ end
 
 -- | Type constructors on untyped lambda calculus error message.
 errorTypeConstructors :: String
 errorTypeConstructors =
-  formatType ++
+  formatError ++
   "Error: this expression uses type constructors. You may want to activate ':types on'."
+  ++ end
+
+-- | Undefined expression error message.
+errorUndefinedText :: String
+errorUndefinedText =
+  formatError ++
+  "Error: undefined terms on the lambda expression"
   ++ end
 
 -- | Prompt line. It is shown when the interpreter asks the user
