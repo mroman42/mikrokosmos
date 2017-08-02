@@ -15,7 +15,7 @@ module Lambda
   , simplifySteps
   , showReduction
   , usestypecons
---  , freein
+  , isOpenExp
   )
 where
 
@@ -188,8 +188,25 @@ incrementFreeVars n (Absurd a) = Absurd (incrementFreeVars n a)
 -- freein n (Lambda e) = freein (succ n) e
 -- freein n (App u v)  = (freein n u) && (freein n v)
 
+-- | Returns true if the expression has at least one type constructor.
 usestypecons :: Exp -> Bool
 usestypecons (Var _) = False
 usestypecons (App a b) = usestypecons a || usestypecons b
 usestypecons (Lambda b) = usestypecons b
 usestypecons _ = True
+
+
+-- | Returns true if the expression contains open undefined variables.
+isOpenExp :: Exp -> Bool
+isOpenExp (Var n) = n == 0
+isOpenExp (App a b) = isOpenExp a || isOpenExp b
+isOpenExp (Lambda a) = isOpenExp a
+isOpenExp (Pair a b) = isOpenExp a || isOpenExp b
+isOpenExp (Pi1 a) = isOpenExp a
+isOpenExp (Pi2 a) = isOpenExp a
+isOpenExp (Inl a) = isOpenExp a
+isOpenExp (Inr a) = isOpenExp a
+isOpenExp (Caseof a b c) = isOpenExp a || isOpenExp b || isOpenExp c
+isOpenExp (Unit) = False
+isOpenExp (Abort a) = isOpenExp a
+isOpenExp (Absurd a) = isOpenExp a
