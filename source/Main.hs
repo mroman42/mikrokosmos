@@ -141,16 +141,10 @@ outputActions environment output = do
     mapM_ (outputStr . format) output
     outputStr end
   where
-    format = formatColor -- . formatVerbose
-
+    format = formatColor
     formatColor s
       | getColor environment = s
       | otherwise            = unlines $ map decolor $ lines s
-    
-    -- formatVerbose "" = ""
-    -- formatVerbose s
-    --   | not (getVerbose environment) = (++"\n") . last . lines $ s
-    --   | otherwise                    = s
 
 
 
