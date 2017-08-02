@@ -9,7 +9,8 @@ writing lambda expressions as combinators.
 -}
 
 module Ski
-  ( Ski (S, K, I, Comb)
+  ( Ski (S, K, I, Comb, Cte,
+         Spair, Spi1, Spi2, Sinl, Sinr, Scase, Sunit, Sabort, Sabsurd)
   , skiabs
   )
 where

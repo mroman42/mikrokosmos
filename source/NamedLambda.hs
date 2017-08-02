@@ -46,6 +46,7 @@ data NamedLambda = LambdaVariable String                         -- ^ variable
                  | TypedUnit                                     -- ^ unit
                  | TypedAbort NamedLambda                        -- ^ abort
                  | TypedAbsurd NamedLambda                       -- ^ absurd
+                 deriving (Eq)
 
 -- | Parses a lambda expression with named variables.
 -- A lambda expression is a sequence of one or more autonomous
