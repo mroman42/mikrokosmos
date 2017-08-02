@@ -120,6 +120,7 @@ helpText = unlines [
   "Commands available from the prompt:",
   "\t<expression>\t\t evaluates the expression",
   "\t:quit       \t\t quits the interpreter",
+  "\t:restart    \t\t restarts the interpreter",
   "\t:load <file>\t\t loads the given .mkr library or script",
   "\t:verbose <on/off> \t sets verbose mode on/off",
   "\t:color <on/off> \t sets color mode on/off",
