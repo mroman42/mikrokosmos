@@ -82,20 +82,14 @@ interpreterLoop environment = do
     -- Ignores the empty line
     EmptyLine -> interpreterLoop environment
     
-    -- Exists the interpreter
+    -- Exits the interpreter
     Quit -> return ()
 
     -- Restarts the interpreter context
-    Restart -> do
-      outputStrLn "Mikrokosmos context has been cleaned up"
-      interpreterLoop defaultEnv
+    Restart -> outputStrLn restartText >> interpreterLoop defaultEnv
 
     -- Unknown command
-    Error -> do
-      outputStr (if getColor environment then formatFormula else "")
-      outputStrLn "Unknown command"
-      outputStr end
-      interpreterLoop environment
+    Error -> outputStrLn errorUnknownCommand >> interpreterLoop environment
 
     -- Sets the verbose option
     SetVerbose setting -> setOption environment setting changeVerbose "verbose: "

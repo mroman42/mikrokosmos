@@ -27,9 +27,11 @@ module Format
   , helpText
   , initialText
   , versionText
+  , restartText
   , errorNonTypeableText
   , errorTypeConstructors
   , errorUndefinedText
+  , errorUnknownCommand
   )
 where
 
@@ -87,6 +89,14 @@ decolor = appEndo $ mconcat $ map (Endo . removeString)
   ]
 
 
+-- | Unknown command error message
+errorUnknownCommand :: String
+errorUnknownCommand =
+  formatError ++
+  "Error: parse error, unknown command"
+  ++ end
+
+
 -- | Non typeable expression error message.
 errorNonTypeableText :: String
 errorNonTypeableText =
@@ -107,6 +117,9 @@ errorUndefinedText =
   formatError ++
   "Error: undefined terms on the lambda expression"
   ++ end
+
+restartText :: String
+restartText = "Mikrokosmos context has been cleaned up"
 
 -- | Prompt line. It is shown when the interpreter asks the user
 --   to introduce a new command.
