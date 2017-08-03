@@ -1,5 +1,5 @@
 #+TITLE: Mikroskosmos
-#+SUBTITLE: User's guide v0.4
+#+SUBTITLE: User's guide (v0.5.0)
 #+SETUPFILE: html.setup
 
 * Mikrokosmos
@@ -203,26 +203,65 @@ fragment of the intuitionistic propositional logic.
 
 [[./images/types.png]]
 
+This implementation of simply typed \lambda-calculus is extended with
+some more type constructors such as
+
+|---------+--------------------------------------------------|
+| Types   | Description                                      |
+|---------+--------------------------------------------------|
+| =A × B= | Product type, pairs of elements of type A and B. |
+| =A + B= | Union type, disjoint union of A and B.           |
+| =⊤=     | Unit type, with only one element.                |
+| =⊥=     | Empty type.                                      |
+|---------+--------------------------------------------------|
+
+You can use these types with the built-in term constructors on the
+language such as =INL=, =INR=, =ABORT=, =UNIT= or =(-,-)=; but it
+is recommended to load the *types* library and work with the
+[[*Type constructors][type constructors]] already available on the library.
+
 * The Mikrokosmos language
-The mikrokosmos language aims to be a minimal implementation of pure
-lambda calculus. A tutorial on the language can be found on
+The Mikrokosmos language aims to be a minimal implementation of pure
+lambda calculus. A *tutorial on the language* can be found on
 =tutorial.ipynb=.
 
 ** Lambda expressions
 A lambda abstraction $(\lambda x. x)$ can be written as =\x.x=. Combinations
 of alphanumeric characters are valid free variable names. Application
-of lambda expressions is written by yuxtaposition.
+of lambda expressions is written by yuxtaposition. For example,
+
+#+BEGIN_SRC haskell
+(\a.a)(\a.a)
+#+END_SRC
 
 ** Bindings
 A expression can be bound to a name using the === operator as follows
 
-#+BEGIN_EXAMPLE
+#+BEGIN_SRC haskell
 plus = \a.\b.\c.\d.((a c) ((b c) d))
-#+END_EXAMPLE
+#+END_SRC
 
 ** Comments
 Comments must start with a =#=, both in the interpreter and in the
 module code.
+
+** Type constructors
+When the =:types= option is on, and the =:load types= library is
+loaded, a predefined set of typed constructors and destructors are
+allowed on \lambda-expressions.
+
+|-------------+-----------------------------------|
+| Constructor | Type                              |
+|-------------+-----------------------------------|
+| =(-,-)=     | =A → B → A × B=                   |
+| =inl=       | =A → A + B=                       |
+| =inr=       | =B → A + B=                       |
+| =unit=      | =⊤=                               |
+| =caseof=    | =(A + B) → (A → C) → (B → C) → C= |
+| =abort=     | =⊥ → A=                           |
+| =absurd=    | =⊥ → ⊥=                           |
+|-------------+-----------------------------------|
+
 
 * Standard libraries
 Mikrokosmos comes bundled with a set of libraries in the =./lib=
