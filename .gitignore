@@ -19,5 +19,6 @@ docs/ltximg/*
 *.toc
 *.out
 */.
+*.ipynb
 */.ipynb_checkpoints/*
 */_minted-userguide/*
