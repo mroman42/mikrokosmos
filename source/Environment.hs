@@ -12,6 +12,7 @@ module Environment
     Environment
   , context
   , defaultEnv
+  , emptyContext
 
   -- * Reading the environment
   , getVerbose
