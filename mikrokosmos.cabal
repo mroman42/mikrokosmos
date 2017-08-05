@@ -35,6 +35,7 @@ executable mikrokosmos
                        options,
                        tasty,
                        tasty-hunit,
+                       tasty-quickcheck,
                        directory >= 1.0
                        
   other-modules:       Format
@@ -70,6 +71,7 @@ test-suite test
                  options,
                  tasty,
                  tasty-hunit,
+                 tasty-quickcheck,
                  directory >= 1.0
   other-modules: Format
                  Lambda

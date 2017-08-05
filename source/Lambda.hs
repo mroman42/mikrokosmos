@@ -40,7 +40,6 @@ data Exp = Var Integer        -- ^ integer indexing the variable.
 instance Show Exp where
   show = showexp
 
-
 -- | Shows an expression with DeBruijn indexes.
 showexp :: Exp -> String
 showexp (Var n)        = show n
