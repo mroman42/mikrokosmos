@@ -12,6 +12,17 @@ by /Bela Bartok/. It aims to provide students with a tool to learn and
 understand [[https://en.wikipedia.org/wiki/Lambda_calculus#Informal_description][lambda calculus]].
 
 * Installation
+It should be possible to install Mikrokosmos only with the following
+commands, provided that =cabal= and =pip= are installed
+
+#+BEGIN_SRC sh
+  cabal install mikrokosmos
+  sudo pip install imikrokosmos
+#+END_SRC
+
+and the [[https://github.com/M42/mikrokosmos/tree/master/lib][libraries]] should be placed under =~/.mikrokosmos/=. The following
+sections explain in more detail each step.
+
 ** Mikrokosmos
 Mikrokosmos is installable from [[http://hackage.haskell.org/][Hackage]]; you can install it directly
 from =cabal= using
@@ -261,7 +272,6 @@ allowed on \lambda-expressions.
 | =abort=     | =⊥ → A=                           |
 | =absurd=    | =⊥ → ⊥=                           |
 |-------------+-----------------------------------|
-
 
 * Standard libraries
 Mikrokosmos comes bundled with a set of libraries in the =./lib=
