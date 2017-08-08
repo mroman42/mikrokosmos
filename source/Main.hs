@@ -96,6 +96,7 @@ interpreterLoop environment = do
     SetColor   setting -> setOption environment setting changeColor "color mode: "
     SetSki     setting -> setOption environment setting changeSkioutput "ski mode: "
     SetTypes   setting -> setOption environment setting changeTypes "types: "
+    SetTopo    setting -> setOption environment setting changeTopo "topo mode: "
 
     -- Prints the help
     Help -> outputStr helpText >> interpreterLoop environment

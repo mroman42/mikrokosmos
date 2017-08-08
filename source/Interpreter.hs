@@ -42,6 +42,7 @@ data InterpreterAction = Interpret Action -- ^ Language action
                        | SetColor Bool    -- ^ Changes colors
                        | SetSki Bool      -- ^ Changes ski output
                        | SetTypes Bool    -- ^ Changes type configuration
+                       | SetTopo Bool
                        | Help             -- ^ Shows help
 
 -- | Language action. The language has a number of possible valid statements;
@@ -106,7 +107,9 @@ showCompleteExp environment expr = let
       inferredtype = typeinference expr
       typename = if getTypes environment
                   then formatType ++ " :: " ++ (case inferredtype of
-                                                   Just s -> show s
+                                                   Just s -> if getTopo environment
+                                                             then show (Top s)
+                                                             else show s
                                                    Nothing -> "Type error!") ++ end
                   else ""
       expName = case getExpressionName environment expr of
@@ -129,6 +132,7 @@ interpreteractionParser = choice
   , try colorParser
   , try skiOutputParser
   , try typesParser
+  , try topoParser
   , try helpParser
   ]
 
@@ -184,11 +188,12 @@ settingParser setSetting settingname = choice
     settingoffParser = string (settingname ++ " off") >> return (setSetting False)
 
 -- | Multiple setting parsers
-verboseParser, colorParser, skiOutputParser, typesParser :: Parser InterpreterAction
+verboseParser, colorParser, skiOutputParser, typesParser, topoParser :: Parser InterpreterAction
 verboseParser   = settingParser SetVerbose ":verbose"
 colorParser     = settingParser SetColor   ":color"
 skiOutputParser = settingParser SetSki     ":ski"
 typesParser     = settingParser SetTypes   ":types"
+topoParser      = settingParser SetTopo    ":Hausdorff"
 
 
 -- | Parses a "load-file" command.
