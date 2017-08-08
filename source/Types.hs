@@ -1,6 +1,7 @@
 module Types
   ( Type (Tvar, Arrow, Times, Union, Unitty, Bottom)
   , typeinference
+  , Top (Top)
   )
 where
 
@@ -244,3 +245,21 @@ applynormalization _ Bottom = Bottom
 -- the smaller possible ones.
 normalize :: Type -> Type
 normalize t = applynormalization (fst $ normalizeTemplate Map.empty 0 t) t
+
+
+
+-- No easter eggs here, sorry!
+newtype Top = Top Type
+instance Show Top where
+  show (Top (Tvar t))         = typevariableNames !! (fromInteger t)
+  show (Top (Arrow a Bottom)) = "(Ω∖" ++ showparensT (Top a)  ++ ")ᴼ"
+  show (Top (Arrow a b))      = "((Ω∖" ++ showparensT (Top a) ++ ") ∪ " ++ show (Top b) ++ ")ᴼ"
+  show (Top (Times a b))      = showparensT (Top a) ++ " ∩ " ++ showparensT (Top b)
+  show (Top (Union a b))      = showparensT (Top a) ++ " ∪ " ++ showparensT (Top b)
+  show (Top (Unitty))         = "Ω"
+  show (Top (Bottom))         = "Ø"
+showparensT :: Top -> String
+showparensT (Top (Tvar t)) = show (Top (Tvar t))
+showparensT (Top (Unitty)) = show (Top Unitty)
+showparensT (Top Bottom) = show (Top Bottom)
+showparensT (Top m) = "(" ++ show (Top m) ++ ")"
