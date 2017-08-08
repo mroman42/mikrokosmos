@@ -248,7 +248,8 @@ normalize t = applynormalization (fst $ normalizeTemplate Map.empty 0 t) t
 
 
 
--- No easter eggs here, sorry!
+
+-- This is definitely not an easter egg
 newtype Top = Top Type
 instance Show Top where
   show (Top (Tvar t))         = typevariableNames !! (fromInteger t)
