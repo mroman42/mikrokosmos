@@ -254,7 +254,7 @@ newtype Top = Top Type
 instance Show Top where
   show (Top (Tvar t))         = typevariableNames !! (fromInteger t)
   show (Top (Arrow a Bottom)) = "(Ω∖" ++ showparensT (Top a)  ++ ")ᴼ"
-  show (Top (Arrow a b))      = "((Ω∖" ++ showparensT (Top a) ++ ") ∪ " ++ show (Top b) ++ ")ᴼ"
+  show (Top (Arrow a b))      = "((Ω∖" ++ showparensT (Top a) ++ ") ∪ " ++ showparensT (Top b) ++ ")ᴼ"
   show (Top (Times a b))      = showparensT (Top a) ++ " ∩ " ++ showparensT (Top b)
   show (Top (Union a b))      = showparensT (Top a) ++ " ∪ " ++ showparensT (Top b)
   show (Top (Unitty))         = "Ω"
