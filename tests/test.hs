@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeSynonymInstances #-}
-
 import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck as QC
@@ -88,6 +86,7 @@ lambdaProps = testGroup "Lambda expression properties (quickcheck)"
   
 
 -- Arbitrary untyped lambda expressions
+-- {-# LANGUAGE TypeSynonymInstances #-}
 -- type UntypedExp = Exp
 -- instance Arbitrary UntypedExp where
 --   arbitrary = sized (untlambda 0)
