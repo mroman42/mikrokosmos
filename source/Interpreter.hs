@@ -187,7 +187,7 @@ verboseParser   = settingParser SetVerbose ":verbose"
 colorParser     = settingParser SetColor   ":color"
 skiOutputParser = settingParser SetSki     ":ski"
 typesParser     = settingParser SetTypes   ":types"
-topoParser      = settingParser SetTopo    ":Hausdorff"
+topoParser      = settingParser SetTopo    ":topology"
 
 
 -- | Parses a "load-file" command.
