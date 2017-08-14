@@ -51,7 +51,7 @@ showexp (Pi2 m)        = "(" ++ "SND " ++ showexp m ++ ")"
 showexp (Inl m)        = "(" ++ "INL " ++ showexp m ++ ")"
 showexp (Inr m)        = "(" ++ "INR " ++ showexp m ++ ")"
 showexp (Caseof m n p) = "(" ++ "CASE " ++ showexp m ++ " OF " ++ showexp n ++ "; " ++ showexp p ++ ")"
-showexp (Unit)         = "*"
+showexp Unit         = "*"
 showexp (Abort a)      = "(ABORT " ++ showexp a ++ ")"
 showexp (Absurd a)     = "(ABSURD " ++ showexp a ++ ")"
 
@@ -128,7 +128,7 @@ simplify (Inr m)              = Inr (simplify m)
 simplify (Caseof (Inl m) a _) = App a m
 simplify (Caseof (Inr m) _ b) = App b m
 simplify (Caseof a b c)       = Caseof (simplify a) (simplify b) (simplify c)
-simplify (Unit)               = Unit
+simplify Unit               = Unit
 simplify (Abort a)            = Abort (simplify a)
 simplify (Absurd a)           = Absurd (simplify a)
 
@@ -151,7 +151,7 @@ substitute n x (Pi2 a) = Pi2 (substitute n x a)
 substitute n x (Inl a) = Inl (substitute n x a)
 substitute n x (Inr a) = Inr (substitute n x a)
 substitute n x (Caseof a b c) = Caseof (substitute n x a) (substitute n x b) (substitute n x c)
-substitute _ _ (Unit) = Unit
+substitute _ _ Unit = Unit
 substitute n x (Abort a) = Abort (substitute n x a)
 substitute n x (Absurd a) = Absurd (substitute n x a)
 substitute n x (Var m)
@@ -177,7 +177,7 @@ incrementFreeVars n (Pi2 a)    = Pi2 (incrementFreeVars n a)
 incrementFreeVars n (Inl a)    = Inl (incrementFreeVars n a)
 incrementFreeVars n (Inr a)    = Inr (incrementFreeVars n a)
 incrementFreeVars n (Caseof a b c) = Caseof (incrementFreeVars n a) (incrementFreeVars n b) (incrementFreeVars n c)
-incrementFreeVars _ (Unit)    = Unit
+incrementFreeVars _ Unit    = Unit
 incrementFreeVars n (Abort a) = Abort (incrementFreeVars n a)
 incrementFreeVars n (Absurd a) = Absurd (incrementFreeVars n a)
 
@@ -207,6 +207,6 @@ isOpenExp (Pi2 a) = isOpenExp a
 isOpenExp (Inl a) = isOpenExp a
 isOpenExp (Inr a) = isOpenExp a
 isOpenExp (Caseof a b c) = isOpenExp a || isOpenExp b || isOpenExp c
-isOpenExp (Unit) = False
+isOpenExp Unit = False
 isOpenExp (Abort a) = isOpenExp a
 isOpenExp (Absurd a) = isOpenExp a

@@ -84,7 +84,7 @@ getTopo    = topo
 addBind :: Environment -> String -> Exp -> Environment
 addBind env s e =
   -- If the binding already exists, it changes nothing
-  if elem s (MultiBimap.lookup e $ context env)
+  if s `elem` MultiBimap.lookup e (context env)
     then env
     else env {context = MultiBimap.insert e s (context env)}
 

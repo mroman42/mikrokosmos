@@ -32,11 +32,11 @@ data Type         = Tvar Variable
   deriving (Eq)
 
 instance Show Type where
-  show (Tvar t)    = typevariableNames !! (fromInteger t)
+  show (Tvar t)    = typevariableNames !! fromInteger t
   show (Arrow a b) = showparens a ++ " → " ++ show b
   show (Times a b) = showparens a ++ " × " ++ showparens b
   show (Union a b) = showparens a ++ " + " ++ showparens b
-  show (Unitty)    = "⊤"
+  show Unitty    = "⊤"
   show (Bottom)    = "⊥"
 
 showparens :: Type -> String
@@ -63,7 +63,7 @@ occurs x (Tvar y)    = x == y
 occurs x (Arrow a b) = occurs x a || occurs x b
 occurs x (Times a b) = occurs x a || occurs x b
 occurs x (Union a b) = occurs x a || occurs x b
-occurs _ (Unitty)    = False
+occurs _ Unitty    = False
 occurs _ (Bottom)    = False
 
 -- | Unifies two types with their most general unifier. Returns the substitution
@@ -78,21 +78,19 @@ unify (Tvar x) b
 unify a (Tvar y)
   | occurs y a = Nothing
   | otherwise  = Just (subs y a)
-unify (Arrow a b) (Arrow c d) = do
-  p <- unify b d
-  q <- unify (p a) (p c)
-  return (q . p)
-unify (Times a b) (Times c d) = do
-  p <- unify b d
-  q <- unify (p a) (p c)
-  return (q . p)
-unify (Union a b) (Union c d) = do
-  p <- unify b d
-  q <- unify (p a) (p c)
-  return (q . p)
+unify (Arrow a b) (Arrow c d) = unifypair (a,b) (c,d)
+unify (Times a b) (Times c d) = unifypair (a,b) (c,d)
+unify (Union a b) (Union c d) = unifypair (a,b) (c,d)
 unify Unitty Unitty = Just id
 unify Bottom Bottom = Just id
 unify _ _ = Nothing
+
+-- | Unifies a pair of types
+unifypair :: (Type,Type) -> (Type,Type) -> Maybe Substitution
+unifypair (a,b) (c,d) = do
+  p <- unify b d
+  q <- unify (p a) (p c)
+  return (q . p)
 
 -- | Apply a substitution to all the types on a type context.
 applyctx :: Substitution -> Context -> Context
@@ -231,8 +229,8 @@ normalizeTemplate sub n Bottom = (sub, n)
 -- | Applies a set of variable substitutions to a type to normalize it.
 applynormalization :: Map.Map Integer Integer -> Type -> Type
 applynormalization sub (Tvar m) = case Map.lookup m sub of
-                                    Just n -> (Tvar n)
-                                    Nothing -> (Tvar m)
+                                    Just n -> Tvar n
+                                    Nothing -> Tvar m
 applynormalization sub (Arrow a b) = Arrow (applynormalization sub a) (applynormalization sub b)
 applynormalization sub (Times a b) = Times (applynormalization sub a) (applynormalization sub b)
 applynormalization sub (Union a b) = Union (applynormalization sub a) (applynormalization sub b)
@@ -252,15 +250,15 @@ normalize t = applynormalization (fst $ normalizeTemplate Map.empty 0 t) t
 -- This is definitely not an easter egg
 newtype Top = Top Type
 instance Show Top where
-  show (Top (Tvar t))         = typevariableNames !! (fromInteger t)
+  show (Top (Tvar t))         = typevariableNames !! fromInteger t
   show (Top (Arrow a Bottom)) = "(Ω∖" ++ showparensT (Top a)  ++ ")ᴼ"
   show (Top (Arrow a b))      = "((Ω∖" ++ showparensT (Top a) ++ ") ∪ " ++ showparensT (Top b) ++ ")ᴼ"
   show (Top (Times a b))      = showparensT (Top a) ++ " ∩ " ++ showparensT (Top b)
   show (Top (Union a b))      = showparensT (Top a) ++ " ∪ " ++ showparensT (Top b)
-  show (Top (Unitty))         = "Ω"
+  show (Top Unitty)         = "Ω"
   show (Top (Bottom))         = "Ø"
 showparensT :: Top -> String
 showparensT (Top (Tvar t)) = show (Top (Tvar t))
-showparensT (Top (Unitty)) = show (Top Unitty)
+showparensT (Top Unitty) = show (Top Unitty)
 showparensT (Top Bottom) = show (Top Bottom)
 showparensT (Top m) = "(" ++ show (Top m) ++ ")"
