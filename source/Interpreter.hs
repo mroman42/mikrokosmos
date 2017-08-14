@@ -166,16 +166,10 @@ commentParser :: Parser Action
 commentParser = string "#" >> many anyChar >> return Comment
 
 -- | Parses a "quit" command.
-quitParser :: Parser InterpreterAction
-quitParser = string ":quit" >> return Quit
-
--- | Parses a "restart" command.
-restartParser :: Parser InterpreterAction
+quitParser, restartParser, helpParser :: Parser InterpreterAction
+quitParser    = string ":quit" >> return Quit
 restartParser = string ":restart" >> return Restart
-
--- | Parses a "help" command.
-helpParser :: Parser InterpreterAction
-helpParser = string ":help" >> return Help
+helpParser    = string ":help" >> return Help
 
 -- | Parses a change in a setting
 settingParser :: (Bool -> InterpreterAction) -> String -> Parser InterpreterAction
