@@ -1,6 +1,7 @@
 #INCLUDE nat
 
 ## Fixpoint operator and recursion
+omega != (\x.(x x))(\x.(x x))
 fix != (\f.(\x.f (x x)) (\x.f (x x)))
 fact != fix (\f.\n.iszero n (succ 0) (mult n (f (pred n))))
 fib != fix (\f.\n.iszero n (succ 0) (plus (f (pred n)) (f (pred (pred n)))))
