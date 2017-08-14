@@ -25,18 +25,18 @@ main =
   -- Uses the Options library, which requires the program to start with
   -- runCommand. The flags are stored in opts and other command line arguments
   -- are stored in args.
-  runCommand $ \opts args ->
-  
+  runCommand $ \opts args
   -- Reads the flags
-  if flagVersion opts 
-  then putStrLn versionText
-  else case args of
-        [] -> runInputT defaultSettings ( outputStrLn initialText
-                                          >> interpreterLoop defaultEnv
-                                        )
-        [filename] -> executeFile filename
-        _ -> putStrLn "Wrong number of arguments"
-
+   ->
+    if flagVersion opts
+      then putStrLn versionText
+      else case args of
+             [] ->
+               runInputT
+                 defaultSettings
+                 (outputStrLn initialText >> interpreterLoop defaultEnv)
+             [filename] -> executeFile filename
+             _ -> putStrLn "Wrong number of arguments"
 
 -- | Interpreter awaiting for an instruction.
 interpreterLoop :: Environment -> InputT IO ()
@@ -48,55 +48,51 @@ interpreterLoop environment = do
         case minput of
           Nothing -> Quit
           Just "" -> EmptyLine
-          Just input -> case parse interpreteractionParser "" input of
-            Left _  -> Error
-            Right a -> a
-
+          Just input ->
+            case parse interpreteractionParser "" input of
+              Left _ -> Error
+              Right a -> a
   -- Executes the parsed action, every action may affect the
-  -- context in a way, and returns the control to the interpreter. 
-  case interpreteraction of
+  -- context in a way, and returns the control to the interpreter.
+  case interpreteraction
     -- Interprets an action
-    Interpret action -> case runState (act action) environment of
-                          (output, newenv) -> do
-                            outputActions newenv output
-                            interpreterLoop newenv
-
+        of
+    Interpret action ->
+      case runState (act action) environment of
+        (output, newenv) -> do
+          outputActions newenv output
+          interpreterLoop newenv
     -- Loads a module and its dependencies given its name.
     -- Avoids repeated modules keeping only their first ocurrence.
     Load modulename -> do
       modules <- lift (nub <$> readAllModuleDepsRecursively [modulename])
       files <- lift $ mapM findFilename modules
-
       -- Concats all the module contents
       maybeactions <- fmap concat . sequence <$> lift (mapM loadFile files)
       case maybeactions of
         Nothing -> do
           outputStrLn "Error loading file"
           interpreterLoop environment
-        Just actions -> case runState (multipleAct actions) environment of
-                          (output, newenv) -> do
-                            outputActions newenv output
-                            interpreterLoop newenv
-    
+        Just actions ->
+          case runState (multipleAct actions) environment of
+            (output, newenv) -> do
+              outputActions newenv output
+              interpreterLoop newenv
     -- Ignores the empty line
     EmptyLine -> interpreterLoop environment
-    
     -- Exits the interpreter
     Quit -> return ()
-
     -- Restarts the interpreter context
     Restart -> outputStrLn restartText >> interpreterLoop defaultEnv
-
     -- Unknown command
     Error -> outputStrLn errorUnknownCommand >> interpreterLoop environment
-
     -- Sets the verbose option
-    SetVerbose setting -> setOption environment setting changeVerbose "verbose: "
-    SetColor   setting -> setOption environment setting changeColor "color mode: "
-    SetSki     setting -> setOption environment setting changeSkioutput "ski mode: "
-    SetTypes   setting -> setOption environment setting changeTypes "types: "
-    SetTopo    setting -> setOption environment setting changeTopo "topo mode: "
-
+    SetVerbose setting ->
+      setOption environment setting changeVerbose "verbose: "
+    SetColor setting -> setOption environment setting changeColor "color mode: "
+    SetSki setting -> setOption environment setting changeSkioutput "ski mode: "
+    SetTypes setting -> setOption environment setting changeTypes "types: "
+    SetTopo setting -> setOption environment setting changeTopo "topo mode: "
     -- Prints the help
     Help -> outputStr helpText >> interpreterLoop environment
 
