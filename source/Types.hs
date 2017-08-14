@@ -12,10 +12,10 @@ import qualified Data.Map as Map
 
 -- | A type context is a map from deBruijn indices to types. Given
 -- any lambda variable as a deBruijn index, it returns its type.
-type Context      = Map.Map Integer Type
+type Context = Map.Map Integer Type
 
 -- | A type variable is an integer.
-type Variable     = Integer
+type Variable = Integer
 
 -- | A type substitution is a function that can be applied to any type
 -- to get a new one.
@@ -23,21 +23,25 @@ type Substitution = Type -> Type
 
 -- | A type template is a free type variable or an arrow between two
 -- types; that is, the function type.
-data Type         = Tvar Variable
-                  | Arrow Type Type
-                  | Times Type Type
-                  | Union Type Type
-                  | Unitty
-                  | Bottom
+data Type
+  = Tvar Variable
+  | Arrow Type
+          Type
+  | Times Type
+          Type
+  | Union Type
+          Type
+  | Unitty
+  | Bottom
   deriving (Eq)
 
 instance Show Type where
-  show (Tvar t)    = typevariableNames !! fromInteger t
+  show (Tvar t) = typevariableNames !! fromInteger t
   show (Arrow a b) = showparens a ++ " → " ++ show b
   show (Times a b) = showparens a ++ " × " ++ showparens b
   show (Union a b) = showparens a ++ " + " ++ showparens b
-  show Unitty    = "⊤"
-  show (Bottom)    = "⊥"
+  show Unitty = "⊤"
+  show (Bottom) = "⊥"
 
 showparens :: Type -> String
 showparens (Tvar t) = show (Tvar t)
@@ -80,7 +84,7 @@ unify a (Tvar y)
   | otherwise  = Just (subs y a)
 unify (Arrow a b) (Arrow c d) = unifypair (a,b) (c,d)
 unify (Times a b) (Times c d) = unifypair (a,b) (c,d)
-unify (Union a b) (Union c d) = unifypair (a,b) (c,d)
+unify (Union a b) (Union c d) = unifypair (a, b) (c, d)
 unify Unitty Unitty = Just id
 unify Bottom Bottom = Just id
 unify _ _ = Nothing
@@ -161,12 +165,12 @@ typeinfer (x:vars) ctx (Pi2 m) b = typeinfer vars ctx m (Times (Tvar x) b)
 
 typeinfer (x:y:vars) ctx (Inl m) a = do
   sigma <- unify a (Union (Tvar x) (Tvar y))
-  tau   <- typeinfer vars (applyctx sigma ctx) m (sigma (Tvar x))
+  tau <- typeinfer vars (applyctx sigma ctx) m (sigma (Tvar x))
   return (tau . sigma)
 
 typeinfer (x:y:vars) ctx (Inr m) a = do
   sigma <- unify a (Union (Tvar x) (Tvar y))
-  tau   <- typeinfer vars (applyctx sigma ctx) m (sigma (Tvar y))
+  tau <- typeinfer vars (applyctx sigma ctx) m (sigma (Tvar y))
   return (tau . sigma)
 
 typeinfer (x:y:vars) ctx (Caseof m f g) a = do
@@ -255,7 +259,7 @@ instance Show Top where
   show (Top (Arrow a b))      = "((Ω∖" ++ showparensT (Top a) ++ ") ∪ " ++ showparensT (Top b) ++ ")ᴼ"
   show (Top (Times a b))      = showparensT (Top a) ++ " ∩ " ++ showparensT (Top b)
   show (Top (Union a b))      = showparensT (Top a) ++ " ∪ " ++ showparensT (Top b)
-  show (Top Unitty)         = "Ω"
+  show (Top Unitty)           = "Ω"
   show (Top (Bottom))         = "Ø"
 showparensT :: Top -> String
 showparensT (Top (Tvar t)) = show (Top (Tvar t))
