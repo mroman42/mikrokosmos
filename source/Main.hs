@@ -25,13 +25,12 @@ main =
   -- Uses the Options library, which requires the program to start with
   -- runCommand. The flags are stored in opts and other command line arguments
   -- are stored in args.
-  runCommand $ \opts args -> do
+  runCommand $ \opts args ->
   
   -- Reads the flags
-  case flagVersion opts of
-    True -> putStrLn versionText
-    False ->
-      case args of
+  if flagVersion opts 
+  then putStrLn versionText
+  else case args of
         [] -> runInputT defaultSettings ( outputStrLn initialText
                                           >> interpreterLoop defaultEnv
                                         )
@@ -65,11 +64,11 @@ interpreterLoop environment = do
     -- Loads a module and its dependencies given its name.
     -- Avoids repeated modules keeping only their first ocurrence.
     Load modulename -> do
-      modules <- lift $ (nub <$> readAllModuleDepsRecursively [modulename])
+      modules <- lift (nub <$> readAllModuleDepsRecursively [modulename])
       files <- lift $ mapM findFilename modules
 
       -- Concats all the module contents
-      maybeactions <- (fmap concat) . sequence <$> (lift $ mapM loadFile files)
+      maybeactions <- fmap concat . sequence <$> lift (mapM loadFile files)
       case maybeactions of
         Nothing -> do
           outputStrLn "Error loading file"
@@ -135,7 +134,7 @@ outputActions environment output = do
 loadFile :: String -> IO (Maybe [Action])
 loadFile filename = do
   putStrLn $ formatLoading ++ "Loading " ++ filename ++ "..." ++ end
-  input <- try $ (readFile filename) :: IO (Either IOException String)
+  input <- try $ readFile filename :: IO (Either IOException String)
   case input of
     Left _ -> return Nothing
     Right inputs -> do
@@ -163,7 +162,7 @@ executeFile filename = do
 -- | Reads module dependencies
 readFileDependencies :: Filename -> IO [Modulename]
 readFileDependencies filename = do
-  input <- try $ (readFile filename) :: IO (Either IOException String)
+  input <- try $ readFile filename :: IO (Either IOException String)
   case input of
     Left _ -> return []
     Right inputs -> return $
