@@ -146,13 +146,13 @@ executeFile :: Filename -> IO ()
 executeFile filename = do
   maybeloadfile <- loadFile filename
   case maybeloadfile of
-    Nothing    -> putStrLn "Error loading file"
-    Just actions -> case runState (multipleAct actions) defaultEnv of
-                      (outputs, _) -> mapM_ (putStr . format) outputs
-                      where
-                        format :: String -> String
-                        format "" = ""
-                        format s = (++"\n") . last . lines $ s
+    Nothing -> putStrLn "Error loading file"
+    Just actions ->
+      case runState (multipleAct actions) defaultEnv of
+        (outputs, _) -> mapM_ (putStr . format) outputs
+      where format :: String -> String
+            format "" = ""
+            format s = (++ "\n") . last . lines $ s
 
 
 -- | Reads module dependencies
@@ -205,7 +205,5 @@ data MainFlags = MainFlags
 instance Options MainFlags where
   -- | Flags definition
   defineOptions = pure MainFlags
-    <*> simpleOption "exec" ""
-    "A file to execute and show its results"
-    <*> simpleOption "version" False
-    "Show program version"
+    <*> simpleOption "exec"    ""    "A file to execute and show its results"
+    <*> simpleOption "version" False "Show program version"
