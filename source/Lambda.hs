@@ -46,14 +46,14 @@ showexp (Var n)        = show n
 showexp (Lambda e)     = "λ" ++ showexp e ++ ""
 showexp (App f g)      = "(" ++ showexp f ++ " " ++ showexp g ++ ")"
 showexp (Pair a b)     = "(" ++ showexp a ++ "," ++ showexp b ++ ")"
-showexp (Pi1 m)        = "(" ++ "fst " ++ showexp m ++ ")"
-showexp (Pi2 m)        = "(" ++ "snd " ++ showexp m ++ ")"
-showexp (Inl m)        = "(" ++ "inl " ++ showexp m ++ ")"
-showexp (Inr m)        = "(" ++ "inr " ++ showexp m ++ ")"
-showexp (Caseof m n p) = "(" ++ "case " ++ showexp m ++ " of " ++ showexp n ++ "; " ++ showexp p ++ ")"
+showexp (Pi1 m)        = "(" ++ "FST " ++ showexp m ++ ")"
+showexp (Pi2 m)        = "(" ++ "SND " ++ showexp m ++ ")"
+showexp (Inl m)        = "(" ++ "INL " ++ showexp m ++ ")"
+showexp (Inr m)        = "(" ++ "INR " ++ showexp m ++ ")"
+showexp (Caseof m n p) = "(" ++ "CASE " ++ showexp m ++ " OF " ++ showexp n ++ "; " ++ showexp p ++ ")"
 showexp (Unit)         = "*"
-showexp (Abort a)      = "(abort " ++ showexp a ++ ")"
-showexp (Absurd a)     = "(absurd " ++ showexp a ++ ")"
+showexp (Abort a)      = "(ABORT " ++ showexp a ++ ")"
+showexp (Absurd a)     = "(ABSURD " ++ showexp a ++ ")"
 
 -- | Shows an expression coloring the next reduction.
 showReduction :: Exp -> String
@@ -62,6 +62,7 @@ showReduction (App (Lambda f) x) = betaColor (App (Lambda f) x)
 showReduction (Var e)            = show e
 showReduction (App rs x)         = "(" ++ showReduction rs ++ " " ++ showReduction x ++ ")"
 showReduction e                  = show e
+
 
 -- | Colors a beta reduction
 betaColor :: Exp -> String
