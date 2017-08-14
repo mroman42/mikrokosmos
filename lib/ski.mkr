@@ -2,3 +2,7 @@
 S = \x.\y.\z. x z (y z)
 K = \x.\y.x
 I = S K K
+
+# Schönfinkel combinators
+C = \f.\x.\y.f y x
+B = \f.\g.\x.f (g x)

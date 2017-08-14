@@ -3,3 +3,4 @@
 #INCLUDE ski
 #INCLUDE datastructures
 #INCLUDE fixpoint
+#INCLUDE types
