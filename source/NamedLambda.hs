@@ -94,25 +94,21 @@ nameParser = many1 alphaNum
 -- | Parses a lambda abstraction. The '\' is used as lambda. 
 lambdaAbstractionParser :: Parser NamedLambda
 lambdaAbstractionParser = LambdaAbstraction <$>
-  (char lambdaChar >> nameParser) <*> (char '.' >> lambdaexp)
+  (lambdaChar >> nameParser) <*> (char '.' >> lambdaexp)
 
 -- | Char used to represent lambda in user's input.
-lambdaChar :: Char
-lambdaChar = '\\'
+lambdaChar :: Parser Char
+lambdaChar = choice [try $ char '\\', try $ char 'λ']
 
 pairParser :: Parser NamedLambda
 pairParser = parens (TypedPair <$> lambdaexp <*> (char ',' >> lambdaexp))
 
-pi1Parser :: Parser NamedLambda
+pi1Parser, pi2Parser :: Parser NamedLambda
 pi1Parser = TypedPi1 <$> (string "FST " >> lambdaexp)
-
-pi2Parser :: Parser NamedLambda
 pi2Parser = TypedPi2 <$> (string "SND " >> lambdaexp)
 
-inlParser :: Parser NamedLambda
+inlParser, inrParser :: Parser NamedLambda
 inlParser = TypedInl <$> (string "INL " >> lambdaexp)
-
-inrParser :: Parser NamedLambda
 inrParser = TypedInr <$> (string "INR " >> lambdaexp)
 
 caseParser :: Parser NamedLambda
@@ -201,7 +197,7 @@ nameIndexes used new (Inr a)        = TypedInr (nameIndexes used new a)
 nameIndexes used new (Caseof a b c) = TypedCase (nameIndexes used new a) (nameIndexes used new b) (nameIndexes used new c)
 nameIndexes _    _   (Unit)         = TypedUnit
 nameIndexes used new (Abort a)      = TypedAbort (nameIndexes used new a)
-nameIndexes used new (Absurd a)      = TypedAbsurd (nameIndexes used new a)
+nameIndexes used new (Absurd a)     = TypedAbsurd (nameIndexes used new a)
 
 
 -- | Gives names to every variable in a deBruijn expression using
