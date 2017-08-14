@@ -114,7 +114,7 @@ simplify :: Exp -> Exp
 simplify (Lambda e)           = Lambda (simplify e)
 simplify (App (Lambda f) x)   = betared (App (Lambda f) x)
 simplify (App (Var e) x)      = App (Var e) (simplify x)
-simplify (App (App f g) x)    = App (simplify (App f g)) x
+simplify (App (App f g) x)    = App (simplify (App f g)) (simplify x)
 simplify (App a b)            = App (simplify a) (simplify b)
 simplify (Var e)              = Var e
 simplify (Pair a b)           = Pair (simplify a) (simplify b)
