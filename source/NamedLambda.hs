@@ -135,7 +135,7 @@ showNamedLambda (TypedPi2 a)            = "(" ++ "SND " ++ showNamedLambda a ++ 
 showNamedLambda (TypedInl a)            = "(" ++ "INL " ++ showNamedLambda a ++ ")"
 showNamedLambda (TypedInr a)            = "(" ++ "INR " ++ showNamedLambda a ++ ")"
 showNamedLambda (TypedCase a b c)       = "(" ++ "CASE " ++ showNamedLambda a ++ " of " ++ showNamedLambda b ++ "; " ++ showNamedLambda c ++ ")"
-showNamedLambda (TypedUnit)             = "UNIT"
+showNamedLambda TypedUnit             = "UNIT"
 showNamedLambda (TypedAbort a)          = "(" ++ "ABORT " ++ showNamedLambda a ++ ")"
 showNamedLambda (TypedAbsurd a)          = "(" ++ "ABSURD " ++ showNamedLambda a ++ ")"
 
@@ -169,7 +169,7 @@ tobruijn d context (TypedPi2 a) = Pi2 (tobruijn d context a)
 tobruijn d context (TypedInl a) = Inl (tobruijn d context a)
 tobruijn d context (TypedInr a) = Inr (tobruijn d context a)
 tobruijn d context (TypedCase a b c) = Caseof (tobruijn d context a) (tobruijn d context b) (tobruijn d context c)
-tobruijn _ _       (TypedUnit) = Unit
+tobruijn _ _       TypedUnit = Unit
 tobruijn d context (TypedAbort a) = Abort (tobruijn d context a)
 tobruijn d context (TypedAbsurd a) = Absurd (tobruijn d context a)
 
@@ -195,7 +195,7 @@ nameIndexes used new (Pi2 a)        = TypedPi2 (nameIndexes used new a)
 nameIndexes used new (Inl a)        = TypedInl (nameIndexes used new a)
 nameIndexes used new (Inr a)        = TypedInr (nameIndexes used new a)
 nameIndexes used new (Caseof a b c) = TypedCase (nameIndexes used new a) (nameIndexes used new b) (nameIndexes used new c)
-nameIndexes _    _   (Unit)         = TypedUnit
+nameIndexes _    _   Unit         = TypedUnit
 nameIndexes used new (Abort a)      = TypedAbort (nameIndexes used new a)
 nameIndexes used new (Absurd a)     = TypedAbsurd (nameIndexes used new a)
 

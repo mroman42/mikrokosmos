@@ -22,6 +22,7 @@ import           Control.Applicative           ((<$>), (<*>))
 import           Control.Monad.State.Lazy      
 import           Text.ParserCombinators.Parsec hiding (State)
 import           Data.Char
+import           Data.Maybe
 import           Format
 import           Environment
 import           NamedLambda
@@ -72,10 +73,10 @@ executeExpression le = do
      env <- get
      let typed = getTypes env
      let bruijn = toBruijn (context env) le
-     let illtyped = typed && typeinference bruijn == Nothing
+     let illtyped = typed && isNothing (typeinference bruijn)
      let notypes = not typed && usestypecons bruijn
      let verbose = getVerbose env
-     let completeexp = showCompleteExp env $ simplifyAll $ bruijn
+     let completeexp = showCompleteExp env $ simplifyAll bruijn
      let isopen = isOpenExp bruijn
      
      return $
@@ -85,7 +86,7 @@ executeExpression le = do
        if not verbose then [completeexp ++ "\n"] else
          [unlines $
            [show le] ++
-           [unlines $ map showReduction $ simplifySteps $ bruijn] ++
+           [unlines $ map showReduction $ simplifySteps bruijn] ++
            [completeexp]
          ]
   
@@ -102,7 +103,7 @@ showCompleteExp :: Environment -> Exp -> String
 showCompleteExp environment expr = let
       lambdaname = show $ nameExp expr
       skiname = if getSki environment
-                 then formatSubs2 ++ " ⇒ " ++ (show $ skiabs $ nameExp expr) ++ end
+                 then formatSubs2 ++ " ⇒ " ++ show (skiabs $ nameExp expr) ++ end
                  else ""
       inferredtype = typeinference expr
       typename = if getTypes environment

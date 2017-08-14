@@ -88,6 +88,6 @@ bracketabs _ a = Comb K a
 
 -- | Checks if a given variable is used on a SKI expression.
 freein :: String -> Ski -> Bool
-freein x (Cte y)    = not (x == y)
+freein x (Cte y)    = x /= y
 freein x (Comb u v) = freein x u && freein x v
 freein _ _ = True
