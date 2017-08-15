@@ -192,6 +192,7 @@ findFilename s = do
     , "./" ++ s ++ ".mkr"
     , appdir ++ "/" ++ s ++ ".mkr"
     , homedir ++ "/" ++ s ++ ".mkr"
+    , "/usr/lib/mikrokosmos/" ++ s ++ ".mkr"
     ]
 
 
