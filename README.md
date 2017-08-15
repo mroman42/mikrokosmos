@@ -10,4 +10,5 @@ It aims to provide students with a tool to learn and understand λ-calculus. It 
 and simply typed λ-calculus.
 
  * [Mikrokosmos user's guide](https://m42.github.io/mikrokosmos/).
+ * [Mikrokosmos tutorial](https://github.com/M42/mikrokosmos/blob/master/docs/tutorial.ipynb).
  * [Mikrokosmos on Hackage](https://hackage.haskell.org/package/mikrokosmos).
