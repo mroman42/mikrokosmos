@@ -8,6 +8,7 @@ import Lambda
 import Types
 import Ski
 import Environment
+import Interpreter
 
 
 main :: IO ()
@@ -19,6 +20,7 @@ tests = testGroup "Tests"
   , typeinferTests
   , skiabsTests
   , lambdaProps
+  , parserProps
   ]
 
 -- Unit tests
@@ -53,7 +55,7 @@ typeinferTests = testGroup "Type inference tests"
     Just (Arrow (Tvar 0) (Tvar 0))
 
   , testCase "Double negation of LEM" $
-    typeinference (Lambda (Absurd ((App (Var 1) (Inr (Lambda (App (Var 2) (Inl (Var 1)))))))))
+    typeinference (Lambda (Absurd (App (Var 1) (Inr (Lambda (App (Var 2) (Inl (Var 1))))))))
     @?=
     Just (Arrow (Arrow (Union (Tvar 0) (Arrow (Tvar 0) Bottom)) Bottom) Bottom)
   ]
@@ -75,15 +77,25 @@ skiabsTests = testGroup "SKI abstraction tests"
   ]
 
 
--- Lambda properties
+
+-- Quickcheck
 lambdaProps :: TestTree
 lambdaProps = testGroup "Lambda expression properties (quickcheck)"
-  [ QC.testProperty "expression -> named -> expression" $
-      \exp -> toBruijn emptyContext (nameExp exp) == exp
-  , QC.testProperty "open expressions not allowed" $
-      \exp -> isOpenExp exp == False
+  [ QC.testProperty "Expression -> named -> expression" $
+      \expr -> toBruijn emptyContext (nameExp expr) == expr
+  , QC.testProperty "Open expressions are not allowed" $
+      \expr -> not (isOpenExp expr)
   ]
-  
+
+parserProps :: TestTree
+parserProps = testGroup "Parser properties (quickcheck)"
+  [ QC.testProperty "Comments are ignored" $
+      \str -> case parse interpreteractionParser "" ("#" ++ str) of
+                Right (Interpret Comment) -> True
+                _ -> False
+  ]
+
+
 
 -- Arbitrary untyped lambda expressions
 -- {-# LANGUAGE TypeSynonymInstances #-}
