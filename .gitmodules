@@ -3,4 +3,4 @@
 	url = https://github.com/M42/jupyter-mikrokosmos.git
 [submodule "lib"]
 	path = lib
-	url = git@github.com:M42/mikrokosmos-lib.git
+	url = https://github.com/M42/mikrokosmos-lib.git
