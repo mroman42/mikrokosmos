@@ -4,3 +4,6 @@
 [submodule "lib"]
 	path = lib
 	url = https://github.com/M42/mikrokosmos-lib.git
+[submodule "docs/tutorials"]
+	path = docs/tutorials
+	url = https://github.com/M42/mikrokosmos-tutorials.git
