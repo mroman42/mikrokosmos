@@ -1,3 +1,0 @@
-id = \x.x
-const = \x.\y.x
-compose = \f.\g.\x.f (g x)

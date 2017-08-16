@@ -1,7 +1,0 @@
-#INCLUDE basic
-#INCLUDE logic
-#INCLUDE nat
-#INCLUDE ski
-#INCLUDE datastructures
-#INCLUDE fixpoint
-#INCLUDE types
