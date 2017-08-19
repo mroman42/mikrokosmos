@@ -1,4 +1,4 @@
-#+TITLE: Mikroskosmos
+#+TITLE: Mikrokosmos
 #+SUBTITLE: User's guide (v0.5.0)
 #+SETUPFILE: html.setup
 
@@ -154,6 +154,7 @@ menu =Kernel > Change kernel > IMikrokosmos=.
 
 Multiple expressions can be evaluated in one cell. Each line will be evaluated
 separately.
+
 * The Mikrokosmos interpreter
 The interpreter acts as a REPL where commands and expressions can be evaluated.
 The following options are available both to the command line interpreter and to
@@ -314,9 +315,18 @@ on the command line interpreter.
 
 * References & interesting links
 The following are interesting links for those who want to learn more
-about lambda-calculus or how this interpreter has been built.
+about \lambda-calculus or how this interpreter has been built.
 
- - [[http://www.mscs.dal.ca/~selinger/papers/lambdanotes.pdf][Lecture notes on the lambda calculus - Peter Selinger]]
- - [[https://github.com/goldfirere/glambda][The Glambda interpreter]]
- - [[http://dev.stephendiehl.com/fun/003_lambda_calculus.html][Build you a Haskell - Stephen Diehl]]
- - [[https://www.youtube.com/playlist?list=PLxj9UAX4Em-Ij4TKwKvo-SLp-Zbv-hB4B][Haskell from Scratch - Jekor]]
+ - [[http://www.mscs.dal.ca/~selinger/papers/lambdanotes.pdf][Lecture notes on the lambda calculus - Peter Selinger]], being a series
+   of notes on the \lambda-calculus from a mathematical perspective.
+
+ - [[https://www.haskell.org/][The Haskell programming language]]. A complete, general purpose programming
+   language based on a typed \lambda-calculus. Mikrokosmos itself has been
+   written in Haskell.
+
+ - [[https://github.com/goldfirere/glambda][The Glambda interpreter]], being another \lambda-calculus interpreter
+   written in Haskell.
+
+ - [[http://dev.stephendiehl.com/fun/003_lambda_calculus.html][Build you a Haskell - Stephen Diehl]], a tutorial in how to build your
+   own \lambda-calculus interpreter in Haskell.
+
