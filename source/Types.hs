@@ -23,17 +23,13 @@ type Substitution = Type -> Type
 
 -- | A type template is a free type variable or an arrow between two
 -- types; that is, the function type.
-data Type
-  = Tvar Variable
-  | Arrow Type
-          Type
-  | Times Type
-          Type
-  | Union Type
-          Type
-  | Unitty
-  | Bottom
-  deriving (Eq)
+data Type = Tvar Variable
+          | Arrow Type Type
+          | Times Type Type
+          | Union Type Type
+          | Unitty
+          | Bottom
+          deriving (Eq)
 
 instance Show Type where
   show (Tvar t) = typevariableNames !! fromInteger t
@@ -41,7 +37,7 @@ instance Show Type where
   show (Times a b) = showparens a ++ " × " ++ showparens b
   show (Union a b) = showparens a ++ " + " ++ showparens b
   show Unitty = "⊤"
-  show (Bottom) = "⊥"
+  show Bottom = "⊥"
 
 showparens :: Type -> String
 showparens (Tvar t) = show (Tvar t)
@@ -67,21 +63,21 @@ occurs x (Tvar y)    = x == y
 occurs x (Arrow a b) = occurs x a || occurs x b
 occurs x (Times a b) = occurs x a || occurs x b
 occurs x (Union a b) = occurs x a || occurs x b
-occurs _ Unitty    = False
-occurs _ (Bottom)    = False
+occurs _ Unitty = False
+occurs _ Bottom = False
 
 -- | Unifies two types with their most general unifier. Returns the substitution
 -- that transforms any of the types into the unifier.
 unify :: Type -> Type -> Maybe Substitution
 unify (Tvar x) (Tvar y)
-  | x == y    = Just id
+  | x == y = Just id
   | otherwise = Just (subs x (Tvar y))
 unify (Tvar x) b
   | occurs x b = Nothing
-  | otherwise  = Just (subs x b)
+  | otherwise = Just (subs x b)
 unify a (Tvar y)
   | occurs y a = Nothing
-  | otherwise  = Just (subs y a)
+  | otherwise = Just (subs y a)
 unify (Arrow a b) (Arrow c d) = unifypair (a,b) (c,d)
 unify (Times a b) (Times c d) = unifypair (a,b) (c,d)
 unify (Union a b) (Union c d) = unifypair (a, b) (c, d)
@@ -260,7 +256,7 @@ instance Show Top where
   show (Top (Times a b))      = showparensT (Top a) ++ " ∩ " ++ showparensT (Top b)
   show (Top (Union a b))      = showparensT (Top a) ++ " ∪ " ++ showparensT (Top b)
   show (Top Unitty)           = "Ω"
-  show (Top (Bottom))         = "Ø"
+  show (Top Bottom)           = "Ø"
 showparensT :: Top -> String
 showparensT (Top (Tvar t)) = show (Top (Tvar t))
 showparensT (Top Unitty) = show (Top Unitty)
