@@ -45,21 +45,21 @@ showski (Comb x I) = showski x ++ showski I
 showski (Comb x (Cte c)) = showski x ++ showski (Cte c)
 showski (Comb x (Comb u v)) = showski x ++ "(" ++ showski (Comb u v) ++ ")"
 showski (Comb x a) = showski x ++ showski a
-showski (Spair) = "[PAIR]"
-showski (Spi1) = "[FST]"
-showski (Spi2) = "[SND]"
-showski (Sinl) = "[INL]"
-showski (Sinr) = "[INR]"
-showski (Scase) = "[CASEOF]"
-showski (Sunit) = "[UNIT]"
-showski (Sabort) = "[ABORT]"
-showski (Sabsurd) = "[ABSURD]"
+showski Spair = "[PAIR]"
+showski Spi1 = "[FST]"
+showski Spi2 = "[SND]"
+showski Sinl = "[INL]"
+showski Sinr = "[INR]"
+showski Scase = "[CASEOF]"
+showski Sunit = "[UNIT]"
+showski Sabort = "[ABORT]"
+showski Sabsurd = "[ABSURD]"
 
 -- | SKI abstraction of a named lambda term. From a lambda expression
 -- creates a SKI equivalent expression. The following algorithm is a
 -- version of the algorithm 9.10 on the Hindley-Seldin book.
 skiabs :: NamedLambda -> Ski
-skiabs (LambdaVariable x) = Cte x
+skiabs (LambdaVariable x)      = Cte x
 skiabs (LambdaApplication m n) = Comb (skiabs m) (skiabs n)
 skiabs (LambdaAbstraction x m) = bracketabs x (skiabs m)
 skiabs (TypedPair a b) = Comb (Comb Spair (skiabs a)) (skiabs b)
@@ -68,7 +68,7 @@ skiabs (TypedPi2 a) = Comb Spi2 (skiabs a)
 skiabs (TypedInl a) = Comb Sinl (skiabs a)
 skiabs (TypedInr a) = Comb Sinr (skiabs a)
 skiabs (TypedCase a b c) = Comb (Comb (Comb Scase (skiabs a)) (skiabs b)) (skiabs c)
-skiabs (TypedUnit) = Sunit
+skiabs TypedUnit = Sunit
 skiabs (TypedAbort a) = Comb Sabort (skiabs a)
 skiabs (TypedAbsurd a) = Comb Sabsurd (skiabs a)
 
@@ -82,9 +82,9 @@ bracketabs x (Comb u (Cte y))
   | freein x u           = Comb K (Comb u (Cte y))
   | otherwise            = Comb (Comb S (bracketabs x u)) (bracketabs x (Cte y))
 bracketabs x (Comb u v)
-  | freein x (Comb u v) = Comb K (Comb u v)
-  | otherwise           = Comb (Comb S (bracketabs x u)) (bracketabs x v)
-bracketabs _ a = Comb K a
+  | freein x (Comb u v)  = Comb K (Comb u v)
+  | otherwise            = Comb (Comb S (bracketabs x u)) (bracketabs x v)
+bracketabs _ a           = Comb K a
 
 -- | Checks if a given variable is used on a SKI expression.
 freein :: String -> Ski -> Bool
