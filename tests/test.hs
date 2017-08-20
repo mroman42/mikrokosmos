@@ -121,7 +121,7 @@ instance Arbitrary Exp where
 lambda :: Int -> Int -> Gen Exp
 lambda 0   0    = return $ Lambda (Var 1)
 lambda 0   size = Lambda <$> lambda 1 (size-1)
-lambda lim 0    = Var <$> (toInteger <$> (choose (1, lim)))
+lambda lim 0    = Var <$> (toInteger <$> choose (1, lim))
 lambda lim size = oneof
   [ Var <$> (toInteger <$> choose (1, lim))
   , Lambda <$> lambda (succ lim) (size-1)
