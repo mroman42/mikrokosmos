@@ -129,11 +129,7 @@ executeFile filename = do
     Nothing -> putStrLn "Error loading file"
     Just actions ->
       case runState (multipleAct actions) defaultEnv of
-        (outputs, _) -> mapM_ (putStr . format) outputs
-      where format :: String -> String
-            format "" = ""
-            format s = (++ "\n") . last . lines $ s
-
+        (outputs, _) -> mapM_ putStr outputs
 
 -- | Reads module dependencies
 readFileDependencies :: Filename -> IO [Modulename]
