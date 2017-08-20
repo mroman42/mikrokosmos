@@ -4,6 +4,7 @@ import           Control.Monad.Trans
 import           Control.Monad.State
 import           Control.Exception
 import           Data.List
+import           Data.Foldable (forM_)
 import           System.Directory
 import           System.Console.Haskeline
 import           Text.ParserCombinators.Parsec hiding (try)
@@ -25,12 +26,11 @@ main =
   -- Uses the Options library, which requires the program to start with
   -- runCommand. The flags are stored in opts and other command line arguments
   -- are stored in args.
-  runCommand $ \opts args
+  runCommand $ \opts args ->
   -- Reads the flags
-   ->
-    if flagVersion opts
-      then putStrLn versionText
-      else case args of
+  if flagVersion opts
+  then putStrLn versionText
+  else case args of
              [] ->
                runInputT
                  defaultSettings
@@ -52,16 +52,22 @@ interpreterLoop environment = do
             case parse interpreteractionParser "" input of
               Left _ -> Error
               Right a -> a
+
+  newenvironment <- executeAction environment interpreteraction
+  forM_ newenvironment interpreterLoop
               
-  -- Executes the parsed action, every action may affect the
-  -- context in a way, and returns the control to the interpreter.
+
+-- | Executes the parsed action, every action may affect the context
+-- in a way, and returns the control to the interpreter.
+executeAction :: Environment -> InterpreterAction -> InputT IO (Maybe Environment)
+executeAction environment interpreteraction = 
   case interpreteraction of
     -- Interprets an action
     Interpret action ->
       case runState (act action) environment of
         (output, newenv) -> do
           outputActions newenv output
-          interpreterLoop newenv
+          return $ Just newenv
     -- Loads a module and its dependencies given its name.
     -- Avoids repeated modules keeping only their first ocurrence.
     Load modulename -> do
@@ -72,20 +78,20 @@ interpreterLoop environment = do
       case maybeactions of
         Nothing -> do
           outputStrLn "Error loading file"
-          interpreterLoop environment
+          return $ Just environment
         Just actions ->
           case runState (multipleAct actions) environment of
             (output, newenv) -> do
               outputActions newenv output
-              interpreterLoop newenv
+              return $ Just newenv
     -- Ignores the empty line
-    EmptyLine -> interpreterLoop environment
+    EmptyLine -> return $ Just environment
     -- Exits the interpreter
-    Quit -> return ()
+    Quit -> return Nothing
     -- Restarts the interpreter context
-    Restart -> outputStrLn restartText >> interpreterLoop defaultEnv
+    Restart -> outputStrLn restartText >> return (Just defaultEnv)
     -- Unknown command
-    Error -> outputStrLn errorUnknownCommand >> interpreterLoop environment
+    Error -> outputStrLn errorUnknownCommand >> return (Just environment)
     -- Sets the verbose option
     SetVerbose setting -> setOption environment setting changeVerbose "verbose: "
     SetColor setting -> setOption environment setting changeColor "color mode: "
@@ -93,18 +99,19 @@ interpreterLoop environment = do
     SetTypes setting -> setOption environment setting changeTypes "types: "
     SetTopo setting -> setOption environment setting changeTopo "topo mode: "
     -- Prints the help
-    Help -> outputStr helpText >> interpreterLoop environment
+    Help -> outputStr helpText >> return (Just environment)
 
+  
 -- | Sets the given option on/off.
 setOption :: Environment -> Bool ->
              (Environment -> Bool -> Environment) ->
              String ->
-             InputT IO ()
+             InputT IO (Maybe Environment)
 setOption environment setting change message = do
   outputStrLn $
     (if getColor environment then formatFormula else "") ++
     message ++ if setting then "on" else "off" ++ end  
-  interpreterLoop (change environment setting)
+  return (Just $ change environment setting)
 
 
 -- | Outputs results from actions. Given a list of options and outputs,
