@@ -71,19 +71,30 @@ executeAction environment interpreteraction =
     -- Loads a module and its dependencies given its name.
     -- Avoids repeated modules keeping only their first ocurrence.
     Load modulename -> do
-      modules <- lift (nub <$> readAllModuleDepsRecursively [modulename])
-      files <- lift $ mapM findFilename modules
-      -- Concats all the module contents
-      maybeactions <- fmap concat . sequence <$> lift (mapM loadFile files)
-      case maybeactions of
+      readallmoduledeps <- lift $ readAllModuleDepsRecursively [modulename]
+      case readallmoduledeps of
         Nothing -> do
-          outputStrLn "Error loading file"
+          outputStrLn errorNotFoundText
           return $ Just environment
-        Just actions ->
-          case runState (multipleAct actions) environment of
-            (output, newenv) -> do
-              outputActions newenv output
-              return $ Just newenv
+        Just readallmodules -> do
+          let modules = nub readallmodules
+          files <- lift $ mapM findFilename modules
+          -- Concats all the module contents
+          case sequence files of
+            Nothing -> do
+              outputStrLn errorNotFoundText
+              return $ Just environment
+            Just allfiles -> do
+              maybeactions <- fmap concat . sequence <$> lift (mapM loadFile allfiles)
+              case maybeactions of
+                Nothing -> do
+                  outputStrLn "Error loading file"
+                  return $ Just environment
+                Just actions ->
+                  case runState (multipleAct actions) environment of
+                    (output, newenv) -> do
+                      outputActions newenv output
+                      return $ Just newenv
     -- Exits the interpreter
     Quit -> return Nothing
 
@@ -140,37 +151,44 @@ readFileDependencies filename = do
     Right inputs -> return $
       map (drop 9) (filter (isPrefixOf "#INCLUDE ") $ filter (/="") $ lines inputs)
 
--- | Reads all the dependencies from a module list
-readAllModuleDeps :: [Modulename] -> IO [Modulename]
+-- | Reads all the dependencies from a module list.
+--   Returns an error if a dependency cannot be found
+readAllModuleDeps :: [Modulename] -> IO (Maybe [Modulename])
 readAllModuleDeps modulenames = do
   files <- mapM findFilename modulenames
-  deps <- mapM readFileDependencies files
-  return $ concat deps
+  deps <- mapM (mapM readFileDependencies) files
+  return (concat <$> sequence deps)
 
--- | Read module dependencies recursively
-readAllModuleDepsRecursively :: [Modulename] -> IO [Modulename]
+-- | Read module dependencies recursively.
+--   Returns an error if a dependency cannot be found
+readAllModuleDepsRecursively :: [Modulename] -> IO (Maybe [Modulename])
 readAllModuleDepsRecursively modulenames = do
-  newmodulenames <- readAllModuleDeps modulenames
-  let allmodulenames = nub (newmodulenames ++ modulenames)
-  if modulenames == allmodulenames
-    then return modulenames
-    else readAllModuleDepsRecursively allmodulenames
+  maybenewmodulenames <- readAllModuleDeps modulenames
+  case maybenewmodulenames of
+    Nothing -> return Nothing
+    Just newmodulenames -> do
+      let allmodulenames = nub (newmodulenames ++ modulenames)
+      if modulenames == allmodulenames
+      then return (Just modulenames)
+      else readAllModuleDepsRecursively allmodulenames
 
 -- | Given a module name, returns the filename associated with it
-findFilename :: Modulename -> IO Filename
+findFilename :: Modulename -> IO (Maybe Filename)
 findFilename s = do
   appdir <- getAppUserDataDirectory "mikrokosmos"
   homedir <- getHomeDirectory
 
   -- Looks for the module in the common locations
-  head <$> filterM doesFileExist
+  headMaybe <$> filterM doesFileExist
     [ "lib/" ++ s ++ ".mkr"
     , "./" ++ s ++ ".mkr"
     , appdir ++ "/" ++ s ++ ".mkr"
     , homedir ++ "/" ++ s ++ ".mkr"
     , "/usr/lib/mikrokosmos/" ++ s ++ ".mkr"
     ]
-
+  where
+    headMaybe [] = Nothing
+    headMaybe (x:_) = Just x
 
 -- Flags
 -- | Flags datatype

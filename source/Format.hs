@@ -32,6 +32,7 @@ module Format
   , errorTypeConstructors
   , errorUndefinedText
   , errorUnknownCommand
+  , errorNotFoundText
   )
 where
 
@@ -116,6 +117,12 @@ errorUndefinedText :: String
 errorUndefinedText =
   formatError ++
   "Error: undefined terms on the lambda expression"
+  ++ end
+
+errorNotFoundText :: String
+errorNotFoundText =
+  formatError ++
+  "Error: module or dependencies cannot be found"
   ++ end
 
 restartText :: String
