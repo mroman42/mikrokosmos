@@ -22,3 +22,4 @@ docs/ltximg/*
 *.ipynb
 */.ipynb_checkpoints/*
 */_minted-userguide/*
+/tests/output.golden
