@@ -137,7 +137,7 @@ showCompleteExp environment expr =
     inferredtype = case typeinference expr of
                      Just s -> if getTopo environment then show (Top s) else show s
                      Nothing -> "Type error!"
-    typename = ifvoid typesset $ formatType ++ " :: " ++ inferredtype ++ end
+    typename = ifvoid typesset $ ifvoid coloring formatType ++ " :: " ++ inferredtype ++ end
     expName = case getExpressionName environment expr of
                 Just exname -> ifvoid coloring formatName ++ " ⇒ " ++ exname ++ end
                 Nothing -> ""
