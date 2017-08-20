@@ -1,6 +1,8 @@
 import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck as QC
+import Test.Tasty.Golden as TG
+import System.Process
 
 import Text.ParserCombinators.Parsec
 import NamedLambda
@@ -21,6 +23,7 @@ tests = testGroup "Tests"
   , skiabsTests
   , lambdaProps
   , parserProps
+  , goldenTests
   ]
 
 -- Unit tests
@@ -96,24 +99,6 @@ parserProps = testGroup "Parser properties (quickcheck)"
   ]
 
 
-
--- Arbitrary untyped lambda expressions
--- {-# LANGUAGE TypeSynonymInstances #-}
--- type UntypedExp = Exp
--- instance Arbitrary UntypedExp where
---   arbitrary = sized (untlambda 0)
-
--- untlambda :: Int -> Int -> Gen UntypedExp
--- untlambda 0   0    = return $ Lambda (Var 1)
--- untlambda 0   size = Lambda <$> untlambda 1 (size-1)
--- untlambda lim 0    = Var <$> (toInteger <$> (choose (1, lim)))
--- untlambda lim size = oneof
---   [ Var <$> (toInteger <$> choose (1, lim))
---   , Lambda <$> untlambda (succ lim) (size-1)
---   , App <$> untlambda lim (div size 2) <*> untlambda lim (div size 2)
---   ]
-
-
 -- Arbitrary typed lambda expressions
 instance Arbitrary Exp where
   arbitrary = sized (lambda 0)
@@ -141,3 +126,14 @@ lambda lim size = oneof
   , Abort <$> lambda lim (size-1)
   , Absurd <$> lambda lim (size-1)
   ]
+
+
+-- Golden test
+goldenTests :: TestTree
+goldenTests = testGroup "Golden tests (tasty-golden)"
+  [ goldenVsFile "Main golden test"
+      "tests/output.golden"
+      "tests/testing.golden"
+      ((createProcess $ shell "mikrokosmos tests/testing.mkr > tests/output.golden") >> return ())
+  ]
+
