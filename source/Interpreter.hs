@@ -101,6 +101,8 @@ executeExpression le = do
      let verbose = getVerbose env
      let completeexp = showCompleteExp env $ simplifyAll bruijn
      let isopen = isOpenExp bruijn
+     let coloring = getColor env
+     let decolorif = if coloring then id else decolor
      
      return $
        if isopen then [errorUndefinedText ++ "\n"] else
@@ -109,7 +111,7 @@ executeExpression le = do
        if not verbose then [completeexp ++ "\n"] else
          [unlines $
            [show le] ++
-           [unlines $ map showReduction $ simplifySteps bruijn] ++
+           [unlines $ map (decolorif . showReduction) $ simplifySteps bruijn] ++
            [completeexp]
          ]
   
@@ -123,25 +125,22 @@ multipleAct actions = concat <$> mapM act actions
 -- | Shows an expression and the name that is bound to the expression
 -- in the current context
 showCompleteExp :: Environment -> Exp -> String
-showCompleteExp environment expr = let
-      lambdaname = show $ nameExp expr
-      skiname = if getSki environment
-                 then formatSubs2 ++ " ⇒ " ++ show (skiabs $ nameExp expr) ++ end
-                 else ""
-      inferredtype = typeinference expr
-      typename = if getTypes environment
-                  then formatType ++ " :: " ++ (case inferredtype of
-                                                   Just s -> if getTopo environment
-                                                             then show (Top s)
-                                                             else show s
-                                                   Nothing -> "Type error!") ++ end
-                  else ""
-      expName = case getExpressionName environment expr of
-                  Nothing -> ""
-                  Just exname -> formatName ++ " ⇒ " ++ exname ++ end
-  in
-      lambdaname ++ skiname ++ expName ++ typename ++ end
-    
+showCompleteExp environment expr = 
+  lambdaname ++ skiname ++ expName ++ typename ++ end
+  where
+    coloring = getColor environment
+    ifvoid b x = if b then x else ""
+    typesset = getTypes environment
+    skiset = getSki environment
+    lambdaname = show $ nameExp expr
+    skiname = ifvoid skiset $ formatSubs2 ++ " ⇒ " ++ show (skiabs $ nameExp expr) ++ end
+    inferredtype = case typeinference expr of
+                     Just s -> if getTopo environment then show (Top s) else show s
+                     Nothing -> "Type error!"
+    typename = ifvoid typesset $ formatType ++ " :: " ++ inferredtype ++ end
+    expName = case getExpressionName environment expr of
+                Just exname -> ifvoid coloring formatName ++ " ⇒ " ++ exname ++ end
+                Nothing -> ""
 
 
 -- Parsing of interpreter command line commands.
@@ -151,11 +150,6 @@ interpreteractionParser = choice
   [ try interpretParser
   , try quitParser
   , try loadParser
-  , try verboseParser
-  , try colorParser
-  , try skiOutputParser
-  , try typesParser
-  , try topoParser
   ]
 
 -- | Parses a language action as an interpreter action.
@@ -171,6 +165,11 @@ actionParser = choice
   , try commentParser
   , try helpParser
   , try restartParser
+  , try verboseParser
+  , try colorParser
+  , try skiOutputParser
+  , try typesParser
+  , try topoParser
   ]
 
 -- | Parses a binding between a variable an its representation.
@@ -191,13 +190,12 @@ commentParser = string "#" >> many anyChar >> return Comment
 
 quitParser :: Parser InterpreterAction
 quitParser    = string ":quit" >> return Quit
-restartParser :: Parser Action
+restartParser, helpParser :: Parser Action
 restartParser = string ":restart" >> return Restart
-helpParser :: Parser Action
 helpParser    = string ":help" >> return Help
 
 -- | Parses a change in a setting
-settingParser :: (Bool -> InterpreterAction) -> String -> Parser InterpreterAction
+settingParser :: (Bool -> Action) -> String -> Parser Action
 settingParser setSetting settingname = choice
   [ try settingonParser
   , try settingoffParser
@@ -207,12 +205,12 @@ settingParser setSetting settingname = choice
     settingoffParser = string (settingname ++ " off") >> return (setSetting False)
 
 -- | Multiple setting parsers
-verboseParser, colorParser, skiOutputParser, typesParser, topoParser :: Parser InterpreterAction
-verboseParser   = settingParser (Interpret . SetVerbose) ":verbose"
-colorParser     = settingParser (Interpret . SetColor)   ":color"
-skiOutputParser = settingParser (Interpret . SetSki)     ":ski"
-typesParser     = settingParser (Interpret . SetTypes)   ":types"
-topoParser      = settingParser (Interpret . SetTopo)    ":topology"
+verboseParser, colorParser, skiOutputParser, typesParser, topoParser :: Parser Action
+verboseParser   = settingParser SetVerbose ":verbose"
+colorParser     = settingParser SetColor   ":color"
+skiOutputParser = settingParser SetSki     ":ski"
+typesParser     = settingParser SetTypes   ":types"
+topoParser      = settingParser SetTopo    ":topology"
 
 
 -- | Parses a "load-file" command.
