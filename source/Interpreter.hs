@@ -52,6 +52,7 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
             | EvalBind (String, NamedLambda) -- ^ bind a name to an expression and simplify it
             | Execute NamedLambda            -- ^ execute an expression
             | Comment                        -- ^ comment
+            
 
 
 -- | Executes a language action. Given a context and an action, returns

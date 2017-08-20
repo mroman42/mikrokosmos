@@ -52,11 +52,11 @@ interpreterLoop environment = do
             case parse interpreteractionParser "" input of
               Left _ -> Error
               Right a -> a
+              
   -- Executes the parsed action, every action may affect the
   -- context in a way, and returns the control to the interpreter.
-  case interpreteraction
+  case interpreteraction of
     -- Interprets an action
-        of
     Interpret action ->
       case runState (act action) environment of
         (output, newenv) -> do
@@ -87,15 +87,13 @@ interpreterLoop environment = do
     -- Unknown command
     Error -> outputStrLn errorUnknownCommand >> interpreterLoop environment
     -- Sets the verbose option
-    SetVerbose setting ->
-      setOption environment setting changeVerbose "verbose: "
+    SetVerbose setting -> setOption environment setting changeVerbose "verbose: "
     SetColor setting -> setOption environment setting changeColor "color mode: "
     SetSki setting -> setOption environment setting changeSkioutput "ski mode: "
     SetTypes setting -> setOption environment setting changeTypes "types: "
     SetTopo setting -> setOption environment setting changeTopo "topo mode: "
     -- Prints the help
     Help -> outputStr helpText >> interpreterLoop environment
-
 
 -- | Sets the given option on/off.
 setOption :: Environment -> Bool ->
@@ -127,7 +125,7 @@ outputActions environment output = do
 -- Loading and reading files
 -- | Loads the given filename and returns the complete list of actions.
 --   Returns Nothing if there is an error reading or parsing the file.
-loadFile :: String -> IO (Maybe [Action])
+loadFile :: Filename -> IO (Maybe [Action])
 loadFile filename = do
   putStrLn $ formatLoading ++ "Loading " ++ filename ++ "..." ++ end
   input <- try $ readFile filename :: IO (Either IOException String)
