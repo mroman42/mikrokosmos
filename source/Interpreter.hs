@@ -34,17 +34,8 @@ import           Types
 -- | Interpreter action. It can be a language action (binding and evaluation)
 -- or an interpreter specific one, such as "quit".
 data InterpreterAction = Interpret Action -- ^ Language action
-                       | EmptyLine        -- ^ Empty line, it will be ignored
-                       | Error            -- ^ Error on the interpreter
                        | Quit             -- ^ Close the interpreter
-                       | Restart          -- ^ Restarts the environment
                        | Load String      -- ^ Load the given file
-                       | SetVerbose Bool  -- ^ Changes verbosity
-                       | SetColor Bool    -- ^ Changes colors
-                       | SetSki Bool      -- ^ Changes ski output
-                       | SetTypes Bool    -- ^ Changes type configuration
-                       | SetTopo Bool
-                       | Help             -- ^ Shows help
 
 -- | Language action. The language has a number of possible valid statements;
 -- all on the following possible forms.
@@ -52,20 +43,51 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
             | EvalBind (String, NamedLambda) -- ^ bind a name to an expression and simplify it
             | Execute NamedLambda            -- ^ execute an expression
             | Comment                        -- ^ comment
-            
+            | EmptyLine                      -- ^ empty line, it will be ignored
+            | Error                          -- ^ error on the interpreter
+            | Restart                        -- ^ restarts the environment
+            | Help                           -- ^ shows help
+            | SetVerbose Bool                -- ^ changes verbosity
+            | SetColor Bool                  -- ^ changes colors
+            | SetSki Bool                    -- ^ changes ski output
+            | SetTypes Bool                  -- ^ changes type configuration
+            | SetTopo Bool
 
-
+              
 -- | Executes a language action. Given a context and an action, returns
 -- the new context after the action and a text output.
 act :: Action -> State Environment [String]
 act Comment = return [""]
-act (Bind (s,le)) =
-  do modify (\env -> addBind env s (toBruijn (context env) le))
-     return [""]
-act (EvalBind (s,le)) =
-  do modify (\env -> addBind env s (simplifyAll $ toBruijn (context env) le))
-     return [""]
+act (Bind (s,le)) = do
+  modify (\env -> addBind env s (toBruijn (context env) le))
+  return [""]
+act (EvalBind (s,le)) = do
+  modify (\env -> addBind env s (simplifyAll $ toBruijn (context env) le))
+  return [""]
 act (Execute le) = executeExpression le
+act EmptyLine = return [""]
+act Error = return [errorUnknownCommand ++ "\n"]
+act Restart = put defaultEnv >> return [restartText ++ "\n"]
+act Help = return [helpText ++ "\n"]
+act (SetVerbose setting) = setOption setting changeVerbose "verbose: "
+act (SetColor setting) = setOption setting changeColor "color mode: "
+act (SetSki setting) = setOption setting changeSkioutput "ski mode: "
+act (SetTypes setting) = setOption setting changeTypes "types: "
+act (SetTopo setting) = setOption setting changeTopo "topology: "
+
+
+-- | Sets the given option on/off.
+setOption :: Bool ->
+             (Environment -> Bool -> Environment) ->
+             String ->
+             State Environment [String]
+setOption setting change message = do
+  modify (`change` setting)
+  env <- get
+  return [messageenv env ++ "\n"]
+    where messageenv env =
+            (if getColor env then formatFormula else "") ++ message ++
+            (if setting then "on" else "off") ++ end
 
 -- | Executes a lambda expression. Given the context, returns the new
 -- context after the evaluation.
@@ -128,14 +150,12 @@ interpreteractionParser :: Parser InterpreterAction
 interpreteractionParser = choice
   [ try interpretParser
   , try quitParser
-  , try restartParser
   , try loadParser
   , try verboseParser
   , try colorParser
   , try skiOutputParser
   , try typesParser
   , try topoParser
-  , try helpParser
   ]
 
 -- | Parses a language action as an interpreter action.
@@ -149,6 +169,8 @@ actionParser = choice
   , try evalbindParser
   , try executeParser
   , try commentParser
+  , try helpParser
+  , try restartParser
   ]
 
 -- | Parses a binding between a variable an its representation.
@@ -167,10 +189,11 @@ executeParser = Execute <$> lambdaexp
 commentParser :: Parser Action
 commentParser = string "#" >> many anyChar >> return Comment
 
--- | Parses a "quit" command.
-quitParser, restartParser, helpParser :: Parser InterpreterAction
+quitParser :: Parser InterpreterAction
 quitParser    = string ":quit" >> return Quit
+restartParser :: Parser Action
 restartParser = string ":restart" >> return Restart
+helpParser :: Parser Action
 helpParser    = string ":help" >> return Help
 
 -- | Parses a change in a setting
@@ -185,11 +208,11 @@ settingParser setSetting settingname = choice
 
 -- | Multiple setting parsers
 verboseParser, colorParser, skiOutputParser, typesParser, topoParser :: Parser InterpreterAction
-verboseParser   = settingParser SetVerbose ":verbose"
-colorParser     = settingParser SetColor   ":color"
-skiOutputParser = settingParser SetSki     ":ski"
-typesParser     = settingParser SetTypes   ":types"
-topoParser      = settingParser SetTopo    ":topology"
+verboseParser   = settingParser (Interpret . SetVerbose) ":verbose"
+colorParser     = settingParser (Interpret . SetColor)   ":color"
+skiOutputParser = settingParser (Interpret . SetSki)     ":ski"
+typesParser     = settingParser (Interpret . SetTypes)   ":types"
+topoParser      = settingParser (Interpret . SetTopo)    ":topology"
 
 
 -- | Parses a "load-file" command.
