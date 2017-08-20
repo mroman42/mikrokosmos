@@ -47,10 +47,10 @@ interpreterLoop environment = do
   let interpreteraction =
         case minput of
           Nothing -> Quit
-          Just "" -> EmptyLine
+          Just "" -> Interpret EmptyLine
           Just input ->
             case parse interpreteractionParser "" input of
-              Left _ -> Error
+              Left _ -> Interpret Error
               Right a -> a
 
   newenvironment <- executeAction environment interpreteraction
@@ -84,34 +84,9 @@ executeAction environment interpreteraction =
             (output, newenv) -> do
               outputActions newenv output
               return $ Just newenv
-    -- Ignores the empty line
-    EmptyLine -> return $ Just environment
     -- Exits the interpreter
     Quit -> return Nothing
-    -- Restarts the interpreter context
-    Restart -> outputStrLn restartText >> return (Just defaultEnv)
-    -- Unknown command
-    Error -> outputStrLn errorUnknownCommand >> return (Just environment)
-    -- Sets the verbose option
-    SetVerbose setting -> setOption environment setting changeVerbose "verbose: "
-    SetColor setting -> setOption environment setting changeColor "color mode: "
-    SetSki setting -> setOption environment setting changeSkioutput "ski mode: "
-    SetTypes setting -> setOption environment setting changeTypes "types: "
-    SetTopo setting -> setOption environment setting changeTopo "topo mode: "
-    -- Prints the help
-    Help -> outputStr helpText >> return (Just environment)
 
-  
--- | Sets the given option on/off.
-setOption :: Environment -> Bool ->
-             (Environment -> Bool -> Environment) ->
-             String ->
-             InputT IO (Maybe Environment)
-setOption environment setting change message = do
-  outputStrLn $
-    (if getColor environment then formatFormula else "") ++
-    message ++ if setting then "on" else "off" ++ end  
-  return (Just $ change environment setting)
 
 
 -- | Outputs results from actions. Given a list of options and outputs,
