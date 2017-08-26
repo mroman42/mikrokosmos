@@ -89,7 +89,7 @@ indexColor _ e = show e
 -- Reductions of lambda expressions.
 
 -- | Applies repeated simplification to the expression until it stabilizes and
--- returns the final simplified expression.
+--   returns the final simplified expression.
 --
 -- >>> simplifyAll $ App (Lambda (Var 1)) (Lambda (Var 1))
 -- λ1
