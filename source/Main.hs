@@ -47,10 +47,10 @@ interpreterLoop environment = do
   let interpreteraction =
         case minput of
           Nothing -> Quit
-          Just "" -> EmptyLine
+          Just "" -> Interpret EmptyLine
           Just input ->
             case parse interpreteractionParser "" input of
-              Left _ -> Error
+              Left _ -> Interpret Error
               Right a -> a
 
   newenvironment <- executeAction environment interpreteraction
@@ -71,47 +71,33 @@ executeAction environment interpreteraction =
     -- Loads a module and its dependencies given its name.
     -- Avoids repeated modules keeping only their first ocurrence.
     Load modulename -> do
-      modules <- lift (nub <$> readAllModuleDepsRecursively [modulename])
-      files <- lift $ mapM findFilename modules
-      -- Concats all the module contents
-      maybeactions <- fmap concat . sequence <$> lift (mapM loadFile files)
-      case maybeactions of
+      readallmoduledeps <- lift $ readAllModuleDepsRecursively [modulename]
+      case readallmoduledeps of
         Nothing -> do
-          outputStrLn "Error loading file"
+          outputStrLn errorNotFoundText
           return $ Just environment
-        Just actions ->
-          case runState (multipleAct actions) environment of
-            (output, newenv) -> do
-              outputActions newenv output
-              return $ Just newenv
-    -- Ignores the empty line
-    EmptyLine -> return $ Just environment
+        Just readallmodules -> do
+          let modules = nub readallmodules
+          files <- lift $ mapM findFilename modules
+          -- Concats all the module contents
+          case sequence files of
+            Nothing -> do
+              outputStrLn errorNotFoundText
+              return $ Just environment
+            Just allfiles -> do
+              maybeactions <- fmap concat . sequence <$> lift (mapM loadFile allfiles)
+              case maybeactions of
+                Nothing -> do
+                  outputStrLn "Error loading file"
+                  return $ Just environment
+                Just actions ->
+                  case runState (multipleAct actions) environment of
+                    (output, newenv) -> do
+                      outputActions newenv output
+                      return $ Just newenv
     -- Exits the interpreter
     Quit -> return Nothing
-    -- Restarts the interpreter context
-    Restart -> outputStrLn restartText >> return (Just defaultEnv)
-    -- Unknown command
-    Error -> outputStrLn errorUnknownCommand >> return (Just environment)
-    -- Sets the verbose option
-    SetVerbose setting -> setOption environment setting changeVerbose "verbose: "
-    SetColor setting -> setOption environment setting changeColor "color mode: "
-    SetSki setting -> setOption environment setting changeSkioutput "ski mode: "
-    SetTypes setting -> setOption environment setting changeTypes "types: "
-    SetTopo setting -> setOption environment setting changeTopo "topo mode: "
-    -- Prints the help
-    Help -> outputStr helpText >> return (Just environment)
 
-  
--- | Sets the given option on/off.
-setOption :: Environment -> Bool ->
-             (Environment -> Bool -> Environment) ->
-             String ->
-             InputT IO (Maybe Environment)
-setOption environment setting change message = do
-  outputStrLn $
-    (if getColor environment then formatFormula else "") ++
-    message ++ if setting then "on" else "off" ++ end  
-  return (Just $ change environment setting)
 
 
 -- | Outputs results from actions. Given a list of options and outputs,
@@ -154,11 +140,7 @@ executeFile filename = do
     Nothing -> putStrLn "Error loading file"
     Just actions ->
       case runState (multipleAct actions) defaultEnv of
-        (outputs, _) -> mapM_ (putStr . format) outputs
-      where format :: String -> String
-            format "" = ""
-            format s = (++ "\n") . last . lines $ s
-
+        (outputs, _) -> mapM_ putStr outputs
 
 -- | Reads module dependencies
 readFileDependencies :: Filename -> IO [Modulename]
@@ -169,37 +151,44 @@ readFileDependencies filename = do
     Right inputs -> return $
       map (drop 9) (filter (isPrefixOf "#INCLUDE ") $ filter (/="") $ lines inputs)
 
--- | Reads all the dependencies from a module list
-readAllModuleDeps :: [Modulename] -> IO [Modulename]
+-- | Reads all the dependencies from a module list.
+--   Returns an error if a dependency cannot be found
+readAllModuleDeps :: [Modulename] -> IO (Maybe [Modulename])
 readAllModuleDeps modulenames = do
   files <- mapM findFilename modulenames
-  deps <- mapM readFileDependencies files
-  return $ concat deps
+  deps <- mapM (mapM readFileDependencies) files
+  return (concat <$> sequence deps)
 
--- | Read module dependencies recursively
-readAllModuleDepsRecursively :: [Modulename] -> IO [Modulename]
+-- | Read module dependencies recursively.
+--   Returns an error if a dependency cannot be found
+readAllModuleDepsRecursively :: [Modulename] -> IO (Maybe [Modulename])
 readAllModuleDepsRecursively modulenames = do
-  newmodulenames <- readAllModuleDeps modulenames
-  let allmodulenames = nub (newmodulenames ++ modulenames)
-  if modulenames == allmodulenames
-    then return modulenames
-    else readAllModuleDepsRecursively allmodulenames
+  maybenewmodulenames <- readAllModuleDeps modulenames
+  case maybenewmodulenames of
+    Nothing -> return Nothing
+    Just newmodulenames -> do
+      let allmodulenames = nub (newmodulenames ++ modulenames)
+      if modulenames == allmodulenames
+      then return (Just modulenames)
+      else readAllModuleDepsRecursively allmodulenames
 
 -- | Given a module name, returns the filename associated with it
-findFilename :: Modulename -> IO Filename
+findFilename :: Modulename -> IO (Maybe Filename)
 findFilename s = do
   appdir <- getAppUserDataDirectory "mikrokosmos"
   homedir <- getHomeDirectory
 
   -- Looks for the module in the common locations
-  head <$> filterM doesFileExist
+  headMaybe <$> filterM doesFileExist
     [ "lib/" ++ s ++ ".mkr"
     , "./" ++ s ++ ".mkr"
     , appdir ++ "/" ++ s ++ ".mkr"
     , homedir ++ "/" ++ s ++ ".mkr"
     , "/usr/lib/mikrokosmos/" ++ s ++ ".mkr"
     ]
-
+  where
+    headMaybe [] = Nothing
+    headMaybe (x:_) = Just x
 
 -- Flags
 -- | Flags datatype
