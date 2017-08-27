@@ -61,6 +61,7 @@ test-suite test
                   source
   main-is:
     test.hs
+    
   build-depends: base >=4.7 && <5,
                  mtl >=2.2,
                  containers >= 0.5,
@@ -76,6 +77,7 @@ test-suite test
                  tasty-quickcheck,
                  directory >= 1.0,
                  process
+                 
   other-modules: Format
                  Lambda
                  NamedLambda
