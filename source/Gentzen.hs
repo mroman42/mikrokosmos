@@ -75,7 +75,7 @@ matrixProofTree (Inference x)      = textMatrix x
 matrixProofTree (Deduction x l xs) = deductionMatrix (textMatrix x) l (map matrixProofTree xs)
 
 showProofTree :: ProofTree String String -> String
-showProofTree = showMatrixChar . map ("@ " ++) . matrixProofTree
+showProofTree = showMatrixChar . map ("   " ++) . matrixProofTree
 
 
 data Label = Lponens | Labs | Lpair | Lpi1 | Lpi2 | Linr | Linl | Lcase | Lunit | Labort | Labsurd

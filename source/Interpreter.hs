@@ -101,7 +101,7 @@ drawDiagram le = do
   return $
     case maybediagram of
       Nothing -> [errorNonTypeableText ++ "\n"]
-      Just diagram -> lines $ showProofTree diagram
+      Just diagram -> map (++ "\n") . lines $ showProofTree diagram
   
 -- | Executes a lambda expression. Given the context, returns the new
 -- context after the evaluation.
