@@ -15,6 +15,8 @@ module NamedLambda
   , lambdaexp
   , toBruijn
   , nameExp
+  , quicknameIndexes
+  , variableNames
   )
 where
 
@@ -201,19 +203,19 @@ nameIndexes used new (Absurd a)     = TypedAbsurd (nameIndexes used new a)
 
 
 quicknameIndexes :: Int -> [String] -> Exp -> NamedLambda
-quicknameIndexes n _   (Var 0)        = LambdaVariable "undefined"
-quicknameIndexes n _   (Var n)        = LambdaVariable (new !! pred (fromInteger n))
-quicknameIndexes n new (Lambda e)     = LambdaAbstraction (head new) (quicknameIndexes (head new:n) (tail new) e)
-quicknameIndexes n new (App f g)      = LambdaApplication (quicknameIndexes n new f) (quicknameIndexes n new g)
-quicknameIndexes n new (Pair a b)     = TypedPair (quicknameIndexes n new a) (quicknameIndexes n new b)
-quicknameIndexes n new (Pi1 a)        = TypedPi1 (quicknameIndexes n new a)
-quicknameIndexes n new (Pi2 a)        = TypedPi2 (quicknameIndexes n new a)
-quicknameIndexes n new (Inl a)        = TypedInl (quicknameIndexes n new a)
-quicknameIndexes n new (Inr a)        = TypedInr (quicknameIndexes n new a)
-quicknameIndexes n new (Caseof a b c) = TypedCase (quicknameIndexes n new a) (quicknameIndexes n new b) (quicknameIndexes n new c)
-quicknameIndexes _ _   Unit           = TypedUnit
-quicknameIndexes n new (Abort a)      = TypedAbort (quicknameIndexes n new a)
-quicknameIndexes n new (Absurd a)     = TypedAbsurd (quicknameIndexes n new a)
+quicknameIndexes _ _  (Var 0)          = LambdaVariable "undefined"
+quicknameIndexes n vars   (Var m)      = LambdaVariable (vars !! (n - fromInteger m))
+quicknameIndexes n vars (Lambda e)     = LambdaAbstraction (vars !! n) (quicknameIndexes (succ n) vars e)
+quicknameIndexes n vars (App f g)      = LambdaApplication (quicknameIndexes n vars f) (quicknameIndexes n vars g)
+quicknameIndexes n vars (Pair a b)     = TypedPair (quicknameIndexes n vars a) (quicknameIndexes n vars b)
+quicknameIndexes n vars (Pi1 a)        = TypedPi1 (quicknameIndexes n vars a)
+quicknameIndexes n vars (Pi2 a)        = TypedPi2 (quicknameIndexes n vars a)
+quicknameIndexes n vars (Inl a)        = TypedInl (quicknameIndexes n vars a)
+quicknameIndexes n vars (Inr a)        = TypedInr (quicknameIndexes n vars a)
+quicknameIndexes n vars (Caseof a b c) = TypedCase (quicknameIndexes n vars a) (quicknameIndexes n vars b) (quicknameIndexes n vars c)
+quicknameIndexes _ _   Unit            = TypedUnit
+quicknameIndexes n vars (Abort a)      = TypedAbort (quicknameIndexes n vars a)
+quicknameIndexes n vars (Absurd a)     = TypedAbsurd (quicknameIndexes n vars a)
 
 
 -- | Gives names to every variable in a deBruijn expression using
