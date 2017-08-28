@@ -1,7 +1,16 @@
 module Types
   ( Type (Tvar, Arrow, Times, Union, Unitty, Bottom)
   , typeinference
+  , unify
+  , applyctx
+  , emptyctx
+  , incrementindices
+  , variables
+  , normalizeTemplate
   , Top (Top)
+  , Context
+  , Variable
+  , Substitution
   )
 where
 

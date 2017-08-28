@@ -195,9 +195,25 @@ nameIndexes used new (Pi2 a)        = TypedPi2 (nameIndexes used new a)
 nameIndexes used new (Inl a)        = TypedInl (nameIndexes used new a)
 nameIndexes used new (Inr a)        = TypedInr (nameIndexes used new a)
 nameIndexes used new (Caseof a b c) = TypedCase (nameIndexes used new a) (nameIndexes used new b) (nameIndexes used new c)
-nameIndexes _    _   Unit         = TypedUnit
+nameIndexes _    _   Unit           = TypedUnit
 nameIndexes used new (Abort a)      = TypedAbort (nameIndexes used new a)
 nameIndexes used new (Absurd a)     = TypedAbsurd (nameIndexes used new a)
+
+
+quicknameIndexes :: Int -> [String] -> Exp -> NamedLambda
+quicknameIndexes n _   (Var 0)        = LambdaVariable "undefined"
+quicknameIndexes n _   (Var n)        = LambdaVariable (new !! pred (fromInteger n))
+quicknameIndexes n new (Lambda e)     = LambdaAbstraction (head new) (quicknameIndexes (head new:n) (tail new) e)
+quicknameIndexes n new (App f g)      = LambdaApplication (quicknameIndexes n new f) (quicknameIndexes n new g)
+quicknameIndexes n new (Pair a b)     = TypedPair (quicknameIndexes n new a) (quicknameIndexes n new b)
+quicknameIndexes n new (Pi1 a)        = TypedPi1 (quicknameIndexes n new a)
+quicknameIndexes n new (Pi2 a)        = TypedPi2 (quicknameIndexes n new a)
+quicknameIndexes n new (Inl a)        = TypedInl (quicknameIndexes n new a)
+quicknameIndexes n new (Inr a)        = TypedInr (quicknameIndexes n new a)
+quicknameIndexes n new (Caseof a b c) = TypedCase (quicknameIndexes n new a) (quicknameIndexes n new b) (quicknameIndexes n new c)
+quicknameIndexes _ _   Unit           = TypedUnit
+quicknameIndexes n new (Abort a)      = TypedAbort (quicknameIndexes n new a)
+quicknameIndexes n new (Absurd a)     = TypedAbsurd (quicknameIndexes n new a)
 
 
 -- | Gives names to every variable in a deBruijn expression using
