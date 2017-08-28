@@ -1,12 +1,14 @@
 module Types
   ( Type (Tvar, Arrow, Times, Union, Unitty, Bottom)
   , typeinference
+  , typeinfer
   , unify
   , applyctx
   , emptyctx
   , incrementindices
   , variables
   , normalizeTemplate
+  , applynormalization
   , Top (Top)
   , Context
   , Variable
