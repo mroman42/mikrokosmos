@@ -1,4 +1,7 @@
 module Gentzen
+  ( gentzendiagram
+  , showProofTree
+  )
 where
 
 import Types
