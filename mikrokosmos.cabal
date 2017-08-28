@@ -1,5 +1,5 @@
 name:                mikrokosmos
-version:             0.6.0
+version:             0.7.0
 synopsis:            Lambda calculus interpreter
 description:         A didactic untyped lambda calculus interpreter.
 homepage:            https://github.com/M42/mikrokosmos
