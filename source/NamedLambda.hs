@@ -177,10 +177,10 @@ namesInr :: [String]
 namesInr = ["ιnr ", "INR "]
 
 namesCase :: [String]
-namesCase = ["CASE ", "Case "]
+namesCase = ["CASE ", "Case ", "ᴄᴀsᴇ "]
 
 namesOf :: [String]
-namesOf = [" OF ", " Of "]
+namesOf = [" OF ", " Of ", " ᴏꜰ "]
 
 namesCaseSep :: [String]
 namesCaseSep = ["; ", ";"]
