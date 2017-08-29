@@ -5,18 +5,19 @@
 #+SETUPFILE: html.setup
 
 * The \lambda-calculus
-** The \lambda-calculus
-The [[https://en.wikipedia.org/wiki/Lambda_calculus][*λ-calculus*]] (or *lambda calculus*) is a logical formal system
-which is also a model of computation (like Turing machines). It was
-introduced in the 1930s by Alonzo Church, who was looking for a formal
-system able to express the notion of computability. It is
-Turing-complete, that is, it has the property that every computable
-function can be written on λ-calculus.
+** The untyped \lambda-calculus
+The untyped [[https://en.wikipedia.org/wiki/Lambda_calculus][*λ-calculus*]] (or simply, *\lambda calculus*) is a logical formal system
+which is also a model of computation (like the [[https://en.wikipedia.org/wiki/Turing_machine][Turing machines]], for
+example). It was introduced in the 1930s by [[https://en.wikipedia.org/wiki/Alonzo_Church][Alonzo Church]], who was
+looking for a formal system able to express the notion of
+computability. It is [[https://en.wikipedia.org/wiki/Turing_completeness][Turing-complete]], that is, it has the property
+that every computable function, every function you could write in any
+other programming language, can be written on the untyped λ-calculus.
 
-Its syntax is very simple; any expression is either:
+Its [[https://en.wikipedia.org/wiki/Lambda_calculus_definition#Standard_definition][syntax]] is very simple; any expression is either:
 
-  - a *variable*, which could have appeared before on the lambda 
-    abstraction;
+  - a *variable*, $x,y,z,\dots$ which could have appeared before on
+    the lambda abstraction;
     
   - a *lambda abstraction* $\lambda x. -$, which can be interpreted 
     as a function taking $x$ as an argument and returning what is
@@ -46,10 +47,23 @@ chapters.
   * [[https://www.youtube.com/watch?v=eis11j_iGMs][Lambda Calculus - Computerphile]]
 
 ** A first example
+On this tutorial we will use a didactic \lambda-calculus interpreter,
+[[https://github.com/M42/mikrokosmos][Mikroskosmos]]; which can be used directly from the browser. Every time
+you find a Mikrokosmos code snippet like the following, you can execute
+it by pressing *evaluate*.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+id = \x.x
+id id</script>
+</div>
+#+END_EXPORT
+
 In Mikrokosmos, it is possible to use the backslash character as a λ
 to make the input easier. If you happen to have a greek keyboard
 configured, however, feel free to write "λ"! Mikrokosmos accepts both
-sintaxes. For example, the nested expression $\lambda x.(\lambda y.x)$
+sintaxes. For instance, the nested expression $\lambda x.(\lambda y.x)$
 can be written as =\x.(\y.x)=.
 
 Our first example defines a very simple lambda term, the 
@@ -60,8 +74,10 @@ this tutorial that it is perfectly possible to apply functions to
 other functions or to themselves; in fact, this is one of the core
 ideas of lambda calculus.
 
-In the previous example, the evaluation has followed this
-chain of \beta-reductions
+In its output, Mikrokosmos shows the evaluated term and possible names
+for it. We will learn what those names mean later. In the previous
+example, the evaluation of =id id= to =id= has followed this chain of
+\beta-reductions and equivalences
 
 \[ 
 id\ id \longrightarrow (\lambda x.x)(\lambda x'.x') \longrightarrow (\lambda x'.x') \longrightarrow  id.
@@ -107,11 +123,12 @@ idea, previously discovered by Schönfinkel and Frege.
 
 This is why we can see every function with two arguments as a function
 taking only one argument and returning again a function taking the
-second one. For example, the =(const id)= function is a function that
-takes only one argument, discards it, and outputs =id=.
+second one. For example, the =discard = const id= function is a function that
+takes only one argument, discards it, and outputs =id=. This is called
+a *partial application* of a function.
 
 A more useful example of function taking functions as arguments is the
-function **composition**, which takes two functions and returns a new
+*function composition*, which takes two functions and returns a new
 one created by applying the two sequentially. This corresponds to the
 usual mathematical function composition $f \circ g$.
 
@@ -120,9 +137,9 @@ usual mathematical function composition $f \circ g$.
 <script type="text/mikrokosmos">
 # Comments can be inserted starting a line with the # character
 # A constant function
-alwaysid = const id
-alwaysid id
-alwaysid const
+discard = const id
+discard id
+discard const
 
 # Function composition
 compose = \f.\g.\x.f (g x)
@@ -130,7 +147,7 @@ compose id id</script>
 </div>
 #+END_EXPORT
 
-** An exercise
+** Exercises
 *Exercise 1.1:* Think what should be the result of evaluating the
 following expressions and then check it with the interpreter.
 
@@ -141,7 +158,23 @@ following expressions and then check it with the interpreter.
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
-# -- Your solution goes here</script>
+# -- Your solution goes here
+# Feel free to play with the interpreter!</script>
+</div>
+#+END_EXPORT
+
+*Exercise 1.2:* Write
+
+ * function application, a function taking a function $f$ and a term
+   $x$ as arguments and returning $f(x)$.
+
+ * swapping of arguments, a function that takes a function
+   $f$ and returns a $g$ such that $g(x,y) = g\ x\ y = f\ y\ x = f(y,x)$.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solutions go here</script>
 </div>
 #+END_EXPORT
 
@@ -187,7 +220,7 @@ Here, a truth value is a function on two elements that chooses one of them.
  - $\mathtt{false}\ a\ b = b$
 
 This is called the *Church encoding* of the booleans, as it was
-firstly used by Alonzo Church. This idea of defining a type based not
+used by Alonzo Church for the first time. This idea of defining a type based not
 on its content but on how it can be used will appear later, when we
 define more complex data structures.
 
@@ -504,7 +537,7 @@ a function that can be applied to a pair of numbers $n$ times and in
 such a way that the first application renders $1,0$, and any
 subsequent application acts as a successor on both numbers. We finally
 take only the second one. A detailed derivation of this function can
-be found [[https://en.wikipedia.org/wiki/Church_encoding#Derivation_of_predecessor_function][here]].
+be found [[https://en.wikipedia.org/wiki/Church_encoding#Derivation_of_predecessor_function][here]]; but we will also study it in the *Exercise 3.5*.
 
 *Exercise 3.4:* Use the predecessor function to define the =minus=
 function. It should return the difference between two numbers. It
@@ -515,6 +548,32 @@ second.
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
 # -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+*Exercise 3.5:* Let's look again at the definition of =pred=,
+the core of the definition is this subexpression =\g.(\h.h (g f))=,
+which we will call =inc f=. It is a sort of reversed composition.
+Study what happens when we compose =inc f= with itself and reimplement
+pred using =inc=.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Definition of inc, depending on f
+inc = \f.\g.\h.h (g f)
+
+# Study step-by-step the result of these compositions
+\f.compose (inc f) (inc f)
+\f.compose (compose (inc f) (inc f)) (inc f)
+ 
+# What will happen in these cases?
+\f.3 (inc f)
+\f.4 (inc f)
+\f.5 (inc f)
+
+# Implement pred using inc
+# pred = -- Your solution goes here</script>
 </div>
 #+END_EXPORT
 
@@ -606,9 +665,9 @@ with the general rule.
 Schönfinkel and Church defined different but equivalent sets of
 combinators. Some of the other classical combinators are
 
-  * function application, `C`;
-  * function composition, `B`;
-  * and duplication of an argument, `W`;
+  * function application, =C=;
+  * function composition, =B=;
+  * and duplication of an argument, =W=;
   
 and they are defined as
 
@@ -627,15 +686,16 @@ C S K S</script>
 
 The [[https://en.wikipedia.org/wiki/Fixed-point_combinator#Fixed_point_combinators_in_lambda_calculus][Y combinator]] is related to recursion and we will discuss it on
 future chapters.
+
 * Data structures
-** Pairs
-Pairs are easily defined from the boolean logic. The main idea will be
-that, to apply a pair to a function will be the same thing that to
-apply the function to its two components.
+** Tuples
+Tuples are easily defined from the boolean logic. The main idea will be
+that the application of tuple to a function will result on the
+application of the function to its two components.
 
-\[ \mathtt{pair}(a,b)(f) \equiv f\ a\ b \]
+\[ \mathtt{tuple}(a,b)(f) \equiv f\ a\ b \]
 
-With this idea, pairs and their two projections are defined as
+With this idea, tuples and their two projections are defined as
 follows.
 
 #+BEGIN_EXPORT HTML
@@ -655,9 +715,10 @@ second (tuple 2 3)
 </div>
 #+END_EXPORT
 
-We use =true= and =false= to select the first or the second argument
-to the function; it is possible to use the same idea to apply other
-functions.
+As seen in the example, we use =true= and =false= to select the first
+or the second argument to the function. It is possible to use the same
+idea to apply other functions.
+
 ** Lists I: nil and cons
 Data structures such as lists or binary trees can be represented using
 the same principle we used to build naturals and booleans. We would
@@ -767,11 +828,14 @@ sum (map (mult 0) (cons 1 (cons 2 (cons 3 nil))))</script>
   - doubling the value of each number on a list.
   - negating each value of a list of booleans.
 
+/Hint: you don't need to use lambda abstractions on these/
+/definitions./
+
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
 # -- Your solution goes here
-# doublelist = 
+# doublelist =
 # negate =</script>
 </div>
 #+END_EXPORT
@@ -826,18 +890,37 @@ node = \x.\l.\r.\f.\n.(f x (l f n) (r f n))
 # Example on natural numbers
 mytree    = node 4 (node 2 nil nil) (node 3 nil nil)
 triplesum = \a.\b.\c.plus (plus a b) c
-mytree triplesum 0
-</script>
+mytree triplesum 0</script>
 </div>
 #+END_EXPORT
+
 * Recursion
 ** Fixpoints
-We can use and define fixpoint operators in order to define recursive
-functions. The problem they have is that they can not be evaluated
-without arguments into a closed form, so we have to delay the
-evaluation of the expression when we bind it. To do this, we use the
-=!== operator, which binds an expression to a variable *without*
-simplifying it.
+A fixpoint combinator is a higher-order function that, given
+a function $f$, solves the equation
+
+\[
+x = f\ x
+\]
+
+for $x$, meaning that, if $\mathtt{fix}\ f$ is the fixpoint of $f$, the following
+sequence of equations holds
+
+\[
+\mathtt{fix}\ f =
+f (\mathtt{fix}\ f) =
+f ( f (\mathtt{fix}\ f)) =
+f ( f ( f (\mathtt{fix}\ f))) =
+\dots
+\]
+
+The first surprising fact is that such a combinator actually exists.
+In the following example, we define the =fix= combinator; which we
+will use later to define recursive functions. The problem it has is
+that it cannot be evaluated without arguments into a closed form, so
+we have to delay the evaluation of the expression when we bind it. To
+do this, we use the Mikrokosmos =!== operator, which binds an
+expression to a variable *without* simplifying it first.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -905,7 +988,7 @@ appears twice in the body of the function, it will be evaluated twice!
 but it prevent some expressions taking from entering an inifinite
 loop.
 
-For example, =fix= is a non-terminating term (it *diverges*); but if
+For instance, =fix= is a non-terminating term (it *diverges*); but if
 it is used inside an =ifelse= statement, it will be not evaluated at
 all.
 
@@ -972,15 +1055,14 @@ The rules of lambda calculus are similar to the rules of the
 intuitionistic propositional logic; this means that a type will be
 inhabited if and only if the type, reading arrows as logical
 implications, is a tautology of propositional logic.
-
-The axioms of intuistic propositional logic are
+That is, the axioms of intuistic propositional logic are
 
   * every expression implies itself, =A -> A=.
   * we can discard any assumption to arrive at a conclusion =A -> B -> A=.
   * an assumption can be used multiple times to arrive at intermediate
     conclusions, =(A -> B -> C) -> (A -> B) -> A -> C=.
   
-Those are precisely the types of the SKI combinators. As any lambda
+And these are precisely the types of the SKI combinators. As any lambda
 expression can be written in terms of these combinators, every lambda
 expression of a type is actually a *proof* of the proposition the
 type represents.
@@ -988,8 +1070,8 @@ type represents.
 We can define some logical connectives using only the implication. For
 example, the negation of a proposition $A$ would be a function taking
 $A$ and returning any given type. As we discussed earlier, this should
-be impossible, so the existence of a function `T -> B` where `B` is a
-free variable should be a proof of the type `T` not being inhabited.
+be impossible, so the existence of a function =T -> B= where =B= is a
+free variable should be a proof of the type =T= not being inhabited.
 
 For example, we can write a proof of the *modus ponens* by presenting
 an inhabitant of the type $A \to (A \to B) \to B$, where A and B are
@@ -1008,35 +1090,38 @@ S
 \a.\b.b a</script>
 </div>
 #+END_EXPORT
+
 ** Products, unions and logic
-Mikrokosmos supports product, union, unit and void types. They
-can be used with the following typed constructors
+Mikrokosmos supports *product*, *union*, *unit* and *void* types.
 
-|-------------+-----------------------------------|
-| Constructor | Type                              |
-|-------------+-----------------------------------|
-| =(-,-)=     | =A → B → A × B=                   |
-| =fst=       | =(A × B) → A=                     |
-| =snd=       | =(A × B) → B=                     |
-| =inl=       | =A → A + B=                       |
-| =inr=       | =B → A + B=                       |
-| =unit=      | =⊤=                               |
-| =abort=     | =⊥ → A=                           |
-| =absurd=    | =⊥ → ⊥=                           |
-| =caseof=    | =(A + B) → (A → C) → (B → C) → C= |
-|-------------+-----------------------------------|
+ * The /product/ type =A × B= is the type of the pairs of elements
+   where the first one is of type =A= and the second one is of type =B=.
 
-These types complete the correspondence between intuitionistic logic and lambda calculus. A type is inhabited if and only if its proposition is provable.
+ * The /union/ type =A + B= is a type that can contain an element of
+   type =A= or an element of type =B=. It is a labeled disjoint union
+   of the two types.
 
-|---------------------+---------+-------------+---------------------|
-| Description         | Type    | Proposition | Description         |
-|---------------------+---------+-------------+---------------------|
-| Product type        | =A × B= | =A ∧ B=     | Logical conjunction |
-| Disjoint union type | =A + B= | =A ∨ B=     | Logical disjunction |
-| Unit type           | =⊤=     | =⊤=         | True proposition    |
-| Empty type          | =⊥=     | =⊥=         | False proposition   |
-| Function to empty   | =A → ⊥= | =¬A=        | Logical negation    |
-|---------------------+---------+-------------+---------------------|
+ * The /unit/ type =⊤= has only one element, called =unit= or =★=.
+
+ * The /void/ type =⊥= has no elements. Its utility will be discussed
+   later.
+
+They can be used with the following typed constructors
+
+|-------------+-----------------------------------+-------------------|
+| Constructor | Type                              | Description       |
+|-------------+-----------------------------------+-------------------|
+| =(-,-)=     | =A → B → A × B=                   | Pairs             |
+| =fst=       | =(A × B) → A=                     | First projection  |
+| =snd=       | =(A × B) → B=                     | Second projection |
+| =inl=       | =A → A + B=                       | First inclusion   |
+| =inr=       | =B → A + B=                       | Second inclusion  |
+| =caseof=    | =(A + B) → (A → C) → (B → C) → C= | Case analysis     |
+| =unit=      | =⊤=                               | Unit element      |
+| =abort=     | =⊥ → A=                           | Empty function    |
+| =absurd=    | =⊥ → ⊥=                           | Empty identity    |
+|-------------+-----------------------------------+-------------------|
+
 
 The following are examples of the use of typed constructors.
 
@@ -1051,6 +1136,90 @@ inr false
 caseof (inl 3) (mult 2) (plus 1)
 caseof (inr 3) (mult 2) (plus 1)
 unit</script>
+</div>
+#+END_EXPORT
+
+As an example, we could use the type =⊤ + ⊤= to write a new version
+of the booleans. This new version will use =caseof= as its =ifelse=.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+ttrue = inl unit
+tfalse = inr unit
+tnot = \b.caseof b inr inl
+tand = \a.\b.caseof a (\t.b) inr
+
+tnot ttrue
+tnot tfalse
+tand ttrue ttrue
+tand ttrue tfalse
+tand tfalse ttrue
+tand tfalse tfalse</script>
+</div>
+#+END_EXPORT
+
+** Conjunctions, disjunctions and proofs
+These types complete the correspondence between intuitionistic logic
+and lambda calculus. A type is inhabited if and only if its
+proposition is provable.
+
+|---------------------+---------+-------------+---------------------|
+| Description         | Type    | Proposition | Description         |
+|---------------------+---------+-------------+---------------------|
+| Product type        | =A × B= | =A ∧ B=     | Logical conjunction |
+| Disjoint union type | =A + B= | =A ∨ B=     | Logical disjunction |
+| Unit type           | =⊤=     | =⊤=         | True proposition    |
+| Empty type          | =⊥=     | =⊥=         | False proposition   |
+| Function to empty   | =A → ⊥= | =¬A=        | Logical negation    |
+|---------------------+---------+-------------+---------------------|
+
+Following this correspondence, we are now able to write more complex
+proofs on intuitionistic logic. For example, the following is a proof
+of the trivial fact that
+
+\[
+A \wedge B \to B \wedge A;
+\]
+
+and, at the same time, it is a function swapping the two terms of a
+pair.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+swap = \m.(snd m,fst m)
+swap</script>
+</div>
+#+END_EXPORT
+
+We had defined the negation of a type as a function from that type
+to the empty type. This makes sense, only if the type is not inhabited
+it is possible to write an empty function. The =abort= function is
+useful if we want to use the [[https://en.wikipedia.org/wiki/Principle_of_explosion][principle of explosion]], that is, from
+falsity, everything follows. As an example, we will prove
+
+\[
+A \wedge \neg A \to B
+\]
+
+and one of the deMorgan laws
+
+\[
+\neg (A \vee B) \to \neg A \wedge \neg B
+\]
+
+as the following terms. 
+/Note the use of =abort= and =absurd= as =□= and =■=!/
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+\m.abort (snd m (fst m))
+\f.(\a.absurd (f (inl a)), \b.absurd (f (inr b)))</script>
 </div>
 #+END_EXPORT
 
@@ -1070,3 +1239,54 @@ notnotlem = \f.f (inr (\a.absurd (f (inl a))))
 notnotlem</script>
 </div>
 #+END_EXPORT
+
+Now that we are writing proofs, it is a good time to introduce a new
+feature of the interpreter. Mikrokosmos can show you the derivation
+tree of any of your proofs with =@@=. For example, we will prove
+that
+
+\[
+A \vee B \to B \vee A
+\]
+
+as
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+# Our proof is of type (A + B) → B + A
+\m.caseof m inr inl
+
+# And we can show a derivation tree of it as
+@@ \m.caseof m inr inl
+
+# A simpler example is the identity
+@@ \x.x</script>
+</div>
+#+END_EXPORT
+
+** Curry-Howard
+The Curry-Howard isomorphism not only states the correspondence
+between types and propositions and between terms and proofs; but
+a full isomorphism with respect to term evaluation and proof
+simplification. That is, if a term corresponds to a proof, the
+fully evaluated term corresponds to a fully simplified proof.
+
+Every simply typed \lambda-calculus term can be understood as a
+derivation tree of the term it is proving. Mikrokosmos allows the user
+to check the derivation tree of a given \lambda-term using =@=.  And
+it can also simplify the derivation using =@@=, as we did before. We
+will use our previously defined function/proof =swap= as an example.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+@ \m.(snd m,fst m)
+@@ \m.(snd m,fst m)</script>
+</div>
+#+END_EXPORT
+
+In the first case, the function is not fully simplified, and a more
+complex derivation tree arises from it. The simplification of the
+term corresponds directly to a simplification of the derivation tree.
