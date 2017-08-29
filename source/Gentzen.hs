@@ -51,7 +51,7 @@ centerRow n s = centered
   where
     w = length s
     diff = n - w
-    semicentered = replicate (diff `div` 2) ' ' ++ s
+    semicentered = replicate (diff `div` 2 + diff `mod` 2) ' ' ++ s
     centered = take n (semicentered ++ repeat ' ')
 
 showMatrixChar :: CharMatrix -> String
@@ -80,17 +80,17 @@ showProofTree = showMatrixChar . map ("  " ++) . matrixProofTree
 
 data Label = Lponens | Labs | Lpair | Lpi1 | Lpi2 | Linr | Linl | Lcase | Lunit | Labort | Labsurd
 instance Show Label where
-  show Lponens = "(→E)"
-  show Labs = "(→I)"
-  show Lpair = "(×I)"
-  show Lpi1 = "(×E₁)"
-  show Lpi2 = "(×E₂)"
-  show Linr = "(+I₁)"
-  show Linl = "(+I₂)"
-  show Lcase = "(+E)"
-  show Lunit = "(⊤)"
-  show Labort = "(⊥E)"
-  show Labsurd = "(⊥)"
+  show Lponens = "(→)"
+  show Labs = "(λ)"
+  show Lpair = "(,)"
+  show Lpi1 = "(π₁)"
+  show Lpi2 = "(π₂)"
+  show Linr = "(ιnl)"
+  show Linl = "(ιnr)"
+  show Lcase = "(Case)"
+  show Lunit = "(★)"
+  show Labort = "(□)"
+  show Labsurd = "(■)"
 
 type Depth = Int
 type TermDiagram = (Exp,Depth,Type)

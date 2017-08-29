@@ -93,6 +93,9 @@ variableParser = LambdaVariable <$> nameParser
 nameParser :: Parser String
 nameParser = many1 alphaNum
 
+choicest :: [String] -> Parser String
+choicest sl = choice (try . string <$> sl)
+
 -- | Parses a lambda abstraction. The '\' is used as lambda. 
 lambdaAbstractionParser :: Parser NamedLambda
 lambdaAbstractionParser = LambdaAbstraction <$>
@@ -106,24 +109,28 @@ pairParser :: Parser NamedLambda
 pairParser = parens (TypedPair <$> lambdaexp <*> (char ',' >> lambdaexp))
 
 pi1Parser, pi2Parser :: Parser NamedLambda
-pi1Parser = TypedPi1 <$> (string "FST " >> lambdaexp)
-pi2Parser = TypedPi2 <$> (string "SND " >> lambdaexp)
+pi1Parser = TypedPi1 <$> (choicest namesPi1 >> lambdaexp)
+pi2Parser = TypedPi2 <$> (choicest namesPi2 >> lambdaexp)
 
 inlParser, inrParser :: Parser NamedLambda
-inlParser = TypedInl <$> (string "INL " >> lambdaexp)
-inrParser = TypedInr <$> (string "INR " >> lambdaexp)
+inlParser = TypedInl <$> (choicest namesInl >> lambdaexp)
+inrParser = TypedInr <$> (choicest namesInr >> lambdaexp)
 
 caseParser :: Parser NamedLambda
-caseParser = TypedCase <$> (string "CASE " >> simpleexp) <*> (string " OF " >> simpleexp) <*> (string ";" >> simpleexp)
+caseParser =
+  TypedCase <$>
+  (choicest namesCase >> simpleexp) <*>
+  (choicest namesOf >> simpleexp) <*>
+  (choicest namesCaseSep >> simpleexp)
 
 unitParser :: Parser NamedLambda
-unitParser = string "UNIT" >> return TypedUnit
+unitParser = choicest namesUnit >> return TypedUnit
 
 abortParser :: Parser NamedLambda
-abortParser = TypedAbort <$> (string "ABORT " >> lambdaexp)
+abortParser = TypedAbort <$> (choicest namesAbort >> lambdaexp)
 
 absurdParser :: Parser NamedLambda
-absurdParser = TypedAbsurd <$> (string "ABSURD " >> lambdaexp)
+absurdParser = TypedAbsurd <$> (choicest namesAbsurd >> lambdaexp)
 
 -- | Shows a lambda expression with named variables.
 -- Parentheses are ignored; they are written only around applications.
@@ -134,16 +141,17 @@ showNamedLambda (LambdaApplication f g) =
   showNamedLambdaPar f ++ " " ++ showNamedLambdaPar g
 showNamedLambda (TypedPair a b) =
   "(" ++ showNamedLambda a ++ "," ++ showNamedLambda b ++ ")"
-showNamedLambda (TypedPi1 a) = "π₁ " ++ showNamedLambdaPar a
-showNamedLambda (TypedPi2 a) = "π₂ " ++ showNamedLambdaPar a
-showNamedLambda (TypedInl a) = "INL " ++ showNamedLambdaPar a
-showNamedLambda (TypedInr a) = "INR " ++ showNamedLambdaPar a
+showNamedLambda (TypedPi1 a) = head namesPi1 ++ showNamedLambdaPar a
+showNamedLambda (TypedPi2 a) = head namesPi2 ++ showNamedLambdaPar a
+showNamedLambda (TypedInl a) = head namesInl ++ showNamedLambdaPar a
+showNamedLambda (TypedInr a) = head namesInr ++ showNamedLambdaPar a
 showNamedLambda (TypedCase a b c) =
-  "CASE " ++
-  showNamedLambda a ++ " OF " ++ showNamedLambda b ++ "; " ++ showNamedLambda c
-showNamedLambda TypedUnit = "UNIT"
-showNamedLambda (TypedAbort a) = "ABORT " ++ showNamedLambdaPar a ++ ")"
-showNamedLambda (TypedAbsurd a) = "ABSURD " ++ showNamedLambdaPar a ++ ")"
+  last namesCase ++
+  showNamedLambda a ++
+  last namesOf ++ showNamedLambda b ++ head namesCaseSep ++ showNamedLambda c
+showNamedLambda TypedUnit = head namesUnit
+showNamedLambda (TypedAbort a) = head namesAbort ++ showNamedLambdaPar a
+showNamedLambda (TypedAbsurd a) = head namesAbsurd ++ showNamedLambdaPar a
 
 showNamedLambdaPar :: NamedLambda -> String
 showNamedLambdaPar l@(LambdaVariable _) = showNamedLambda l
@@ -155,6 +163,36 @@ instance Show NamedLambda where
   show = showNamedLambda
 
 
+-- Name type constructors
+namesPi1 :: [String]
+namesPi1 = ["π₁ ", "FST "]
+
+namesPi2 :: [String]
+namesPi2 = ["π₂ ", "SND "]
+
+namesInl :: [String]
+namesInl = ["ιnl ", "INL "]
+
+namesInr :: [String]
+namesInr = ["ιnr ", "INR "]
+
+namesCase :: [String]
+namesCase = ["CASE ", "Case "]
+
+namesOf :: [String]
+namesOf = [" OF ", " Of "]
+
+namesCaseSep :: [String]
+namesCaseSep = ["; ", ";"]
+
+namesUnit :: [String]
+namesUnit = ["★", "UNIT"]
+
+namesAbort :: [String]
+namesAbort = ["□ ", "ABORT "]
+
+namesAbsurd :: [String]
+namesAbsurd = ["■ ", "ABSURD "]
 
 
 -- | Translates a named variable expression into a DeBruijn one.
