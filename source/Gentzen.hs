@@ -63,7 +63,10 @@ textMatrix s = [centerRow (length s) s]
 deductionMatrix :: CharMatrix -> String -> [CharMatrix] -> CharMatrix
 deductionMatrix inference label blocks = stackMatrices label top inference
   where
-    top = foldr1 (\ x y -> x <::> ["   "] <::> y) blocks
+    top =
+      if not (null blocks)
+        then foldr1 (\x y -> x <::> ["   "] <::> y) blocks
+        else [""]
 
 data ProofTree a l = Inference a | Deduction a l [ProofTree a l]
 instance Bifunctor ProofTree where
