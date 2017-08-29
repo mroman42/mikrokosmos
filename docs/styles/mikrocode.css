@@ -1,0 +1,16 @@
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+  overflow-y: hidden;
+}
+.CodeMirror-scroll {
+  height: auto;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+.mikrojs-console {
+  height: auto;
+}
+pre {
+    box-shadow: 0px 0px 1px #eee;
+}
