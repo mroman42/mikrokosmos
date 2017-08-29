@@ -58,12 +58,12 @@ showMatrixChar :: CharMatrix -> String
 showMatrixChar = unlines
 
 textMatrix :: String -> CharMatrix
-textMatrix s = [centerRow (length s + 2) s]
+textMatrix s = [centerRow (length s) s]
 
 deductionMatrix :: CharMatrix -> String -> [CharMatrix] -> CharMatrix
 deductionMatrix inference label blocks = stackMatrices label top inference
   where
-    top = foldr (\ x y -> x <::> [[' ']] <::> y) [] blocks
+    top = foldr1 (\ x y -> x <::> ["   "] <::> y) blocks
 
 data ProofTree a l = Inference a | Deduction a l [ProofTree a l]
 instance Bifunctor ProofTree where
@@ -80,17 +80,17 @@ showProofTree = showMatrixChar . map ("  " ++) . matrixProofTree
 
 data Label = Lponens | Labs | Lpair | Lpi1 | Lpi2 | Linr | Linl | Lcase | Lunit | Labort | Labsurd
 instance Show Label where
-  show Lponens = "(impl)"
-  show Labs = "(abs)"
-  show Lpair = "(pair)"
-  show Lpi1 = "(pi1)"
-  show Lpi2 = "(pi2)"
-  show Linr = "(inr)"
-  show Linl = "(inl)"
-  show Lcase = "(case)"
-  show Lunit = "(unit)"
-  show Labort = "(abort)"
-  show Labsurd = "(absurd)"
+  show Lponens = "(→E)"
+  show Labs = "(→I)"
+  show Lpair = "(×I)"
+  show Lpi1 = "(×E₁)"
+  show Lpi2 = "(×E₂)"
+  show Linr = "(+I₁)"
+  show Linl = "(+I₂)"
+  show Lcase = "(+E)"
+  show Lunit = "(⊤)"
+  show Labort = "(⊥E)"
+  show Labsurd = "(⊥)"
 
 type Depth = Int
 type TermDiagram = (Exp,Depth,Type)
@@ -133,7 +133,8 @@ typeinfer' (x:vars) depth ctx l@(App p q) b = do
   (sigma, d1) <- typeinfer' (evens vars) depth ctx                  p (Arrow (Tvar x) b)
   (tau,   d2) <- typeinfer' (odds  vars) depth (applyctx sigma ctx) q (sigma (Tvar x))
   let ss = tau . sigma
-  return (ss, Deduction (l, depth, ss b) Lponens [d1,d2])
+  let fulld1 = bimap (\(d1e,d1d,d1t) -> (d1e,d1d,tau d1t)) id d1
+  return (ss, Deduction (l, depth, ss b) Lponens [fulld1,d2])
   where
     odds [] = []
     odds [_] = []
