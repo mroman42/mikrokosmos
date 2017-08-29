@@ -29,6 +29,7 @@ import           NamedLambda
 import           Lambda
 import           Ski
 import           Types
+import           Gentzen
 
 
 -- | Interpreter action. It can be a language action (binding and evaluation)
@@ -42,6 +43,8 @@ data InterpreterAction = Interpret Action -- ^ Language action
 data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
             | EvalBind (String, NamedLambda) -- ^ bind a name to an expression and simplify it
             | Execute NamedLambda            -- ^ execute an expression
+            | Diagram NamedLambda            -- ^ show the diagram of a lambda expression
+            | SimpDiagram NamedLambda        -- ^ show the diagram of the simplified expression
             | Comment                        -- ^ comment
             | EmptyLine                      -- ^ empty line, it will be ignored
             | Error                          -- ^ error on the interpreter
@@ -65,6 +68,8 @@ act (EvalBind (s,le)) = do
   modify (\env -> addBind env s (simplifyAll $ toBruijn (context env) le))
   return [""]
 act (Execute le) = executeExpression le
+act (Diagram le) = drawDiagram False le
+act (SimpDiagram le) = drawDiagram True le
 act EmptyLine = return [""]
 act Error = return [errorUnknownCommand ++ "\n"]
 act Restart = put defaultEnv >> return [restartText ++ "\n"]
@@ -89,6 +94,20 @@ setOption setting change message = do
             (if getColor env then formatFormula else "") ++ message ++
             (if setting then "on" else "off") ++ end
 
+drawDiagram :: Bool -> NamedLambda -> State Environment [String]
+drawDiagram wantsimplification le = do
+  env <- get
+  let bruijn = toBruijn (context env) le
+  let isopen = isOpenExp bruijn
+  let simpbruijn = simplifyAll bruijn
+  let maybediagram = gentzendiagram (if wantsimplification then simpbruijn else bruijn)
+
+  return $
+    if isopen then [errorUndefinedText ++ "\n"] else
+      case maybediagram of
+        Nothing -> [errorNonTypeableText ++ "\n"]
+        Just diagram -> map (++ "\n") . lines $ showProofTree diagram
+  
 -- | Executes a lambda expression. Given the context, returns the new
 -- context after the evaluation.
 executeExpression :: NamedLambda -> State Environment [String]
@@ -159,7 +178,9 @@ interpretParser = Interpret <$> actionParser
 -- | Parses a language action.
 actionParser :: Parser Action
 actionParser = choice
-  [ try bindParser
+  [ try simpdiagramParser
+  , try diagramParser
+  , try bindParser
   , try evalbindParser
   , try executeParser
   , try commentParser
@@ -171,6 +192,15 @@ actionParser = choice
   , try typesParser
   , try topoParser
   ]
+
+
+-- | Parses a diagram request
+diagramParser :: Parser Action
+diagramParser = Diagram <$> (string "@ " >> lambdaexp)
+
+-- | Parses a simplfication and diagram request
+simpdiagramParser :: Parser Action
+simpdiagramParser = SimpDiagram <$> (string "@@ " >> lambdaexp)
 
 -- | Parses a binding between a variable an its representation.
 bindParser :: Parser Action
