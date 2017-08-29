@@ -1,0 +1,55 @@
+#+TITLE: Mikrokosmos
+#+SUBTITLE: A \lambda-calculus interpreter
+#+AUTHOR: Mario Román [[https://github.com/M42/][(github)]]
+#+EMAIL: mromang08@gmail.com
+#+SETUPFILE: html.setup
+#+OPTIONS: num:nil
+
+
+[[./icon.svg.png]]
+
+*Mikrokosmos* is an untyped and simply typed \lambda-calculus
+interpreter, borrowing its name from the series of progressive piano
+études /[[https://www.youtube.com/watch?v=VEsMk3DAzWM][Mikrokosmos]]/ written by /Bela Bartok/. It aims to provide
+students with a tool to learn and understand the [[https://en.wikipedia.org/wiki/Lambda_calculus#Informal_description][\lambda-calculus]].
+
+* Try Mikrokosmos!
+You can try Mikrokosmos in your browser. Press the *evaluate*
+button below!
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Lambda expressions are written with \ or λ, as in
+(λx.x)
+(\x.\y.x)(\x.x)
+
+# Libraries included
+plus 2 3
+sum (cons 1 (cons 2 (cons 3 nil)))
+
+# Change between untyped and simply-typed λ-calculus
+:types on
+swap = \m.(snd m, fst m)
+swap
+
+# Gentzen-style deduction trees
+@@ \a.(snd a,fst a)</script>
+</div>
+#+END_EXPORT
+
+A more detailed tutorial and a user's guide are available.
+
+ * [[file:tutorial.org][Mikrokosmos: a tutorial]].
+ * [[file:userguide.org][Mikrokosmos: user's guide]].
+
+* About
+Mikrokosmos has been developed by [[https://m42.github.io/blog/about/][Mario Román]] as part of a bachelor
+thesis. It is free software licensed under GPL-3. You can follow the
+development on the relevant GitHub repositories
+
+ * [[https://github.com/M42/mikrokosmos][Mikrokosmos]], main repository. Console interpreter.
+ * [[https://github.com/M42/jupyter-mikrokosmos][Mikrokosmos-Jupyter]], a Jupyter kernel for the interpreter.
+ * [[https://github.com/M42/mikrokosmos-tutorials][Mikrokosmos-tutorials]], a set of tutorials written for Jupyter.
+ * [[https://github.com/M42/mikrokosmos-lib][Mikrokosmos-libs]], standard libraries for the interpreter.
+ * [[https://github.com/M42/mikrokosmos-js][Mikrokosmos-JS]], call Mikrokosmos from JS.
