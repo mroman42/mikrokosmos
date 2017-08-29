@@ -63,7 +63,7 @@ textMatrix s = [centerRow (length s + 2) s]
 deductionMatrix :: CharMatrix -> String -> [CharMatrix] -> CharMatrix
 deductionMatrix inference label blocks = stackMatrices label top inference
   where
-    top = foldr (<::>) [] blocks
+    top = foldr (\ x y -> x <::> [[' ']] <::> y) [] blocks
 
 data ProofTree a l = Inference a | Deduction a l [ProofTree a l]
 instance Bifunctor ProofTree where
@@ -155,7 +155,8 @@ typeinfer' (x:y:vars) depth ctx l@(Pair m n) a = do
   (tau, d1) <- typeinfer' (evens vars) depth (applyctx sigma         ctx) m (sigma (Tvar x))
   (rho, d2) <- typeinfer' (odds  vars) depth (applyctx (tau . sigma) ctx) n (tau (sigma (Tvar y)))
   let ss = rho . tau . sigma
-  return (ss, Deduction (l, depth, ss a) Lpair [d1,d2])
+  let fulld1 = bimap (\(d1e,d1d,d1t) -> (d1e,d1d,rho d1t)) id d1
+  return (ss, Deduction (l, depth, ss a) Lpair [fulld1,d2])
   where
     odds [] = []
     odds [_] = []
@@ -191,8 +192,10 @@ typeinfer' (x:y:vars) depth ctx l@(Caseof m f g) a = do
   (sigma, d1) <- typeinfer' (third1 vars) depth ctx                          f (Arrow (Tvar x) a)
   (tau,   d2) <- typeinfer' (third2 vars) depth (applyctx sigma ctx)         g (Arrow (sigma $ Tvar y) (sigma a))
   (rho,   d3) <- typeinfer' (third3 vars) depth (applyctx (tau . sigma) ctx) m (Union (tau . sigma $ Tvar x) (tau . sigma $ Tvar y))
-  let ss = rho . tau . sigma 
-  return (ss, Deduction (l, depth, ss a) Lcase [d1,d2,d3])
+  let ss = rho . tau . sigma
+  let fulld1 = bimap (\(d1e,d1d,d1t) -> (d1e,d1d,(rho . tau) d1t)) id d1
+  let fulld2 = bimap (\(d2e,d2d,d2t) -> (d2e,d2d,rho d2t)) id d2
+  return (ss, Deduction (l, depth, ss a) Lcase [fulld1,fulld2,d3])
   where
     third1 [] = []
     third1 [_] = []
