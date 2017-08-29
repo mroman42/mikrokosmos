@@ -128,18 +128,28 @@ absurdParser = TypedAbsurd <$> (string "ABSURD " >> lambdaexp)
 -- | Shows a lambda expression with named variables.
 -- Parentheses are ignored; they are written only around applications.
 showNamedLambda :: NamedLambda -> String
-showNamedLambda (LambdaVariable c)      = c
-showNamedLambda (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showNamedLambda e ++ ""
-showNamedLambda (LambdaApplication f g) = "(" ++ showNamedLambda f ++ " " ++ showNamedLambda g ++ ")"
-showNamedLambda (TypedPair a b)         = "(" ++ showNamedLambda a ++ "," ++ showNamedLambda b ++ ")"
-showNamedLambda (TypedPi1 a)            = "π₁ " ++ showNamedLambda a
-showNamedLambda (TypedPi2 a)            = "π₂ " ++ showNamedLambda a
-showNamedLambda (TypedInl a)            = "(" ++ "INL " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedInr a)            = "(" ++ "INR " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedCase a b c)       = "(" ++ "CASE " ++ showNamedLambda a ++ " OF " ++ showNamedLambda b ++ "; " ++ showNamedLambda c ++ ")"
-showNamedLambda TypedUnit             = "UNIT"
-showNamedLambda (TypedAbort a)          = "(" ++ "ABORT " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedAbsurd a)          = "(" ++ "ABSURD " ++ showNamedLambda a ++ ")"
+showNamedLambda (LambdaVariable c) = c
+showNamedLambda (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showNamedLambda e
+showNamedLambda (LambdaApplication f g) =
+  showNamedLambdaPar f ++ " " ++ showNamedLambdaPar g
+showNamedLambda (TypedPair a b) =
+  "(" ++ showNamedLambda a ++ "," ++ showNamedLambda b ++ ")"
+showNamedLambda (TypedPi1 a) = "π₁ " ++ showNamedLambdaPar a
+showNamedLambda (TypedPi2 a) = "π₂ " ++ showNamedLambdaPar a
+showNamedLambda (TypedInl a) = "INL " ++ showNamedLambdaPar a
+showNamedLambda (TypedInr a) = "INR " ++ showNamedLambdaPar a
+showNamedLambda (TypedCase a b c) =
+  "CASE " ++
+  showNamedLambda a ++ " OF " ++ showNamedLambda b ++ "; " ++ showNamedLambda c
+showNamedLambda TypedUnit = "UNIT"
+showNamedLambda (TypedAbort a) = "ABORT " ++ showNamedLambdaPar a ++ ")"
+showNamedLambda (TypedAbsurd a) = "ABSURD " ++ showNamedLambdaPar a ++ ")"
+
+showNamedLambdaPar :: NamedLambda -> String
+showNamedLambdaPar l@(LambdaVariable _) = showNamedLambda l
+showNamedLambdaPar l@TypedUnit = showNamedLambda l
+showNamedLambdaPar l@(TypedPair _ _) = showNamedLambda l
+showNamedLambdaPar l = "(" ++ showNamedLambda l ++ ")"
 
 instance Show NamedLambda where
   show = showNamedLambda
