@@ -168,8 +168,10 @@ following expressions and then check it with the interpreter.
  * function application, a function taking a function $f$ and a term
    $x$ as arguments and returning $f(x)$.
 
- * swapping of arguments, a function that takes a function
-   $f$ and returns a $g$ such that $g(x,y) = g\ x\ y = f\ y\ x = f(y,x)$.
+ * swapping of arguments, a function that takes a function on two
+   arguments $f$ and returns a $g$ such that $g(x,y) = g\ x\ y = f\ y\ x = f(y,x)$.
+
+And test them.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
