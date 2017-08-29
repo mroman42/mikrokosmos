@@ -177,7 +177,7 @@ namesInr :: [String]
 namesInr = ["ιnr ", "INR "]
 
 namesCase :: [String]
-namesCase = ["CASE ", "Case ", "ᴄᴀsᴇ "]
+namesCase = ["CASE ", "Case ", "ᴄᴀꜱᴇ "]
 
 namesOf :: [String]
 namesOf = [" OF ", " Of ", " ᴏꜰ "]
