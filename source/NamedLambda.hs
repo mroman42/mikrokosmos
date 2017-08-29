@@ -15,6 +15,8 @@ module NamedLambda
   , lambdaexp
   , toBruijn
   , nameExp
+  , quicknameIndexes
+  , variableNames
   )
 where
 
@@ -91,6 +93,9 @@ variableParser = LambdaVariable <$> nameParser
 nameParser :: Parser String
 nameParser = many1 alphaNum
 
+choicest :: [String] -> Parser String
+choicest sl = choice (try . string <$> sl)
+
 -- | Parses a lambda abstraction. The '\' is used as lambda. 
 lambdaAbstractionParser :: Parser NamedLambda
 lambdaAbstractionParser = LambdaAbstraction <$>
@@ -104,45 +109,90 @@ pairParser :: Parser NamedLambda
 pairParser = parens (TypedPair <$> lambdaexp <*> (char ',' >> lambdaexp))
 
 pi1Parser, pi2Parser :: Parser NamedLambda
-pi1Parser = TypedPi1 <$> (string "FST " >> lambdaexp)
-pi2Parser = TypedPi2 <$> (string "SND " >> lambdaexp)
+pi1Parser = TypedPi1 <$> (choicest namesPi1 >> lambdaexp)
+pi2Parser = TypedPi2 <$> (choicest namesPi2 >> lambdaexp)
 
 inlParser, inrParser :: Parser NamedLambda
-inlParser = TypedInl <$> (string "INL " >> lambdaexp)
-inrParser = TypedInr <$> (string "INR " >> lambdaexp)
+inlParser = TypedInl <$> (choicest namesInl >> lambdaexp)
+inrParser = TypedInr <$> (choicest namesInr >> lambdaexp)
 
 caseParser :: Parser NamedLambda
-caseParser = TypedCase <$> (string "CASE " >> simpleexp) <*> (string " OF " >> simpleexp) <*> (string ";" >> simpleexp)
+caseParser =
+  TypedCase <$>
+  (choicest namesCase >> simpleexp) <*>
+  (choicest namesOf >> simpleexp) <*>
+  (choicest namesCaseSep >> simpleexp)
 
 unitParser :: Parser NamedLambda
-unitParser = string "UNIT" >> return TypedUnit
+unitParser = choicest namesUnit >> return TypedUnit
 
 abortParser :: Parser NamedLambda
-abortParser = TypedAbort <$> (string "ABORT " >> lambdaexp)
+abortParser = TypedAbort <$> (choicest namesAbort >> lambdaexp)
 
 absurdParser :: Parser NamedLambda
-absurdParser = TypedAbsurd <$> (string "ABSURD " >> lambdaexp)
+absurdParser = TypedAbsurd <$> (choicest namesAbsurd >> lambdaexp)
 
 -- | Shows a lambda expression with named variables.
 -- Parentheses are ignored; they are written only around applications.
 showNamedLambda :: NamedLambda -> String
-showNamedLambda (LambdaVariable c)      = c
-showNamedLambda (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showNamedLambda e ++ ""
-showNamedLambda (LambdaApplication f g) = "(" ++ showNamedLambda f ++ " " ++ showNamedLambda g ++ ")"
-showNamedLambda (TypedPair a b)         = "(" ++ showNamedLambda a ++ "," ++ showNamedLambda b ++ ")"
-showNamedLambda (TypedPi1 a)            = "(" ++ "FST " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedPi2 a)            = "(" ++ "SND " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedInl a)            = "(" ++ "INL " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedInr a)            = "(" ++ "INR " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedCase a b c)       = "(" ++ "CASE " ++ showNamedLambda a ++ " of " ++ showNamedLambda b ++ "; " ++ showNamedLambda c ++ ")"
-showNamedLambda TypedUnit             = "UNIT"
-showNamedLambda (TypedAbort a)          = "(" ++ "ABORT " ++ showNamedLambda a ++ ")"
-showNamedLambda (TypedAbsurd a)          = "(" ++ "ABSURD " ++ showNamedLambda a ++ ")"
+showNamedLambda (LambdaVariable c) = c
+showNamedLambda (LambdaAbstraction c e) = "λ" ++ c ++ "." ++ showNamedLambda e
+showNamedLambda (LambdaApplication f g) =
+  showNamedLambdaPar f ++ " " ++ showNamedLambdaPar g
+showNamedLambda (TypedPair a b) =
+  "(" ++ showNamedLambda a ++ "," ++ showNamedLambda b ++ ")"
+showNamedLambda (TypedPi1 a) = head namesPi1 ++ showNamedLambdaPar a
+showNamedLambda (TypedPi2 a) = head namesPi2 ++ showNamedLambdaPar a
+showNamedLambda (TypedInl a) = head namesInl ++ showNamedLambdaPar a
+showNamedLambda (TypedInr a) = head namesInr ++ showNamedLambdaPar a
+showNamedLambda (TypedCase a b c) =
+  last namesCase ++
+  showNamedLambda a ++
+  last namesOf ++ showNamedLambda b ++ head namesCaseSep ++ showNamedLambda c
+showNamedLambda TypedUnit = head namesUnit
+showNamedLambda (TypedAbort a) = head namesAbort ++ showNamedLambdaPar a
+showNamedLambda (TypedAbsurd a) = head namesAbsurd ++ showNamedLambdaPar a
+
+showNamedLambdaPar :: NamedLambda -> String
+showNamedLambdaPar l@(LambdaVariable _) = showNamedLambda l
+showNamedLambdaPar l@TypedUnit = showNamedLambda l
+showNamedLambdaPar l@(TypedPair _ _) = showNamedLambda l
+showNamedLambdaPar l = "(" ++ showNamedLambda l ++ ")"
 
 instance Show NamedLambda where
   show = showNamedLambda
 
 
+-- Name type constructors
+namesPi1 :: [String]
+namesPi1 = ["π₁ ", "FST "]
+
+namesPi2 :: [String]
+namesPi2 = ["π₂ ", "SND "]
+
+namesInl :: [String]
+namesInl = ["ιnl ", "INL "]
+
+namesInr :: [String]
+namesInr = ["ιnr ", "INR "]
+
+namesCase :: [String]
+namesCase = ["CASE ", "Case ", "ᴄᴀsᴇ "]
+
+namesOf :: [String]
+namesOf = [" OF ", " Of ", " ᴏꜰ "]
+
+namesCaseSep :: [String]
+namesCaseSep = ["; ", ";"]
+
+namesUnit :: [String]
+namesUnit = ["★", "UNIT"]
+
+namesAbort :: [String]
+namesAbort = ["□ ", "ABORT "]
+
+namesAbsurd :: [String]
+namesAbsurd = ["■ ", "ABSURD "]
 
 
 -- | Translates a named variable expression into a DeBruijn one.
@@ -195,9 +245,25 @@ nameIndexes used new (Pi2 a)        = TypedPi2 (nameIndexes used new a)
 nameIndexes used new (Inl a)        = TypedInl (nameIndexes used new a)
 nameIndexes used new (Inr a)        = TypedInr (nameIndexes used new a)
 nameIndexes used new (Caseof a b c) = TypedCase (nameIndexes used new a) (nameIndexes used new b) (nameIndexes used new c)
-nameIndexes _    _   Unit         = TypedUnit
+nameIndexes _    _   Unit           = TypedUnit
 nameIndexes used new (Abort a)      = TypedAbort (nameIndexes used new a)
 nameIndexes used new (Absurd a)     = TypedAbsurd (nameIndexes used new a)
+
+
+quicknameIndexes :: Int -> [String] -> Exp -> NamedLambda
+quicknameIndexes _ _  (Var 0)          = LambdaVariable "undefined"
+quicknameIndexes n vars   (Var m)      = LambdaVariable (vars !! (n - fromInteger m))
+quicknameIndexes n vars (Lambda e)     = LambdaAbstraction (vars !! n) (quicknameIndexes (succ n) vars e)
+quicknameIndexes n vars (App f g)      = LambdaApplication (quicknameIndexes n vars f) (quicknameIndexes n vars g)
+quicknameIndexes n vars (Pair a b)     = TypedPair (quicknameIndexes n vars a) (quicknameIndexes n vars b)
+quicknameIndexes n vars (Pi1 a)        = TypedPi1 (quicknameIndexes n vars a)
+quicknameIndexes n vars (Pi2 a)        = TypedPi2 (quicknameIndexes n vars a)
+quicknameIndexes n vars (Inl a)        = TypedInl (quicknameIndexes n vars a)
+quicknameIndexes n vars (Inr a)        = TypedInr (quicknameIndexes n vars a)
+quicknameIndexes n vars (Caseof a b c) = TypedCase (quicknameIndexes n vars a) (quicknameIndexes n vars b) (quicknameIndexes n vars c)
+quicknameIndexes _ _   Unit            = TypedUnit
+quicknameIndexes n vars (Abort a)      = TypedAbort (quicknameIndexes n vars a)
+quicknameIndexes n vars (Absurd a)     = TypedAbsurd (quicknameIndexes n vars a)
 
 
 -- | Gives names to every variable in a deBruijn expression using
