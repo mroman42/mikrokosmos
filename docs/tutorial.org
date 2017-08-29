@@ -1,0 +1,1294 @@
+#+TITLE: Mikrokosmos
+#+SUBTITLE: Programming on the λ-calculus
+#+AUTHOR: Mario Román [[https://github.com/M42/][(github)]]
+#+EMAIL: mromang08@gmail.com
+#+SETUPFILE: html.setup
+
+* The \lambda-calculus
+** The untyped \lambda-calculus
+The untyped [[https://en.wikipedia.org/wiki/Lambda_calculus][*λ-calculus*]] (or simply, *\lambda calculus*) is a logical formal system
+which is also a model of computation (like the [[https://en.wikipedia.org/wiki/Turing_machine][Turing machines]], for
+example). It was introduced in the 1930s by [[https://en.wikipedia.org/wiki/Alonzo_Church][Alonzo Church]], who was
+looking for a formal system able to express the notion of
+computability. It is [[https://en.wikipedia.org/wiki/Turing_completeness][Turing-complete]], that is, it has the property
+that every computable function, every function you could write in any
+other programming language, can be written on the untyped λ-calculus.
+
+Its [[https://en.wikipedia.org/wiki/Lambda_calculus_definition#Standard_definition][syntax]] is very simple; any expression is either:
+
+  - a *variable*, $x,y,z,\dots$ which could have appeared before on
+    the lambda abstraction;
+    
+  - a *lambda abstraction* $\lambda x. -$, which can be interpreted 
+    as a function taking $x$ as an argument and returning what is
+    written under $-$, which can depend on $x$;
+    
+  - or an *application* of two expressions $(\lambda x. M)N$ which 
+    applies the function $(\lambda x. M)$ over the argument $N$.
+    When a function is applied, all the ocurrences of $x$ on $M$ will 
+    be substituted by $N$. This is what is called a *\beta-reduction*;
+    it captures the notion of function application.
+
+That is, in λ-calculus any function $f$ can be written as $(\lambda x.f(x))$, 
+and it can be applied to an argument and \beta-reduced as
+
+\[ (\lambda x.f(x))\ y \longrightarrow f(y). \]
+
+For example, the function that duplicates an element could be written
+as $(\lambda x.\ 2 \cdot x)$, and it would be applied to $3$ as
+
+\[ (\lambda x.\ 2 \cdot x)\ 3 \longrightarrow 2 \cdot 3 \longrightarrow 6. \]
+
+In this chapter, however, we will restrict ourselves to very basic
+functions which do not involve arithmetic. How to define natural
+numbers, addition or multiplication will be topics for future
+chapters.
+
+  * [[https://www.youtube.com/watch?v=eis11j_iGMs][Lambda Calculus - Computerphile]]
+
+** A first example
+On this tutorial we will use a didactic \lambda-calculus interpreter,
+[[https://github.com/M42/mikrokosmos][Mikroskosmos]]; which can be used directly from the browser. Every time
+you find a Mikrokosmos code snippet like the following, you can execute
+it by pressing *evaluate*.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+id = \x.x
+id id</script>
+</div>
+#+END_EXPORT
+
+In Mikrokosmos, it is possible to use the backslash character as a λ
+to make the input easier. If you happen to have a greek keyboard
+configured, however, feel free to write "λ"! Mikrokosmos accepts both
+sintaxes. For instance, the nested expression $\lambda x.(\lambda y.x)$
+can be written as =\x.(\y.x)=.
+
+Our first example defines a very simple lambda term, the 
+*identity function* $\lambda x. x$; which is a function that takes an argument
+$x$ and returns it unchanged. Our first statement just after this
+definition will be apply this function to itself. Keep in mind during
+this tutorial that it is perfectly possible to apply functions to
+other functions or to themselves; in fact, this is one of the core
+ideas of lambda calculus.
+
+In its output, Mikrokosmos shows the evaluated term and possible names
+for it. We will learn what those names mean later. In the previous
+example, the evaluation of =id id= to =id= has followed this chain of
+\beta-reductions and equivalences
+
+\[ 
+id\ id \longrightarrow (\lambda x.x)(\lambda x'.x') \longrightarrow (\lambda x'.x') \longrightarrow  id.
+\]
+
+Note that the specific name of a variable is irrelevant. They act only
+as placeholders. A perfectly valid definition of =id= would be =id = \a.a=
+or =id = \b.b=.
+
+** Some more examples
+Function application is *left distributive* and parentheses can be
+ommited when they are not necessary, that is, =f g h= must be read as
+=(f(g))(h)= instead of =f(g(h))=. This goes against the usual
+mathematical convention, which always writes parentheses on functions,
+that is, we write
+\[
+f\ x\quad\text{ instead of }\quad f(x);
+\]
+
+and
+\[
+f\ x\ y\quad\text{ instead of }\quad (f(x))(y)\ \text{ or }\  f(x,y);
+\]
+
+but this makes it less verbose to write multiple argument functions
+such as the *constant* function, which takes two arguments and
+returns the first one.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+const = \x.\y.x
+const id id
+const id const</script>
+</div>
+#+END_EXPORT
+
+Note that, in λ-calculus, a "function taking two arguments" and "a
+function that takes an argument and returns a function taking the
+second" are conceptually the same. This equivalence is called
+*[[https://en.wikipedia.org/wiki/Currying][currying]]* in honor of [[https://en.wikipedia.org/wiki/Haskell_Curry][Haskell Curry]], the logician who developed this
+idea, previously discovered by Schönfinkel and Frege.
+
+This is why we can see every function with two arguments as a function
+taking only one argument and returning again a function taking the
+second one. For example, the =discard = const id= function is a function that
+takes only one argument, discards it, and outputs =id=. This is called
+a *partial application* of a function.
+
+A more useful example of function taking functions as arguments is the
+*function composition*, which takes two functions and returns a new
+one created by applying the two sequentially. This corresponds to the
+usual mathematical function composition $f \circ g$.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Comments can be inserted starting a line with the # character
+# A constant function
+discard = const id
+discard id
+discard const
+
+# Function composition
+compose = \f.\g.\x.f (g x)
+compose id id</script>
+</div>
+#+END_EXPORT
+
+** Exercises
+*Exercise 1.1:* Think what should be the result of evaluating the
+following expressions and then check it with the interpreter.
+
+  - =compose const id=
+  - =compose id const=
+  - =compose const const=
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here
+# Feel free to play with the interpreter!</script>
+</div>
+#+END_EXPORT
+
+*Exercise 1.2:* Write
+
+ * function application, a function taking a function $f$ and a term
+   $x$ as arguments and returning $f(x)$.
+
+ * swapping of arguments, a function that takes a function on two
+   arguments $f$ and returns a $g$ such that $g(x,y) = g\ x\ y = f\ y\ x = f(y,x)$.
+
+And test them.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solutions go here</script>
+</div>
+#+END_EXPORT
+
+* Boolean logic
+** Booleans
+[[https://en.wikipedia.org/wiki/Boolean_algebra][Boolean logic]] can be encoded in \lambda-calculus. In boolean logic, we
+have two elements =true= and =false=; and some logical gates such as
+
+  * the *and* gate, which outputs true if and only if its two inputs 
+    are true.
+  * the *or* gate, which outputs true if any of its inputs is true,
+    or even if /both/ are true.
+  * the *not* gate, which outpus true if and only if its input is
+    false.
+
+For example,
+
+\[
+\mathtt{not(\ or ( true, false )\ ) = not\ true = false}.
+\]
+
+Our intuition on what means to be a truth value is that it can
+distinghish between two values (*true* or *false*) or two branches on
+a program =(if ... else ...)=. We are going to use this intuition to
+write an encoding of boolean values based on their ability to choose
+between two branches. Maybe surprisingly, this encoding will be also
+useful to write the usual boolean logic gates.
+
+#+BEGIN_EXPORT html
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Church encoding of boolean truth values
+true  = \a.\b.a
+false = \a.\b.b
+true
+false</script>
+</div>
+#+END_EXPORT
+
+Here, a truth value is a function on two elements that chooses one of them.
+
+ - $\mathtt{true}\ a\ b  = a$
+ - $\mathtt{false}\ a\ b = b$
+
+This is called the *Church encoding* of the booleans, as it was
+used by Alonzo Church for the first time. This idea of defining a type based not
+on its content but on how it can be used will appear later, when we
+define more complex data structures.
+
+#+BEGIN_EXPORT html
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+true id const
+false id const
+true true false
+false true false</script>
+</div>
+#+END_EXPORT
+
+In particular, =true= is exactly the same lambda term as =const=. This
+is a very usual phenomenon in lambda calculus, where the same function
+can be interpreted differently in different contexts. Mikrokosmos
+allows us to have multiple names for the same term.
+
+** If-else
+The advantage of this way of encoding the boolean values is that they
+can be easily used in combination with other lambda terms. In
+particular, the way to encode an if-else is almost trivial: it is
+already encoded on the lambda terms!
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# If true, then the id function will be returned
+# if false, then the const function will be returned 
+(\b. b id const) true
+(\b. b id const) false</script>
+</div>
+#+END_EXPORT
+
+If you really want to write an =if-else= function, it will be, quite
+literally, the trivial one
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+ifelse = \b.b
+(ifelse true) id const
+(ifelse false) id const</script>
+</div>
+#+END_EXPORT
+
+** Logic gates
+Usual operations on booleans can be defined too on this encoding and
+they will be surprisingly easy if we think of booleans as functions
+choosing from two terms.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# The and gate takes two booleans and returns a true if and only if 
+# the two given booleans are true. 
+and = \p.\q.p q p
+# Checking the truth table for the "and" gate
+and true true
+and true false
+and false true
+and false false</script>
+</div>
+#+END_EXPORT
+
+*Exercise 2.1:* Think why this definition of the `and` gate works.
+/Hint: think what happens when the first argument is a =true=./
+/What happens if it is a =false=?/
+
+The =or= gate can be defined in a similar way.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# The or gate takes two booleans and returns a true if and only if
+# any of them (or both) are true
+or = \p.\q.p p q
+# Checking the truth table for the "or" gate
+or true true
+or true false
+or false true
+or false false</script>
+</div>
+#+END_EXPORT
+
+And finally, the negation operator is only a way of interchanging the two truth values
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+not = \b.b false true
+# Truth table for the "not" gate
+not true
+not false
+not (and true true)</script>
+</div>
+#+END_EXPORT
+
+** Exercises and more logical gates
+The boolean logic implication operator works also as a boolean gate, it can be defined as
+
+\[(a \to b) \equiv (\neg a) \vee b,\]
+
+that is, the implication is true if both are true or if the premise is false.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+implies = \a.\b.or (not a) b
+implies true true
+implies true false
+implies false true
+implies false false</script>
+</div>
+#+END_EXPORT
+
+*Exercise 2.2:* Compute the logic table for the implication using the
+ previous definition.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+*Exercise 2.3:* Compute the following logic clauses using lambda calculus
+ 
+ - True or false implies false.
+ - False implies that: false implies false.
+ - The negation of false and the negation of true both imply true.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+*Exercise 2.4:* Define the `xor` gate as a lambda term. The `xor` of
+two boolean values must return a true if and only if *exactly one* of
+them are true. Check also its logic table.
+/Hint: you may want to use the already defined `not`./
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+* Numbers
+** Peano and the natural numbers
+In the 19th century, [[https://en.wikipedia.org/wiki/Peano_axioms][Giuseppe Peano]] gave a definition of the natural
+numbers and an axiomatic theory of them based on only two contructors
+
+ - The zero is a natural number, written as Z.
+ - The successor of a natural number is a natural number, written as
+   S.
+ 
+In those terms, the usual natural numbers will be
+
+\[ Z,\ SZ,\ S(SZ),\ S(S(SZ)),\ \dots \]
+ 
+The question is now how can we encode them on \lambda-calculus. We do
+not have the ability to write the two constructors on \lambda-calculus,
+so we will make the natural numbers depend on them. This is again the
+same idea we used when we tried to encode booleans, we do not care
+about the content, but about how can we use them later.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Definition of the natural numbers
+0 = \s.\z.z
+succ = \n.\s.\z.s (n s z)
+
+# Names for the first six natural numbers
+succ 0
+succ (succ 0)
+succ (succ (succ 0))</script>
+</div>
+#+END_EXPORT
+
+Under this interpretation, a number =n= is really a function taking a
+function =a= as an argument and applying it =n= times over the
+argument =b=.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+5
+5 not true
+4 not false</script>
+</div>
+#+END_EXPORT
+
+*Exercise 3.1:* Define a function that takes a natural number and
+returns true if and only if the number is even. 
+/Hint: you may want to interpret the given number as a function./
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+** Addition and multiplication
+The encoding of the addition and multiplication of natural numbers
+will profit from the interpretation of numbers as functions. This is,
+in fact, the only way we can use naturals; but we will quickly see
+that this is an strenght instead of a weakness of our encoding. We are
+really encoding naturals as their induction principle: we can define a
+function by defining a zero and a successor.
+
+The =double= function will only change the successor for the
+composition of the successor function with itself.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+double = \n.\s.\z.n (compose s s) z
+double 0
+double 3
+double 4</script>
+</div>
+#+END_EXPORT
+
+*Exercise 3.2*: Define a =triple= function.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+We are going now to define *addition* using this same principle. It
+takes a successor and a zero, computes the first number as =(n s z)=
+and then uses it as a zero on the interpretation of the second one.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+plus = \m.\n.\s.\z.m s (n s z)
+plus 2 1
+plus 3 4
+plus 0 5</script>
+</div>
+#+END_EXPORT
+
+*Exercise 3.3:* How would you define multiplication? Keep in mind that
+you can use a number as a function. Keep also in mind the previous
+exercises on =double= and =triple=.  /Spoilers below!/
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+There many possible ways of defining multiplication. Some of them can
+use the repeated application of =plus= to a number; but we are going
+to define *multiplication* in a way that is similar to how we defined
+=double= previously. We are going to interpret the successor as the
+n-fold application of successor.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+mult = \m.\n.\s.\z.m (n s) z
+mult 0 3
+mult 1 5
+mult 3 4</script>
+</div>
+#+END_EXPORT
+
+** The predecessor function
+But, how to compute the predecessor of a number? We have not encoded
+negative numbers, so it could be a function returning zero whenever it
+tries to get the predecessor of zero. It is an insightful exercise to
+try to define it by yourself, but please, do not get too obsessed with
+it. The solution is certainly not easy.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+The solution is the term that follows this paragraph. You probably
+expected something easier! Kleene, who was a student of Alonzo Church,
+discovered for the first time how to write a predecessor on lambda
+calculus while at the dentist. This discovery made Church start
+thinking that every intuitively computable function could be computed
+using lambda calculus, that is, that the notions of lambda-computable
+function and intuitively computable function would coincide.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+pred = \n.\f.\x.n (\g.(\h.h (g f))) (\u.x) (\u.u)
+pred 4
+pred 1
+pred 0</script>
+</div>
+#+END_EXPORT
+
+But why does something like this even work? The main idea is to create
+a function that can be applied to a pair of numbers $n$ times and in
+such a way that the first application renders $1,0$, and any
+subsequent application acts as a successor on both numbers. We finally
+take only the second one. A detailed derivation of this function can
+be found [[https://en.wikipedia.org/wiki/Church_encoding#Derivation_of_predecessor_function][here]]; but we will also study it in the *Exercise 3.5*.
+
+*Exercise 3.4:* Use the predecessor function to define the =minus=
+function. It should return the difference between two numbers. It
+should return zero whenever the first number is smaller than the
+second.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+*Exercise 3.5:* Let's look again at the definition of =pred=,
+the core of the definition is this subexpression =\g.(\h.h (g f))=,
+which we will call =inc f=. It is a sort of reversed composition.
+Study what happens when we compose =inc f= with itself and reimplement
+pred using =inc=.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Definition of inc, depending on f
+inc = \f.\g.\h.h (g f)
+
+# Study step-by-step the result of these compositions
+\f.compose (inc f) (inc f)
+\f.compose (compose (inc f) (inc f)) (inc f)
+ 
+# What will happen in these cases?
+\f.3 (inc f)
+\f.4 (inc f)
+\f.5 (inc f)
+
+# Implement pred using inc
+# pred = -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+** Predicates on natural numbers
+This encoding even allow us to write predicates on natural
+numbers. The first predicate will be a function distinguishing a
+successor from a zero. It will be user later to build more complex
+ones.
+
+It is built by appliying a =const false= function =n= times to a true
+constant. Only if it is applied =0= times, it will return a true
+value.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+iszero = \n.(n (const false) true)
+iszero 0
+iszero 2
+iszero 1</script>
+</div>
+#+END_EXPORT
+
+Using this predicate, we can build =eq= and =leq=, corresponding to $==$ and $\leq$.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+leq = \m.\n.(iszero (minus m n))
+eq  = \m.\n.(and (leq m n) (leq n m))
+
+leq 2 3
+leq 4 1
+eq  5 5</script>
+</div>
+#+END_EXPORT
+* Combinatory logic
+** SKI combinators
+[[https://en.wikipedia.org/wiki/Combinatory_logic][Combinatory logic]] provides a notation for \lambda-terms independent
+from quantified variables. Every \lambda-expression can be written in
+terms of three combinators, $S,K,I$, which are defined as
+
+ - $I = \lambda x.x$, the identity function.
+ - $K = \lambda x.\lambda y.x$, the constant function.
+ - $S = \lambda x.\lambda y.\lambda z. x z (y z)$, a generalized application.
+ 
+The first one, the identity, can be also written as a function of $S$ and $K$.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+I = \x.x
+K = \x.\y.x
+S = \x.\y.\z.(x z (y z))
+
+S K K</script>
+</div>
+#+END_EXPORT
+
+The interesting property of this particular set of combinators is that
+every other lambda expression can be written in terms of them. We can
+see how a particular lambda expression is written in SKI calculus by
+turning on the *ski* mode of the interpreter.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:ski on
+S
+false
+true
+or
+and</script>
+</div>
+#+END_EXPORT
+
+*Exercise 4.1:* How are Church-encoded numerals represented with SKI
+combinators? Compute the first four or five numbers and try to come up
+with the general rule.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here</script>
+</div>
+#+END_EXPORT
+
+** Schönfinkel combinators
+Schönfinkel and Church defined different but equivalent sets of
+combinators. Some of the other classical combinators are
+
+  * function application, =C=;
+  * function composition, =B=;
+  * and duplication of an argument, =W=;
+  
+and they are defined as
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+C = \f.\x.\y.f y x
+B = \f.\g.\x.f (g x)
+W = \x.\y.(y y)
+
+# -- You can test the combinators here
+:ski on
+C S K S</script>
+</div>
+#+END_EXPORT
+
+The [[https://en.wikipedia.org/wiki/Fixed-point_combinator#Fixed_point_combinators_in_lambda_calculus][Y combinator]] is related to recursion and we will discuss it on
+future chapters.
+
+* Data structures
+** Tuples
+Tuples are easily defined from the boolean logic. The main idea will be
+that the application of tuple to a function will result on the
+application of the function to its two components.
+
+\[ \mathtt{tuple}(a,b)(f) \equiv f\ a\ b \]
+
+With this idea, tuples and their two projections are defined as
+follows.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+tuple = \x.\y.\z.z x y
+first = \p.p true
+second = \p.p false
+
+# Projections
+first  (tuple 2 3)
+second (tuple 2 3)
+
+# Other functions
+(tuple 3 4) plus
+(tuple true false) or</script>
+</div>
+#+END_EXPORT
+
+As seen in the example, we use =true= and =false= to select the first
+or the second argument to the function. It is possible to use the same
+idea to apply other functions.
+
+** Lists I: nil and cons
+Data structures such as lists or binary trees can be represented using
+the same principle we used to build naturals and booleans. We would
+need two constructors to represent a list a =nil= signaling the end of
+the list and a =cons=, joining an element to the head of the list. A
+list would be something like this
+
+\[ \mathtt{cons}\ 1\ (\mathtt{cons}\ 2\ (\mathtt{cons}\ 3\ \mathtt{nil})).\]
+
+As we did with natural numbers, we are going to write a representation
+independent from the constructors, they are going to be passed as
+arguments. We need
+
+  - =nil=, a list.
+  - =cons=, a function taking an element (head) and a list (tail) and
+    returning a new list.
+
+This interpretation makes easier to write folding functions for
+lists. We can define a function on a list simply giving the
+interpretation for the =nil= and a binary function as an interpretation
+for the =const=.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Definition
+# The interpretation of nil is the nil constructor
+# The interpretation of (cons h t) is cons of h and the interpretation of t 
+nil  = \c.\n.n
+cons = \h.\t.\c.\n.(c h (t c n))</script>
+
+# Example
+cons 1 (cons 2 (cons 3 nil))
+
+# Folds
+(cons 1 (cons 2 (cons 3 nil))) plus 0
+</div>
+#+END_EXPORT
+
+It is useful to encode this principle into a function called
+=fold=. We are going to define a summation $\Sigma$ function and a
+list product $\Pi$ function on lists.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Definition
+fold = \c.\n.\l.(l c n)
+sum  = fold plus 0
+prod = fold mult 1
+
+# Examples
+sum  (cons 1 (cons 3 (cons 4 nil)))
+prod (cons 1 (cons 3 (cons 4 nil)))</script>
+</div>
+#+END_EXPORT
+
+*Exercise 5.1:* Write the =any= and =all= functions. They are
+functions that can be applied over lists of booleans.
+
+  - =all= returns true if the list is made up only of /trues/.
+  - =any= returns true if there is at least one /true/ on the list.
+
+You may want to use the =fold= function.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here. Uncomment the following lines
+# all = 
+# any =
+
+all (cons true  (cons true nil))
+any (cons false (cons true nil))
+</script>
+</div>
+#+END_EXPORT
+** Lists II: map and filter
+Map, filter and fold are the most famous examples of higher order
+functions on lists and a common example of the power of functional
+programming, which has its roots on lambda calculus.
+
+  - The *map* function applies a function =f= to every element on a
+    list.
+  - The *filter* function removes the elements of the list that do not
+    satisfy a given predicate. It "filters" the list, leaving only
+    elements that satisfy the predicate.
+
+We are going to implement these functions using our previously defined
+=fold=.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Given a cons h t, we return a cons (f h) t; given a nil, we return a nil
+map = \f.(fold (\h.\t.cons (f h) t) nil)
+
+# Examples
+sum               (cons 1 (cons 2 (cons 3 nil)))
+sum (map succ     (cons 1 (cons 2 (cons 3 nil))))
+sum (map (mult 0) (cons 1 (cons 2 (cons 3 nil))))</script>
+</div>
+#+END_EXPORT
+
+*Exercise 5.3:* Write functions
+
+  - doubling the value of each number on a list.
+  - negating each value of a list of booleans.
+
+/Hint: you don't need to use lambda abstractions on these/
+/definitions./
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here
+# doublelist =
+# negate =</script>
+</div>
+#+END_EXPORT
+
+*Filter* can be defined using a boolean to decide at each step whether
+to return a list with a head or return the tail ignoring the head,
+like this
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Definition
+filter = \p.(foldr (\h.\t.((p h) (cons h t) t)) nil)
+
+# Example
+length                (cons 2 (cons 3 (cons 5 nil)))
+length (filter (eq 3) (cons 2 (cons 3 (cons 5 nil))))</script>
+</div>
+#+END_EXPORT
+
+*Exercise 5.4:* Write a function that, given any list, returns a list
+containing only the even numbers on the list.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# -- Your solution goes here
+# filterodd =</script>
+</div>
+#+END_EXPORT
+** Binary trees
+Lists have been defined using two constructors and trees will be
+defined using the same technique. The only difference with lists is
+that the =cons= constructor is going to be replaced by a =node=
+constructor, which takes two trees as arguments. That is, a binary
+tree is
+
+  - an empty tree.
+  - a node, containing a label, a left subtree, and a right subtree.
+
+Defining functions using a fold-like combinator is again very simple
+due to the chosen representation. We are going to need also a variant
+of the usual function acting on three arguments, the label, the right
+node and the left node.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Definition
+node = \x.\l.\r.\f.\n.(f x (l f n) (r f n))
+
+# Example on natural numbers
+mytree    = node 4 (node 2 nil nil) (node 3 nil nil)
+triplesum = \a.\b.\c.plus (plus a b) c
+mytree triplesum 0</script>
+</div>
+#+END_EXPORT
+
+* Recursion
+** Fixpoints
+A fixpoint combinator is a higher-order function that, given
+a function $f$, solves the equation
+
+\[
+x = f\ x
+\]
+
+for $x$, meaning that, if $\mathtt{fix}\ f$ is the fixpoint of $f$, the following
+sequence of equations holds
+
+\[
+\mathtt{fix}\ f =
+f (\mathtt{fix}\ f) =
+f ( f (\mathtt{fix}\ f)) =
+f ( f ( f (\mathtt{fix}\ f))) =
+\dots
+\]
+
+The first surprising fact is that such a combinator actually exists.
+In the following example, we define the =fix= combinator; which we
+will use later to define recursive functions. The problem it has is
+that it cannot be evaluated without arguments into a closed form, so
+we have to delay the evaluation of the expression when we bind it. To
+do this, we use the Mikrokosmos =!== operator, which binds an
+expression to a variable *without* simplifying it first.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Do not evaluate the fix combinator alone, it enters an infinite loop!
+fix != (\f.(\x.f (x x)) (\x.f (x x)))
+fix (const id)</script>
+</div>
+#+END_EXPORT
+
+This `fix` operator (which is more commonly called the [[https://en.wikipedia.org/wiki/Fixed-point_combinator#Fixed_point_combinators_in_lambda_calculus][Y combinator]])
+allows us to use the function we are defining on its own
+definition. The function will be passed as the first argument to the
+argument of fix, as =f = fix (\f. ...)=. It is important to notice
+that recursive functions, even if they work, cannot be evaluated alone
+without entering an infinite beta-reduction loop.
+
+  * [[https://www.youtube.com/watch?v=9T8A89jgeTI][Essentials: Functional Programming's Y Combinator - Computerphile]]
+
+In Mikrokosmos, we need the =!== operator when defining recursive
+functions to prevent them from expanding.
+
+Our first example is the *factorial* function.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+fact != fix (\f.\n.iszero n 1 (mult n (f (pred n))))
+fact 3
+fact 4</script>
+</div>
+#+END_EXPORT
+
+The complexity of computing a factorial grows exponentially, and the
+lambda calculus (and particularly, this encoding of natural numbers)
+was not thought to be efficient. =fact 6= will surely be too much for
+the interpreter.
+
+As a last example, we are going to define *Fibonacci* numbers.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Definition
+fib != fix (\f.\n.iszero n 1 (plus (f (pred n)) (f (pred (pred n)))))
+
+# Examples
+fib 0
+fib 1
+fib 2
+fib 3
+fib 4
+
+# Take care when defining functions using fixpoint combinators!
+# Recursion can easily lead to non-terminating computations</script>
+</div>
+#+END_EXPORT
+** Evaluation
+The order in which evaluation is performed is crucial to determine if
+an expression will eventually terminate. Mikrokosmos evaluates every
+expression from left to right, that is, the arguments of a function
+are not evaluated until they are being actually used on the
+function. This is not the most efficient way: if the same argument
+appears twice in the body of the function, it will be evaluated twice!
+but it prevent some expressions taking from entering an inifinite
+loop.
+
+For instance, =fix= is a non-terminating term (it *diverges*); but if
+it is used inside an =ifelse= statement, it will be not evaluated at
+all.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+false fix 3
+true 4 fix</script>
+</div>
+#+END_EXPORT
+
+If =false 2 fix= is evaluated, however, Mikrokosmos will enter an
+infinite loop. Normally, your browser will allow you to stop the
+Javascript script and reload the page.
+
+* Types
+** Simply typed \lambda-calculus
+Until now, we have been talking about untyped lambda calculus, but we
+are now going to deal with the simply-typed lambda calculus. The main
+differences are that
+
+  * every term has a type;
+  * only a subset of the lambda expressions can be written in
+    simply-typed lambda calculus, the typable ones;
+  * every term normalizes, that is, every computation finishes;
+  * as a consequence, it is not Turing-complete.
+  
+The command =:types on= activates types. Types are displayed with
+every lambda expression, but certain lambda expressions which cannot
+be typed cannot be used anymore. The =fix= operator is an example.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+
+# Some examples
+id
+K
+fix
+
+# Function application
+plus
+plus 3
+plus 3 2</script>
+</div>
+#+END_EXPORT
+
+A type is written as a set of type variables and arrows, where =A -> B=
+represents the type of a function between =A= and =B=. Currying
+works also with types, and a multiargument function must be written as
+=A -> B -> C=. The interpreter will always try to infer the 
+*most general type*, that is, it is preferible to have =A -> B= than the
+particular case =A -> C -> D= where =B= happens to be =C -> D=.
+
+** Propositions as types
+What types are inhabited? It is easy to find an expression of the type
+=A -> A=, but it seems that there is no expression of type =A -> B=. 
+We can reason that any expression of that type should be able to
+transform any given input type onto any desired output type, and that
+such an expression would not be possible.
+
+The rules of lambda calculus are similar to the rules of the
+intuitionistic propositional logic; this means that a type will be
+inhabited if and only if the type, reading arrows as logical
+implications, is a tautology of propositional logic.
+That is, the axioms of intuistic propositional logic are
+
+  * every expression implies itself, =A -> A=.
+  * we can discard any assumption to arrive at a conclusion =A -> B -> A=.
+  * an assumption can be used multiple times to arrive at intermediate
+    conclusions, =(A -> B -> C) -> (A -> B) -> A -> C=.
+  
+And these are precisely the types of the SKI combinators. As any lambda
+expression can be written in terms of these combinators, every lambda
+expression of a type is actually a *proof* of the proposition the
+type represents.
+
+We can define some logical connectives using only the implication. For
+example, the negation of a proposition $A$ would be a function taking
+$A$ and returning any given type. As we discussed earlier, this should
+be impossible, so the existence of a function =T -> B= where =B= is a
+free variable should be a proof of the type =T= not being inhabited.
+
+For example, we can write a proof of the *modus ponens* by presenting
+an inhabitant of the type $A \to (A \to B) \to B$, where A and B are
+free type variables.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Axioms of intuitionistic propositional logic
+:types on
+I
+K
+S
+
+# Modus ponens
+\a.\b.b a</script>
+</div>
+#+END_EXPORT
+
+** Products, unions and logic
+Mikrokosmos supports *product*, *union*, *unit* and *void* types.
+
+ * The /product/ type =A × B= is the type of the pairs of elements
+   where the first one is of type =A= and the second one is of type =B=.
+
+ * The /union/ type =A + B= is a type that can contain an element of
+   type =A= or an element of type =B=. It is a labeled disjoint union
+   of the two types.
+
+ * The /unit/ type =⊤= has only one element, called =unit= or =★=.
+
+ * The /void/ type =⊥= has no elements. Its utility will be discussed
+   later.
+
+They can be used with the following typed constructors
+
+|-------------+-----------------------------------+-------------------|
+| Constructor | Type                              | Description       |
+|-------------+-----------------------------------+-------------------|
+| =(-,-)=     | =A → B → A × B=                   | Pairs             |
+| =fst=       | =(A × B) → A=                     | First projection  |
+| =snd=       | =(A × B) → B=                     | Second projection |
+| =inl=       | =A → A + B=                       | First inclusion   |
+| =inr=       | =B → A + B=                       | Second inclusion  |
+| =caseof=    | =(A + B) → (A → C) → (B → C) → C= | Case analysis     |
+| =unit=      | =⊤=                               | Unit element      |
+| =abort=     | =⊥ → A=                           | Empty function    |
+| =absurd=    | =⊥ → ⊥=                           | Empty identity    |
+|-------------+-----------------------------------+-------------------|
+
+
+The following are examples of the use of typed constructors.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+fst (2,3)
+snd (2,3)
+inl true
+inr false
+caseof (inl 3) (mult 2) (plus 1)
+caseof (inr 3) (mult 2) (plus 1)
+unit</script>
+</div>
+#+END_EXPORT
+
+As an example, we could use the type =⊤ + ⊤= to write a new version
+of the booleans. This new version will use =caseof= as its =ifelse=.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+ttrue = inl unit
+tfalse = inr unit
+tnot = \b.caseof b inr inl
+tand = \a.\b.caseof a (\t.b) inr
+
+tnot ttrue
+tnot tfalse
+tand ttrue ttrue
+tand ttrue tfalse
+tand tfalse ttrue
+tand tfalse tfalse</script>
+</div>
+#+END_EXPORT
+
+** Conjunctions, disjunctions and proofs
+These types complete the correspondence between intuitionistic logic
+and lambda calculus. A type is inhabited if and only if its
+proposition is provable.
+
+|---------------------+---------+-------------+---------------------|
+| Description         | Type    | Proposition | Description         |
+|---------------------+---------+-------------+---------------------|
+| Product type        | =A × B= | =A ∧ B=     | Logical conjunction |
+| Disjoint union type | =A + B= | =A ∨ B=     | Logical disjunction |
+| Unit type           | =⊤=     | =⊤=         | True proposition    |
+| Empty type          | =⊥=     | =⊥=         | False proposition   |
+| Function to empty   | =A → ⊥= | =¬A=        | Logical negation    |
+|---------------------+---------+-------------+---------------------|
+
+Following this correspondence, we are now able to write more complex
+proofs on intuitionistic logic. For example, the following is a proof
+of the trivial fact that
+
+\[
+A \wedge B \to B \wedge A;
+\]
+
+and, at the same time, it is a function swapping the two terms of a
+pair.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+swap = \m.(snd m,fst m)
+swap</script>
+</div>
+#+END_EXPORT
+
+We had defined the negation of a type as a function from that type
+to the empty type. This makes sense, only if the type is not inhabited
+it is possible to write an empty function. The =abort= function is
+useful if we want to use the [[https://en.wikipedia.org/wiki/Principle_of_explosion][principle of explosion]], that is, from
+falsity, everything follows. As an example, we will prove
+
+\[
+A \wedge \neg A \to B
+\]
+
+and one of the deMorgan laws
+
+\[
+\neg (A \vee B) \to \neg A \wedge \neg B
+\]
+
+as the following terms. 
+/Note the use of =abort= and =absurd= as =□= and =■=!/
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+\m.abort (snd m (fst m))
+\f.(\a.absurd (f (inl a)), \b.absurd (f (inr b)))</script>
+</div>
+#+END_EXPORT
+
+The characteristic difference of classical versus intuitionistic logic
+is that $A \vee \neg A$ and $\neg \neg A \to A$ (the law of excluded
+middle, LEM) are not provable on intuitionistic logic. It is not
+possible to find an expression of type =A + (A → ⊥)=, 
+which would correspond to $A \vee \neg A$.
+
+It is possible, however, to prove $\neg \neg (A \vee \neg A)$.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+notnotlem = \f.f (inr (\a.absurd (f (inl a))))
+notnotlem</script>
+</div>
+#+END_EXPORT
+
+Now that we are writing proofs, it is a good time to introduce a new
+feature of the interpreter. Mikrokosmos can show you the derivation
+tree of any of your proofs with =@@=. For example, we will prove
+that
+
+\[
+A \vee B \to B \vee A
+\]
+
+as
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:types on
+# Our proof is of type (A + B) → B + A
+\m.caseof m inr inl
+
+# And we can show a derivation tree of it as
+@@ \m.caseof m inr inl
+
+# A simpler example is the identity
+@@ \x.x</script>
+</div>
+#+END_EXPORT
+
+** Curry-Howard
+The Curry-Howard isomorphism not only states the correspondence
+between types and propositions and between terms and proofs; but
+a full isomorphism with respect to term evaluation and proof
+simplification. That is, if a term corresponds to a proof, the
+fully evaluated term corresponds to a fully simplified proof.
+
+Every simply typed \lambda-calculus term can be understood as a
+derivation tree of the term it is proving. Mikrokosmos allows the user
+to check the derivation tree of a given \lambda-term using =@=.  And
+it can also simplify the derivation using =@@=, as we did before. We
+will use our previously defined function/proof =swap= as an example.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+@ \m.(snd m,fst m)
+@@ \m.(snd m,fst m)</script>
+</div>
+#+END_EXPORT
+
+In the first case, the function is not fully simplified, and a more
+complex derivation tree arises from it. The simplification of the
+term corresponds directly to a simplification of the derivation tree.
