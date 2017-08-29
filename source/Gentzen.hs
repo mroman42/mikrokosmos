@@ -63,7 +63,10 @@ textMatrix s = [centerRow (length s) s]
 deductionMatrix :: CharMatrix -> String -> [CharMatrix] -> CharMatrix
 deductionMatrix inference label blocks = stackMatrices label top inference
   where
-    top = foldr1 (\ x y -> x <::> ["   "] <::> y) blocks
+    top =
+      if not (null blocks)
+        then foldr1 (\x y -> x <::> ["   "] <::> y) blocks
+        else [""]
 
 data ProofTree a l = Inference a | Deduction a l [ProofTree a l]
 instance Bifunctor ProofTree where
@@ -74,8 +77,16 @@ matrixProofTree :: ProofTree String String -> CharMatrix
 matrixProofTree (Inference x)      = textMatrix x
 matrixProofTree (Deduction x l xs) = deductionMatrix (textMatrix x) l (map matrixProofTree xs)
 
+boxAround :: CharMatrix -> CharMatrix
+boxAround cm =
+  ["╭" ++ replicate w '─' ++ "╮"] ++
+  map (" "++) cm ++
+  ["╰" ++ replicate w '─' ++ "╯"]
+  where
+    w = width cm
+
 showProofTree :: ProofTree String String -> String
-showProofTree = showMatrixChar . map ("  " ++) . matrixProofTree
+showProofTree = showMatrixChar . boxAround . matrixProofTree
 
 
 data Label = Lponens | Labs | Lpair | Lpi1 | Lpi2 | Linr | Linl | Lcase | Lunit | Labort | Labsurd
