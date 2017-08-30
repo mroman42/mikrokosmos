@@ -9,6 +9,7 @@ progressive piano études *[Mikrokosmos](https://www.youtube.com/watch?v=VEsMk3D
 It aims to provide students with a tool to learn and understand λ-calculus. It supports both untyped λ-calculus 
 and simply typed λ-calculus.
 
- * [Mikrokosmos user's guide](https://m42.github.io/mikrokosmos/).
- * [Mikrokosmos tutorial](https://github.com/M42/mikrokosmos/blob/master/docs/tutorial.ipynb).
+ * [Try Mikrokosmos!](https://m42.github.io/mikrokosmos/)
+ * [Mikrokosmos tutorial](https://m42.github.io/mikrokosmos/tutorial.html).
+ * [Mikrokosmos user's guide](https://m42.github.io/mikrokosmos/userguide.html).
  * [Mikrokosmos on Hackage](https://hackage.haskell.org/package/mikrokosmos).
