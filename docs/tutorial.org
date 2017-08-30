@@ -115,9 +115,9 @@ const id const</script>
 </div>
 #+END_EXPORT
 
-Note that, in λ-calculus, a "function taking two arguments" and "a
-function that takes an argument and returns a function taking the
-second" are conceptually the same. This equivalence is called
+Note that, in λ-calculus, a /"function taking two arguments"/ and 
+/"a function that takes an argument and returns a function taking the second"/
+are conceptually the same. This equivalence is called
 *[[https://en.wikipedia.org/wiki/Currying][currying]]* in honor of [[https://en.wikipedia.org/wiki/Haskell_Curry][Haskell Curry]], the logician who developed this
 idea, previously discovered by Schönfinkel and Frege.
 
@@ -165,10 +165,10 @@ following expressions and then check it with the interpreter.
 
 *Exercise 1.2:* Write
 
- * function application, a function taking a function $f$ and a term
+ * /function application/, a function taking a function $f$ and a term
    $x$ as arguments and returning $f(x)$.
 
- * swapping of arguments, a function that takes a function on two
+ * /swapping of arguments/, a function that takes a function on two
    arguments $f$ and returns a $g$ such that $g(x,y) = g\ x\ y = f\ y\ x = f(y,x)$.
 
 And test them.
@@ -182,8 +182,9 @@ And test them.
 
 * Boolean logic
 ** Booleans
-[[https://en.wikipedia.org/wiki/Boolean_algebra][Boolean logic]] can be encoded in \lambda-calculus. In boolean logic, we
-have two elements =true= and =false=; and some logical gates such as
+We will start our programming journey on \lambda-calculus encoding
+[[https://en.wikipedia.org/wiki/Boolean_algebra][boolean logic]]. In boolean logic, we have two elements =true= and
+=false=; and some logical gates such as
 
   * the *and* gate, which outputs true if and only if its two inputs 
     are true.
@@ -200,7 +201,7 @@ For example,
 
 Our intuition on what means to be a truth value is that it can
 distinghish between two values (*true* or *false*) or two branches on
-a program =(if ... else ...)=. We are going to use this intuition to
+a program =(if ... then ... else ...)=. We are going to use this intuition to
 write an encoding of boolean values based on their ability to choose
 between two branches. Maybe surprisingly, this encoding will be also
 useful to write the usual boolean logic gates.
@@ -264,8 +265,8 @@ literally, the trivial one
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
 ifelse = \b.b
-(ifelse true) id const
-(ifelse false) id const</script>
+ifelse true id const
+ifelse false id const</script>
 </div>
 #+END_EXPORT
 
@@ -288,7 +289,7 @@ and false false</script>
 </div>
 #+END_EXPORT
 
-*Exercise 2.1:* Think why this definition of the `and` gate works.
+*Exercise 2.1:* Think why this definition of the =and= gate works.
 /Hint: think what happens when the first argument is a =true=./
 /What happens if it is a =false=?/
 
@@ -691,7 +692,7 @@ future chapters.
 
 * Data structures
 ** Tuples
-Tuples are easily defined from the boolean logic. The main idea will be
+Tuples are easily defined from boolean logic. The main idea will be
 that the application of tuple to a function will result on the
 application of the function to its two components.
 
@@ -750,13 +751,13 @@ for the =const=.
 # The interpretation of nil is the nil constructor
 # The interpretation of (cons h t) is cons of h and the interpretation of t 
 nil  = \c.\n.n
-cons = \h.\t.\c.\n.(c h (t c n))</script>
+cons = \h.\t.\c.\n.(c h (t c n))
 
 # Example
 cons 1 (cons 2 (cons 3 nil))
 
 # Folds
-(cons 1 (cons 2 (cons 3 nil))) plus 0
+(cons 1 (cons 2 (cons 3 nil))) plus 0</script>
 </div>
 #+END_EXPORT
 
@@ -1045,6 +1046,31 @@ works also with types, and a multiargument function must be written as
 =A -> B -> C=. The interpreter will always try to infer the 
 *most general type*, that is, it is preferible to have =A -> B= than the
 particular case =A -> C -> D= where =B= happens to be =C -> D=.
+
+*Exercise 7.1:* The library =and= function is not typeable. Think why and
+write a similar typeable =and= function.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+# Our previous 'and' function ...
+:types off
+and
+
+# ... is not typeable
+:types on
+and
+
+# -- Your solution goes here
+# and2 =
+
+and2
+and2 true true
+and2 true false
+and2 false true
+and2 false false</script>
+</div>
+#+END_EXPORT
 
 ** Propositions as types
 What types are inhabited? It is easy to find an expression of the type
