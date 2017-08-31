@@ -46,11 +46,25 @@ chapters.
 
   * [[https://www.youtube.com/watch?v=eis11j_iGMs][Lambda Calculus - Computerphile]]
 
-** A first example
 On this tutorial we will use a didactic \lambda-calculus interpreter,
 [[https://github.com/M42/mikrokosmos][Mikroskosmos]]; which can be used directly from the browser. Every time
 you find a Mikrokosmos code snippet like the following, you can execute
 it by pressing *evaluate*.
+
+#+BEGIN_EXPORT HTML
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+(λx.mult 2 x) 3</script>
+</div>
+#+END_EXPORT
+
+
+** A first example
+In Mikrokosmos, it is possible to use the backslash character as a λ
+to make the input easier. If you happen to have a greek keyboard
+configured, however, feel free to write "λ"! Mikrokosmos accepts both
+sintaxes. For instance, the nested expression $\lambda x.(\lambda y.x)$
+can be written as =\x.(\y.x)=.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -60,19 +74,13 @@ id id</script>
 </div>
 #+END_EXPORT
 
-In Mikrokosmos, it is possible to use the backslash character as a λ
-to make the input easier. If you happen to have a greek keyboard
-configured, however, feel free to write "λ"! Mikrokosmos accepts both
-sintaxes. For instance, the nested expression $\lambda x.(\lambda y.x)$
-can be written as =\x.(\y.x)=.
-
-Our first example defines a very simple lambda term, the 
-*identity function* $\lambda x. x$; which is a function that takes an argument
-$x$ and returns it unchanged. Our first statement just after this
-definition will be apply this function to itself. Keep in mind during
-this tutorial that it is perfectly possible to apply functions to
-other functions or to themselves; in fact, this is one of the core
-ideas of lambda calculus.
+Our first example defines the *identity function* $\lambda x. x$;
+which is a function that takes an argument $x$ and returns it
+unchanged. Our first statement just after this definition applies this
+function to itself, and the result is again the identity.  Keep in
+mind during this tutorial that it is perfectly possible to apply
+functions to other functions or to themselves; in fact, this is one of
+the core ideas of \lambda-calculus.
 
 In its output, Mikrokosmos shows the evaluated term and possible names
 for it. We will learn what those names mean later. In the previous
@@ -238,15 +246,15 @@ false true false</script>
 #+END_EXPORT
 
 In particular, =true= is exactly the same lambda term as =const=. This
-is a very usual phenomenon in lambda calculus, where the same function
+is a very usual phenomenon in \lambda-calculus, where the same function
 can be interpreted differently in different contexts. Mikrokosmos
 allows us to have multiple names for the same term.
 
 ** If-else
 The advantage of this way of encoding the boolean values is that they
-can be easily used in combination with other lambda terms. In
+can be easily used in combination with other \lambda-terms. In
 particular, the way to encode an if-else is almost trivial: it is
-already encoded on the lambda terms!
+already encoded on the \lambda-terms!
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -434,11 +442,9 @@ returns true if and only if the number is even.
 
 ** Addition and multiplication
 The encoding of the addition and multiplication of natural numbers
-will profit from the interpretation of numbers as functions. This is,
-in fact, the only way we can use naturals; but we will quickly see
-that this is an strenght instead of a weakness of our encoding. We are
-really encoding naturals as their induction principle: we can define a
-function by defining a zero and a successor.
+will profit from the interpretation of numbers as functions. We are
+actually encoding naturals as their induction principle: we can define
+a function by defining how it acts on zero and a successor.
 
 The =double= function will only change the successor for the
 composition of the successor function with itself.
@@ -554,11 +560,11 @@ second.
 </div>
 #+END_EXPORT
 
-*Exercise 3.5:* Let's look again at the definition of =pred=,
-the core of the definition is this subexpression =\g.(\h.h (g f))=,
+*Exercise 3.5:* Let's look again at the definition of =pred=.
+The core of the definition is the subexpression =\g.(\h.h (g f))=,
 which we will call =inc f=. It is a sort of reversed composition.
 Study what happens when we compose =inc f= with itself and reimplement
-pred using =inc=.
+=pred= using =inc=.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -581,12 +587,12 @@ inc = \f.\g.\h.h (g f)
 #+END_EXPORT
 
 ** Predicates on natural numbers
-This encoding even allow us to write predicates on natural
+This encoding even allows us to write predicates on natural
 numbers. The first predicate will be a function distinguishing a
-successor from a zero. It will be user later to build more complex
-ones.
+non-zero number from a zero. It will be used later to build more
+complex ones.
 
-It is built by appliying a =const false= function =n= times to a true
+It is built by applying a =const false= function =n= times to a true
 constant. Only if it is applied =0= times, it will return a true
 value.
 
