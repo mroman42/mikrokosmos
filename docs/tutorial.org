@@ -123,9 +123,10 @@ returns the first one.
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
 const = \x.\y.x
+const 3 4
 const id id
 const id const
-const 3 4</script>
+</script>
 </div>
 #+END_EXPORT
 
@@ -152,6 +153,7 @@ usual mathematical function composition $f \circ g$.
 # Comments can be inserted starting a line with the # character
 # A constant function
 discard = const id
+discard 2
 discard id
 discard const
 
@@ -346,11 +348,7 @@ that is, the implication is true if both are true or if the premise is false.
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
-implies = \a.\b.or (not a) b
-implies true true
-implies true false
-implies false true
-implies false false</script>
+implies = \a.\b.or (not a) b</script>
 </div>
 #+END_EXPORT
 
@@ -366,9 +364,9 @@ implies false false</script>
 
 *Exercise 2.3:* Compute the following logic clauses using lambda calculus
  
- - True or false implies false.
- - False implies that: false implies false.
- - The negation of false and the negation of true both imply true.
+ - $(\mathtt{true} \vee \mathtt{false})\to \mathtt{false}$.
+ - $\mathtt{false} \to (\mathtt{false} \to \mathtt{false})$
+ - $(\neg \mathtt{false} \wedge \neg \mathtt{true}) \to \mathtt{true}$
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
