@@ -124,7 +124,8 @@ returns the first one.
 <script type="text/mikrokosmos">
 const = \x.\y.x
 const id id
-const id const</script>
+const id const
+const 3 4</script>
 </div>
 #+END_EXPORT
 
