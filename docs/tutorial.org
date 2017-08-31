@@ -69,8 +69,13 @@ can be written as =\x.(\y.x)=.
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
+# Our first example
 id = \x.x
-id id</script>
+id id
+
+# More examples on the identity function
+id 3
+id 2</script>
 </div>
 #+END_EXPORT
 
