@@ -204,7 +204,9 @@ simpdiagramParser = SimpDiagram <$> (string "@@ " >> lambdaexp)
 
 -- | Parses a binding between a variable an its representation.
 bindParser :: Parser Action
-bindParser = fmap Bind $ (,) <$> many1 alphaNum <*> (spaces >> string "!=" >> spaces >> lambdaexp)
+bindParser = fmap Bind $ (,) <$>
+  many1 alphaNum <*>
+  (spaces >> choice [try (string "!="), try (string ":=")] >> spaces >> lambdaexp)
 
 -- | Parses a binding and evaluation expression between a variable an its representation
 evalbindParser :: Parser Action
