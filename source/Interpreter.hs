@@ -177,20 +177,20 @@ interpretParser = Interpret <$> actionParser
 
 -- | Parses a language action.
 actionParser :: Parser Action
-actionParser = choice
-  [ try simpdiagramParser
-  , try diagramParser
-  , try bindParser
-  , try evalbindParser
-  , try executeParser
-  , try commentParser
-  , try helpParser
-  , try restartParser
-  , try verboseParser
-  , try colorParser
-  , try skiOutputParser
-  , try typesParser
-  , try topoParser
+actionParser = choice $ map try
+  [ simpdiagramParser
+  , diagramParser
+  , bindParser
+  , evalbindParser
+  , executeParser
+  , commentParser
+  , helpParser
+  , restartParser
+  , verboseParser
+  , colorParser
+  , skiOutputParser
+  , typesParser
+  , topoParser
   ]
 
 
