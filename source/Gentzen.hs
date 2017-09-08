@@ -207,7 +207,14 @@ typeinfer' (x:y:vars) depth ctx l@(Caseof m f g) a = do
   let ss = rho . tau . sigma
   let fulld1 = bimap (\(d1e,d1d,d1t) -> (d1e,d1d,(rho . tau) d1t)) id d1
   let fulld2 = bimap (\(d2e,d2d,d2t) -> (d2e,d2d,rho d2t)) id d2
-  return (ss, Deduction (l, depth, ss a) Lcase [fulld1,fulld2,d3])
+  -- Pruning the tree to make it match the natural deduction case rule
+  case fulld1 of
+    Deduction _ Labs [reald1] ->
+      case fulld2 of
+        Deduction _ Labs [reald2] -> return (ss, Deduction (l, depth, ss a) Lcase [reald1,reald2,d3])
+        _ -> Nothing
+    _ -> Nothing
+    
   where
     third1 [] = []
     third1 [_] = []
