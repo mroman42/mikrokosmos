@@ -17,6 +17,7 @@ module Interpreter
   , actionParser
   , executeWithEnv
   , librariesEnv
+  , preformat
   )
 where
 
@@ -38,7 +39,7 @@ import           Stlc.Gentzen
 -- | Execute a block of code in a given environment
 executeWithEnv :: Environment -> String -> (String, Environment)
 executeWithEnv initEnv code = do
-  let parsing = map (parse actionParser "") $ filter (/="") $ lines code
+  let parsing = map (parse actionParser "" . preformat) . filter (/="") . lines $ code
   let actions = mapMaybe (\x -> case x of
                              Left _  -> Nothing
                              Right a -> Just a) parsing
@@ -48,6 +49,10 @@ executeWithEnv initEnv code = do
 -- | Default environment plus standard libraries
 librariesEnv :: Environment
 librariesEnv = snd $ executeWithEnv defaultEnv stdlibraries
+
+-- | Preformats text before sending it to the interpreter
+preformat :: String -> String
+preformat = reverse . dropWhile (==' ') . reverse . dropWhile (==' ')
 
 -- | Interpreter action. It can be a language action (binding and evaluation)
 -- or an interpreter specific one, such as "quit".
