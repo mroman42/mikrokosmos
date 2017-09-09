@@ -7,7 +7,7 @@ import System.Process
 import Text.ParserCombinators.Parsec
 import NamedLambda
 import Lambda
-import Types
+import Stlc.Types
 import Ski
 import Environment
 import Interpreter

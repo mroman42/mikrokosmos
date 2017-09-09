@@ -1,13 +1,13 @@
-module Gentzen
+module Stlc.Gentzen
   ( gentzendiagram
   , showProofTree
   )
 where
 
-import Types
+import Stlc.Types
+import Stlc.Block
 import Lambda
 import NamedLambda
-import Block
 import Data.Bifunctor
 import qualified Data.Map as Map
 
