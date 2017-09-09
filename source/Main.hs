@@ -26,15 +26,17 @@ main =
   -- Uses the Options library, which requires the program to start with
   -- runCommand. The flags are stored in opts and other command line arguments
   -- are stored in args.
-  runCommand $ \opts args ->
-  -- Reads the flags
+  runCommand $ \opts args -> do
+  -- Reads the libaries flag
+  let initialEnv = if flagLibs opts then defaultEnv else librariesEnv
+  -- Reads more flags
   if flagVersion opts
   then putStrLn versionText
   else case args of
              [] ->
                runInputT
                  defaultSettings
-                 (outputStrLn initialText >> interpreterLoop defaultEnv)
+                 (outputStrLn initialText >> interpreterLoop initialEnv)
              [filename] -> executeFile filename
              _ -> putStrLn "Wrong number of arguments"
 
@@ -195,6 +197,7 @@ findFilename s = do
 data MainFlags = MainFlags
   { flagExec :: String
   , flagVersion :: Bool
+  , flagLibs :: Bool
   }
 
 instance Options MainFlags where
@@ -202,3 +205,4 @@ instance Options MainFlags where
   defineOptions = pure MainFlags
     <*> simpleOption "exec"    ""    "A file to execute and show its results"
     <*> simpleOption "version" False "Show program version"
+    <*> simpleOption "no-libs" False "Runs mikrokosmos without standard libraries"
