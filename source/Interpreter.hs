@@ -15,6 +15,7 @@ module Interpreter
   , multipleAct
   , Action (..)
   , actionParser
+  , executeWithEnv
   )
 where
 
@@ -31,6 +32,17 @@ import           Ski
 import           Stlc.Types
 import           Stlc.Gentzen
 
+
+-- | Execute a block of code in a given environment
+executeWithEnv :: Environment -> String -> (String, Environment)
+executeWithEnv initEnv code = do
+  let parsing = map (parse actionParser "") $ filter (/="") $ lines code
+  let actions = mapMaybe (\x -> case x of
+                             Left _  -> Nothing
+                             Right a -> Just a) parsing
+  case runState (multipleAct actions) initEnv of
+    (outputs, env) -> (unlines outputs, env)
+    
 
 -- | Interpreter action. It can be a language action (binding and evaluation)
 -- or an interpreter specific one, such as "quit".
