@@ -136,8 +136,7 @@ returns the first one.
 const = \x.\y.x
 const 3 4
 const id id
-const id const
-</script>
+const id const</script>
 </div>
 #+END_EXPORT
 
