@@ -51,8 +51,8 @@ interpreterLoop environment = do
           Nothing -> Quit
           Just "" -> Interpret EmptyLine
           Just input ->
-            case parse interpreteractionParser "" input of
-              Left _ -> Interpret Error
+            case parse interpreteractionParser "" (preformat input) of
+              Left  _ -> Interpret Error
               Right a -> a
 
   newenvironment <- executeAction environment interpreteraction
@@ -127,7 +127,7 @@ loadFile filename = do
   case input of
     Left _ -> return Nothing
     Right inputs -> do
-      let parsing = map (parse actionParser "") $ filter (/="") $ lines inputs
+      let parsing = map (parse actionParser "" . preformat) . filter (/="") . lines $ inputs
       let actions = map (\x -> case x of
                                  Left _  -> Nothing
                                  Right a -> Just a) parsing
