@@ -45,6 +45,7 @@ executable mikrokosmos
                        Interpreter
                        Environment
                        Ski
+                       Libraries
                        Stlc.Types
                        Stlc.Gentzen
                        Stlc.Block
@@ -86,6 +87,8 @@ test-suite test
                  Interpreter
                  Environment
                  Ski
+                 Libraries
                  Stlc.Types
                  Stlc.Gentzen
                  Stlc.Block
+                 
