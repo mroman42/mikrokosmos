@@ -16,6 +16,7 @@ module Interpreter
   , Action (..)
   , actionParser
   , executeWithEnv
+  , librariesEnv
   )
 where
 
@@ -28,6 +29,7 @@ import           Format
 import           Environment
 import           NamedLambda
 import           Lambda
+import           Libraries
 import           Ski
 import           Stlc.Types
 import           Stlc.Gentzen
@@ -42,7 +44,10 @@ executeWithEnv initEnv code = do
                              Right a -> Just a) parsing
   case runState (multipleAct actions) initEnv of
     (outputs, env) -> (unlines outputs, env)
-    
+
+-- | Default environment plus standard libraries
+librariesEnv :: Environment
+librariesEnv = snd $ executeWithEnv defaultEnv stdlibraries
 
 -- | Interpreter action. It can be a language action (binding and evaluation)
 -- or an interpreter specific one, such as "quit".
