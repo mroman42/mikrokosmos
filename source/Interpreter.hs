@@ -28,8 +28,8 @@ import           Environment
 import           NamedLambda
 import           Lambda
 import           Ski
-import           Types
-import           Gentzen
+import           Stlc.Types
+import           Stlc.Gentzen
 
 
 -- | Interpreter action. It can be a language action (binding and evaluation)

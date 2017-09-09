@@ -1,4 +1,4 @@
-module Types
+module Stlc.Types
   ( Type (Tvar, Arrow, Times, Union, Unitty, Bottom)
   , typeinference
   , typeinfer

@@ -1,4 +1,4 @@
-module Block
+module Stlc.Block
   ( Block
   , textBlock
   , deductionBlock
