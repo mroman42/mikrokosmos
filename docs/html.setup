@@ -14,6 +14,7 @@
 #+HTML_HEAD: <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.min.js"></script>
 #+HTML_HEAD: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.css">
 #+HTML_HEAD: <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/addon/mode/simple.min.js"></script>
+#+HTML_HEAD: <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/addon/edit/matchbrackets.js"></script>
 
 #+HTML_HEAD: <script src="https://m42.github.io/mikrokosmos-js/codemirrormkr.js"></script>
 #+HTML_HEAD: <script language="javascript" src="https://m42.github.io/mikrokosmos-js/rts.js"></script>
