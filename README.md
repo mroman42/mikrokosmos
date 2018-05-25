@@ -1,7 +1,7 @@
 # mikrokosmos
 
 <p align="center">
-  <img src ="https://raw.githubusercontent.com/M42/mikrokosmos/master/docs/icon.svg.png" />
+  <img src ="https://raw.githubusercontent.com/mroman42/mikrokosmos/master/docs/icon.svg.png" />
 </p>
 
 **Mikrokosmos** is a λ-calculus interpreter, borrowing its name from the series of
@@ -9,7 +9,7 @@ progressive piano études *[Mikrokosmos](https://www.youtube.com/watch?v=VEsMk3D
 It aims to provide students with a tool to learn and understand λ-calculus. It supports both untyped λ-calculus 
 and simply typed λ-calculus.
 
- * [Try Mikrokosmos!](https://m42.github.io/mikrokosmos/)
- * [Mikrokosmos tutorial](https://m42.github.io/mikrokosmos/tutorial.html).
- * [Mikrokosmos user's guide](https://m42.github.io/mikrokosmos/userguide.html).
+ * [Try Mikrokosmos!](https://mroman42.github.io/mikrokosmos/)
+ * [Mikrokosmos tutorial](https://mroman42.github.io/mikrokosmos/tutorial.html).
+ * [Mikrokosmos user's guide](https://mroman42.github.io/mikrokosmos/userguide.html).
  * [Mikrokosmos on Hackage](https://hackage.haskell.org/package/mikrokosmos).
