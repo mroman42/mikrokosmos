@@ -20,7 +20,7 @@ commands, provided that =cabal= and =pip= are installed
   sudo pip install imikrokosmos
 #+END_SRC
 
-and the [[https://github.com/M42/mikrokosmos/tree/master/lib][libraries]] should be placed under =~/.mikrokosmos/=. The following
+and the [[https://github.com/mroman42/mikrokosmos/tree/master/lib][libraries]] should be placed under =~/.mikrokosmos/=. The following
 sections explain in more detail each step.
 
 ** Mikrokosmos
@@ -32,12 +32,12 @@ from =cabal= using
   cabal install mikrokosmos
 #+END_EXAMPLE
 
-Binaries are available from the [[https://github.com/M42/mikrokosmos/releases][GitHub repository]].
+Binaries are available from the [[https://github.com/mroman42/mikrokosmos/releases][GitHub repository]].
 You can also install it by cloning the git repository and using
 [[https://www.haskell.org/cabal/][cabal]], as in
 
 #+BEGIN_SRC sh
-  git clone https://github.com/M42/mikrokosmos.git
+  git clone https://github.com/mroman42/mikrokosmos.git
   cd mikrokosmos
   cabal install
 #+END_SRC
@@ -45,7 +45,7 @@ You can also install it by cloning the git repository and using
 or using [[https://docs.haskellstack.org/en/stable/README/][stack]]
 
 #+BEGIN_SRC sh
-  git clone https://github.com/M42/mikrokosmos.git
+  git clone https://github.com/mroman42/mikrokosmos.git
   cd mikrokosmos
   stack install
 #+END_SRC
@@ -54,7 +54,7 @@ If you have =ghc= version 8 or greater you can also compile it directly
 as
 
 #+BEGIN_SRC sh
-  git clone https://github.com/M42/mikrokosmos.git
+  git clone https://github.com/mroman42/mikrokosmos.git
   cd mikrokosmos
   ghc Main.hs
 #+END_SRC
@@ -277,7 +277,7 @@ allowed on \lambda-expressions.
 * Standard libraries
 Mikrokosmos comes bundled with a set of libraries in the =./lib=
 folder; if your installation does not provide you the libraries, you
-can download the [[https://raw.githubusercontent.com/M42/mikrokosmos/master/std.mkr][library]] from the git repository. The installation
+can download the [[https://raw.githubusercontent.com/mroman42/mikrokosmos/master/std.mkr][library]] from the git repository. The installation
 of libraries is discussed [[*Libraries][here]].
 
 ** Loading libraries

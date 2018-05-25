@@ -1,6 +1,6 @@
 #+TITLE: Mikrokosmos
 #+SUBTITLE: A \lambda-calculus interpreter
-#+AUTHOR: Mario Román [[https://github.com/M42/][(github)]]
+#+AUTHOR: Mario Román [[https://github.com/mroman42/][(github)]]
 #+EMAIL: mromang08@gmail.com
 #+SETUPFILE: html.setup
 #+OPTIONS: num:nil
@@ -48,8 +48,8 @@ Mikrokosmos has been developed by [[https://mroman42.github.io/blog/about/][Mari
 thesis. It is free software licensed under GPL-3. You can follow the
 development on the relevant GitHub repositories
 
- * [[https://github.com/M42/mikrokosmos][Mikrokosmos]], main repository. Console interpreter.
- * [[https://github.com/M42/jupyter-mikrokosmos][Mikrokosmos-Jupyter]], a Jupyter kernel for the interpreter.
- * [[https://github.com/M42/mikrokosmos-tutorials][Mikrokosmos-tutorials]], a set of tutorials written for Jupyter.
- * [[https://github.com/M42/mikrokosmos-lib][Mikrokosmos-libs]], standard libraries for the interpreter.
- * [[https://github.com/M42/mikrokosmos-js][Mikrokosmos-JS]], call Mikrokosmos from JS.
+ * [[https://github.com/mroman42/mikrokosmos][Mikrokosmos]], main repository. Console interpreter.
+ * [[https://github.com/mroman42/jupyter-mikrokosmos][Mikrokosmos-Jupyter]], a Jupyter kernel for the interpreter.
+ * [[https://github.com/mroman42/mikrokosmos-tutorials][Mikrokosmos-tutorials]], a set of tutorials written for Jupyter.
+ * [[https://github.com/mroman42/mikrokosmos-lib][Mikrokosmos-libs]], standard libraries for the interpreter.
+ * [[https://github.com/mroman42/mikrokosmos-js][Mikrokosmos-JS]], call Mikrokosmos from JS.

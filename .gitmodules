@@ -1,9 +1,9 @@
 [submodule "jupyter-mikrokosmos"]
 	path = jupyter-mikrokosmos
-	url = https://github.com/M42/jupyter-mikrokosmos.git
+	url = https://github.com/mroman42/jupyter-mikrokosmos.git
 [submodule "lib"]
 	path = lib
-	url = https://github.com/M42/mikrokosmos-lib.git
+	url = https://github.com/mroman42/mikrokosmos-lib.git
 [submodule "docs/tutorials"]
 	path = docs/tutorials
-	url = https://github.com/M42/mikrokosmos-tutorials.git
+	url = https://github.com/mroman42/mikrokosmos-tutorials.git
