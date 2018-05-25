@@ -157,6 +157,7 @@ stdlibraries = unlines
   , "naturals := fix (compose (cons 0) (map (plus 1)))"
   , "infinity := fix succ"
   , "division := fix (\\d.\\q.\\a.\\b. lt a b (tuple q a) (d (succ q) (minus a b) b)) 0"
+  , "mu := \\p.fix (\\f.\\n.(p n) n (f (succ n))) 0"
   , "div := \\a.\\b.first (division a b)"
   , "mod := \\a.\\b.second (division a b)"
   , "pair = \\x.\\y.(x,y)"

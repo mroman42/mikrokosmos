@@ -2,11 +2,11 @@ name:                mikrokosmos
 version:             0.7.0
 synopsis:            Lambda calculus interpreter
 description:         A didactic untyped lambda calculus interpreter.
-homepage:            https://github.com/M42/mikrokosmos
-bug-reports:         https://github.com/M42/mikrokosmos/issues
+homepage:            https://github.com/mroman42/mikrokosmos
+bug-reports:         https://github.com/mroman42/mikrokosmos/issues
 license:             GPL-3
 license-file:        LICENSE
-author:              Mario Román (M42)
+author:              Mario Román (mroman42)
 maintainer:          mromang08+github@gmail.com
 category:            Language
 build-type:          Simple
@@ -16,7 +16,7 @@ tested-with:         GHC == 8.0.2
                                           
 source-repository head
   type:           git
-  location:       git://github.com/M42/mikrokosmos.git
+  location:       git://github.com/mroman42/mikrokosmos.git
 
 
                        
