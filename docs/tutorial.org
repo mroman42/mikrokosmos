@@ -1,6 +1,6 @@
 #+TITLE: Mikrokosmos
 #+SUBTITLE: Programming on the λ-calculus
-#+AUTHOR: Mario Román [[https://github.com/M42/][(github)]]
+#+AUTHOR: Mario Román [[https://github.com/mroman42/][(github)]]
 #+EMAIL: mromang08@gmail.com
 #+SETUPFILE: html.setup
 
@@ -59,7 +59,7 @@ chapters.
   * [[https://www.youtube.com/watch?v=eis11j_iGMs][Lambda Calculus - Computerphile]]
 
 On this tutorial we will use a didactic \lambda-calculus interpreter,
-[[https://github.com/M42/mikrokosmos][Mikroskosmos]]; which can be used directly from the browser. Every time
+[[https://github.com/mroman42/mikrokosmos][Mikroskosmos]]; which can be used directly from the browser. Every time
 you find a Mikrokosmos code snippet like the following, you can execute
 it by pressing *evaluate*.
 

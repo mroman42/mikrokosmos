@@ -1,7 +1,7 @@
 # mikrokosmos
 
 <p align="center">
-  <img src ="https://raw.githubusercontent.com/M42/mikrokosmos/master/docs/icon.svg.png" />
+  <img src ="https://raw.githubusercontent.com/mroman42/mikrokosmos/master/docs/icon.svg.png" />
 </p>
 
 **Mikrokosmos** is a λ-calculus interpreter, borrowing its name from the series of
