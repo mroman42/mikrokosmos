@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Libraries</span><span>
+</span><a name="line-2"></a><span>  </span><span class="hs-special">(</span><span> </span><a href="Libraries.html#stdlibraries"><span class="hs-identifier hs-var">stdlibraries</span></a><span>
+</span><a name="line-3"></a><span>  </span><span class="hs-special">)</span><span>
+</span><a name="line-4"></a><span class="hs-keyword">where</span><span>
+</span><a name="line-5"></a><span>
+</span><a name="line-6"></a><span class="hs-identifier">stdlibraries</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-identifier hs-type">String</span><span>
+</span><a name="line-7"></a><a name="stdlibraries"><a href="Libraries.html#stdlibraries"><span class="hs-identifier">stdlibraries</span></a></a><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier hs-var">unlines</span><span>
+</span><a name="line-8"></a><span>  </span><span class="hs-special">[</span><span> </span><span class="hs-string">&quot;id = \\x.x&quot;</span><span>
+</span><a name="line-9"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;const = \\x.\\y.x&quot;</span><span>
+</span><a name="line-10"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;compose = \\f.\\g.\\x.f (g x)&quot;</span><span>
+</span><a name="line-11"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;true  = \\a.\\b.a&quot;</span><span>
+</span><a name="line-12"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;false = \\a.\\b.b&quot;</span><span>
+</span><a name="line-13"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;and = \\p.\\q.p q p&quot;</span><span>
+</span><a name="line-14"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;or  = \\p.\\q.p p q&quot;</span><span>
+</span><a name="line-15"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;not = \\b.b false true&quot;</span><span>
+</span><a name="line-16"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;implies = \\a.\\b.or (not a) b&quot;</span><span>
+</span><a name="line-17"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;ifelse = (\\x.x)&quot;</span><span>
+</span><a name="line-18"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;succ = \\n.\\f.\\x.f (n f x)&quot;</span><span>
+</span><a name="line-19"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;0 = \\f.\\x.x&quot;</span><span>
+</span><a name="line-20"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;plus = \\m.\\n.\\f.\\x.m f (n f x)&quot;</span><span>
+</span><a name="line-21"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;mult = \\m.\\n.\\f.\\x.m (n f) x&quot;</span><span>
+</span><a name="line-22"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;pred  = \\n.\\f.\\x.n (\\g.(\\h.h (g f))) (\\u.x) (\\u.u)&quot;</span><span>
+</span><a name="line-23"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;minus = \\m.\\n.(n pred) m&quot;</span><span>
+</span><a name="line-24"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;iszero = \\n.(n (\\x.false) true)&quot;</span><span>
+</span><a name="line-25"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;leq    = \\m.\\n.(iszero (minus m n))&quot;</span><span>
+</span><a name="line-26"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;geq    = \\m.\\n.(iszero (minus n m))&quot;</span><span>
+</span><a name="line-27"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;lt     = \\m.\\n.not (geq m n)&quot;</span><span>
+</span><a name="line-28"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;gt     = \\m.\\n.not (leq m n)&quot;</span><span>
+</span><a name="line-29"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;eq     = \\m.\\n.(and (leq m n) (leq n m))&quot;</span><span>
+</span><a name="line-30"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;1 = succ 0&quot;</span><span>
+</span><a name="line-31"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;2 = succ 1&quot;</span><span>
+</span><a name="line-32"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;3 = succ 2&quot;</span><span>
+</span><a name="line-33"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;4 = succ 3&quot;</span><span>
+</span><a name="line-34"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;5 = succ 4&quot;</span><span>
+</span><a name="line-35"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;6 = succ 5&quot;</span><span>
+</span><a name="line-36"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;7 = succ 6&quot;</span><span>
+</span><a name="line-37"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;8 = succ 7&quot;</span><span>
+</span><a name="line-38"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;9 = succ 8&quot;</span><span>
+</span><a name="line-39"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;10 = succ 9&quot;</span><span>
+</span><a name="line-40"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;11 = succ 10&quot;</span><span>
+</span><a name="line-41"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;12 = succ 11&quot;</span><span>
+</span><a name="line-42"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;13 = succ 12&quot;</span><span>
+</span><a name="line-43"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;14 = succ 13&quot;</span><span>
+</span><a name="line-44"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;15 = succ 14&quot;</span><span>
+</span><a name="line-45"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;16 = succ 15&quot;</span><span>
+</span><a name="line-46"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;17 = succ 16&quot;</span><span>
+</span><a name="line-47"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;18 = succ 17&quot;</span><span>
+</span><a name="line-48"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;19 = succ 18&quot;</span><span>
+</span><a name="line-49"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;20 = succ 19&quot;</span><span>
+</span><a name="line-50"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;21 = succ 20&quot;</span><span>
+</span><a name="line-51"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;22 = succ 21&quot;</span><span>
+</span><a name="line-52"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;23 = succ 22&quot;</span><span>
+</span><a name="line-53"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;24 = succ 23&quot;</span><span>
+</span><a name="line-54"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;25 = succ 24&quot;</span><span>
+</span><a name="line-55"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;26 = succ 25&quot;</span><span>
+</span><a name="line-56"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;27 = succ 26&quot;</span><span>
+</span><a name="line-57"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;28 = succ 27&quot;</span><span>
+</span><a name="line-58"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;29 = succ 28&quot;</span><span>
+</span><a name="line-59"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;30 = succ 29&quot;</span><span>
+</span><a name="line-60"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;31 = succ 30&quot;</span><span>
+</span><a name="line-61"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;32 = succ 31&quot;</span><span>
+</span><a name="line-62"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;33 = succ 32&quot;</span><span>
+</span><a name="line-63"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;34 = succ 33&quot;</span><span>
+</span><a name="line-64"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;35 = succ 34&quot;</span><span>
+</span><a name="line-65"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;36 = succ 35&quot;</span><span>
+</span><a name="line-66"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;37 = succ 36&quot;</span><span>
+</span><a name="line-67"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;38 = succ 37&quot;</span><span>
+</span><a name="line-68"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;39 = succ 38&quot;</span><span>
+</span><a name="line-69"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;40 = succ 39&quot;</span><span>
+</span><a name="line-70"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;41 = succ 40&quot;</span><span>
+</span><a name="line-71"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;42 = succ 41&quot;</span><span>
+</span><a name="line-72"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;43 = succ 42&quot;</span><span>
+</span><a name="line-73"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;44 = succ 43&quot;</span><span>
+</span><a name="line-74"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;45 = succ 44&quot;</span><span>
+</span><a name="line-75"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;46 = succ 45&quot;</span><span>
+</span><a name="line-76"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;47 = succ 46&quot;</span><span>
+</span><a name="line-77"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;48 = succ 47&quot;</span><span>
+</span><a name="line-78"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;49 = succ 48&quot;</span><span>
+</span><a name="line-79"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;50 = succ 49&quot;</span><span>
+</span><a name="line-80"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;51 = succ 50&quot;</span><span>
+</span><a name="line-81"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;52 = succ 51&quot;</span><span>
+</span><a name="line-82"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;53 = succ 52&quot;</span><span>
+</span><a name="line-83"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;54 = succ 53&quot;</span><span>
+</span><a name="line-84"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;55 = succ 54&quot;</span><span>
+</span><a name="line-85"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;56 = succ 55&quot;</span><span>
+</span><a name="line-86"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;57 = succ 56&quot;</span><span>
+</span><a name="line-87"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;58 = succ 57&quot;</span><span>
+</span><a name="line-88"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;59 = succ 58&quot;</span><span>
+</span><a name="line-89"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;60 = succ 59&quot;</span><span>
+</span><a name="line-90"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;61 = succ 60&quot;</span><span>
+</span><a name="line-91"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;62 = succ 61&quot;</span><span>
+</span><a name="line-92"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;63 = succ 62&quot;</span><span>
+</span><a name="line-93"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;64 = succ 63&quot;</span><span>
+</span><a name="line-94"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;65 = succ 64&quot;</span><span>
+</span><a name="line-95"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;66 = succ 65&quot;</span><span>
+</span><a name="line-96"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;67 = succ 66&quot;</span><span>
+</span><a name="line-97"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;68 = succ 67&quot;</span><span>
+</span><a name="line-98"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;69 = succ 68&quot;</span><span>
+</span><a name="line-99"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;70 = succ 69&quot;</span><span>
+</span><a name="line-100"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;71 = succ 70&quot;</span><span>
+</span><a name="line-101"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;72 = succ 71&quot;</span><span>
+</span><a name="line-102"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;73 = succ 72&quot;</span><span>
+</span><a name="line-103"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;74 = succ 73&quot;</span><span>
+</span><a name="line-104"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;75 = succ 74&quot;</span><span>
+</span><a name="line-105"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;76 = succ 75&quot;</span><span>
+</span><a name="line-106"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;77 = succ 76&quot;</span><span>
+</span><a name="line-107"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;78 = succ 77&quot;</span><span>
+</span><a name="line-108"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;79 = succ 78&quot;</span><span>
+</span><a name="line-109"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;80 = succ 79&quot;</span><span>
+</span><a name="line-110"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;81 = succ 80&quot;</span><span>
+</span><a name="line-111"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;82 = succ 81&quot;</span><span>
+</span><a name="line-112"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;83 = succ 82&quot;</span><span>
+</span><a name="line-113"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;84 = succ 83&quot;</span><span>
+</span><a name="line-114"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;85 = succ 84&quot;</span><span>
+</span><a name="line-115"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;86 = succ 85&quot;</span><span>
+</span><a name="line-116"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;87 = succ 86&quot;</span><span>
+</span><a name="line-117"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;88 = succ 87&quot;</span><span>
+</span><a name="line-118"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;89 = succ 88&quot;</span><span>
+</span><a name="line-119"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;90 = succ 89&quot;</span><span>
+</span><a name="line-120"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;91 = succ 90&quot;</span><span>
+</span><a name="line-121"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;92 = succ 91&quot;</span><span>
+</span><a name="line-122"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;93 = succ 92&quot;</span><span>
+</span><a name="line-123"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;94 = succ 93&quot;</span><span>
+</span><a name="line-124"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;95 = succ 94&quot;</span><span>
+</span><a name="line-125"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;96 = succ 95&quot;</span><span>
+</span><a name="line-126"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;97 = succ 96&quot;</span><span>
+</span><a name="line-127"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;98 = succ 97&quot;</span><span>
+</span><a name="line-128"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;99 = succ 98&quot;</span><span>
+</span><a name="line-129"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;100 = succ 99&quot;</span><span>
+</span><a name="line-130"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;S = \\x.\\y.\\z. x z (y z)&quot;</span><span>
+</span><a name="line-131"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;K = \\x.\\y.x&quot;</span><span>
+</span><a name="line-132"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;I = S K K&quot;</span><span>
+</span><a name="line-133"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;C = \\f.\\x.\\y.f y x&quot;</span><span>
+</span><a name="line-134"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;B = \\f.\\g.\\x.f (g x)&quot;</span><span>
+</span><a name="line-135"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;W = \\x.\\y.(y y)&quot;</span><span>
+</span><a name="line-136"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;Y != \\f.(\\x.f (x x))(\\x.f (x x))&quot;</span><span>
+</span><a name="line-137"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;tuple  = \\x.\\y.\\z.z x y&quot;</span><span>
+</span><a name="line-138"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;first  = \\p.p true&quot;</span><span>
+</span><a name="line-139"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;second = \\p.p false&quot;</span><span>
+</span><a name="line-140"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;cons = \\h.\\t.\\c.\\n.(c h (t c n))&quot;</span><span>
+</span><a name="line-141"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;nil = \\c.\\n.n&quot;</span><span>
+</span><a name="line-142"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;foldr  = \\o.\\n.\\l.(l o n)&quot;</span><span>
+</span><a name="line-143"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;fold   = \\o.\\n.\\l.(l o n)&quot;</span><span>
+</span><a name="line-144"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;head = fold const nil&quot;</span><span>
+</span><a name="line-145"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;tail = \\l.first (l (\\a.\\b.tuple (second b) (cons a (second b))) (tuple nil nil))&quot;</span><span>
+</span><a name="line-146"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;take = \\n.\\l.first (n (\\t.tuple (cons (head (second t)) (first t)) (tail (second t))) (tuple nil l))&quot;</span><span>
+</span><a name="line-147"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;sum    = (foldr plus 0)&quot;</span><span>
+</span><a name="line-148"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;prod   = (foldr mult (succ 0))&quot;</span><span>
+</span><a name="line-149"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;length = (foldr (\\h.\\t.succ t) 0)&quot;</span><span>
+</span><a name="line-150"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;map    = (\\f.(foldr (\\h.\\t.cons (f h) t) nil))&quot;</span><span>
+</span><a name="line-151"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;filter = \\p.(foldr (\\h.\\t.((p h) (cons h t) t)) nil)&quot;</span><span>
+</span><a name="line-152"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;node = \\x.\\l.\\r.\\f.\\n.(f x (l f n) (r f n))&quot;</span><span>
+</span><a name="line-153"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;omega := (\\x.(x x))(\\x.(x x))&quot;</span><span>
+</span><a name="line-154"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;fix := (\\f.(\\x.f (x x)) (\\x.f (x x)))&quot;</span><span>
+</span><a name="line-155"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;fact := fix (\\f.\\n.iszero n (succ 0) (mult n (f (pred n))))&quot;</span><span>
+</span><a name="line-156"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;fib := fix (\\f.\\n.iszero n (succ 0) (plus (f (pred n)) (f (pred (pred n)))))&quot;</span><span>
+</span><a name="line-157"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;naturals := fix (compose (cons 0) (map (plus 1)))&quot;</span><span>
+</span><a name="line-158"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;infinity := fix succ&quot;</span><span>
+</span><a name="line-159"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;division := fix (\\d.\\q.\\a.\\b. lt a b (tuple q a) (d (succ q) (minus a b) b)) 0&quot;</span><span>
+</span><a name="line-160"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;mu := \\p.fix (\\f.\\n.(p n) n (f (succ n))) 0&quot;</span><span>
+</span><a name="line-161"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;div := \\a.\\b.first (division a b)&quot;</span><span>
+</span><a name="line-162"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;mod := \\a.\\b.second (division a b)&quot;</span><span>
+</span><a name="line-163"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;pair = \\x.\\y.(x,y)&quot;</span><span>
+</span><a name="line-164"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;fst = \\x.FST x&quot;</span><span>
+</span><a name="line-165"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;snd = \\x.SND x&quot;</span><span>
+</span><a name="line-166"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;inl = \\x.INL x&quot;</span><span>
+</span><a name="line-167"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;inr = \\x.INR x&quot;</span><span>
+</span><a name="line-168"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;caseof = \\x.\\y.\\z.CASE x OF (\\a.y a);(\\a.z a)&quot;</span><span>
+</span><a name="line-169"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;unit = UNIT&quot;</span><span>
+</span><a name="line-170"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;abort = \\x.ABORT x&quot;</span><span>
+</span><a name="line-171"></a><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-string">&quot;absurd = \\x.ABSURD x&quot;</span><span>
+</span><a name="line-172"></a><span>  </span><span class="hs-special">]</span><span>
+</span><a name="line-173"></a></pre></body></html>
