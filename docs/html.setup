@@ -12,7 +12,7 @@
 #+HTML_HEAD: <script type="text/javascript" src="styles/readtheorg/js/readtheorg.js"></script>
 
 #+HTML_HEAD: <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.min.js"></script>
-#+HTML_HEAD: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.css">
+#+HTML_HEAD: <link rel="stylesheet" href="https://mroman42.github.io/mikrokosmos-js/codemirrorcustom.css">
 #+HTML_HEAD: <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/addon/mode/simple.min.js"></script>
 #+HTML_HEAD: <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/addon/edit/matchbrackets.js"></script>
 
