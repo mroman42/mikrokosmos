@@ -38,8 +38,8 @@ import           Stlc.Gentzen
 
 -- | Execute a block of code in a given environment
 executeWithEnv :: Environment -> String -> (String, Environment)
-executeWithEnv initEnv code = do
-  let parsing = map (parse actionParser "" . preformat) . filter (/="") . lines $ code
+executeWithEnv initEnv block = do
+  let parsing = map (parse actionParser "" . preformat) . filter (/="") . lines $ block
   let actions = mapMaybe (\x -> case x of
                              Left _  -> Nothing
                              Right a -> Just a) parsing
@@ -72,7 +72,7 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
             | Error                          -- ^ error on the interpreter
             | Restart                        -- ^ restarts the environment
             | Help                           -- ^ shows help
- --            | Ask                            -- ^ asks for the definition of a function
+            | Ask String                     -- ^ asks for the definition of a function
             | SetVerbose Bool                -- ^ changes verbosity
             | SetColor Bool                  -- ^ changes colors
             | SetSki Bool                    -- ^ changes ski output
@@ -102,7 +102,15 @@ act (SetColor setting) = setOption setting changeColor "color mode: "
 act (SetSki setting) = setOption setting changeSkioutput "ski mode: "
 act (SetTypes setting) = setOption setting changeTypes "types: "
 act (SetTopo setting) = setOption setting changeTopo "topology: "
+act (Ask func) = return $ askfor func
 
+
+-- | Asks for the name of a function.
+askfor :: String -> [String]
+askfor func = case stdquery func of
+  Nothing -> ["Error: the function '" ++ func ++ "' is not defined on the standard library.\n"]
+  Just f -> [description f ++ "\n", "Defined as: " ++ code f,"\n"]
+    
 
 -- | Sets the given option on/off.
 setOption :: Bool ->
@@ -208,6 +216,7 @@ actionParser = choice $ map try
   , executeParser
   , commentParser
   , helpParser
+  , askParser
   , restartParser
   , verboseParser
   , colorParser
@@ -238,6 +247,10 @@ evalbindParser = fmap EvalBind $ (,) <$> many1 alphaNum <*> (spaces >> string "=
 -- | Parses an expression in order to execute it.
 executeParser :: Parser Action
 executeParser = Execute <$> lambdaexp
+
+-- | Parses a definition request to the interpreter.
+askParser :: Parser Action
+askParser = Ask <$> (string ":? " >> many1 alphaNum)
 
 -- | Parses comments.
 commentParser :: Parser Action

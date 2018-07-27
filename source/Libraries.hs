@@ -1,6 +1,7 @@
 module Libraries
   ( stdlibraries
   , stdmap
+  , stdquery
   , code
   , name
   , description
@@ -13,24 +14,28 @@ import Control.Arrow
 stdlibraries :: String
 stdlibraries = unlines $ map code stdfunctions
 
+stdquery :: String -> Maybe Function
+stdquery = flip M.lookup stdmap
+
 stdmap :: M.Map String Function
 stdmap = M.fromList $ map (name &&& id) stdfunctions
 
 data Function = Function
-  { code :: String
-  , name :: String
+  { name :: String
+  , code :: String
   , description :: String
   }
+  deriving (Show)
 
 stdfunctions :: [Function]
 stdfunctions = 
-  [ Function "id" "id = \\x.x" "Identity function, evaluates to its argument."
+  [ Function "id" "id = \\x.x" "Identity function. Returns its argument unchanged."
   , Function "const" "const = \\x.\\y.x" "Binay function evaluating to its first argument."
   , Function "compose" "compose = \\f.\\g.\\x.f (g x)" "Function composition."
-  , Function "true" "true  = \\a.\\b.a" "Boolean 'true', using Church encoding."
+  , Function "true" "true = \\a.\\b.a" "Boolean 'true', using Church encoding."
   , Function "false" "false = \\a.\\b.b" "Boolean 'false', using Church encoding."
   , Function "and" "and = \\p.\\q.p q p" "Boolean conjunction."
-  , Function "or" "or  = \\p.\\q.p p q" "Boolean disjunction."
+  , Function "or" "or = \\p.\\q.p p q" "Boolean disjunction."
   , Function "not" "not = \\b.b false true" "Boolean negation."
   , Function "implies" "implies = \\a.\\b.or (not a) b" "Boolean implication."
   , Function "ifelse" "ifelse = (\\x.x)" "Identity function, can be used as a boolean case analysis."
@@ -38,7 +43,7 @@ stdfunctions =
   , Function "0" "0 = \\f.\\x.x" "The natural number 0, using Church encoding."
   , Function "plus" "plus = \\m.\\n.\\f.\\x.m f (n f x)" "Adds two natural numbers."
   , Function "mult" "mult = \\m.\\n.\\f.\\x.m (n f) x" "Multiplies two natural numbers."
-  , Function "pred" "pred  = \\n.\\f.\\x.n (\\g.(\\h.h (g f))) (\\u.x) (\\u.u)" "Predecessor of a natural number"
+  , Function "pred" "pred = \\n.\\f.\\x.n (\\g.(\\h.h (g f))) (\\u.x) (\\u.u)" "Predecessor of a natural number"
   , Function "minus" "minus = \\m.\\n.(n pred) m" "Substracts two natural numbers"
   , Function "iszero" "iszero = \\n.(n (\\x.false) true)" "Returns true if the natural number is zero."
   , Function "leq" "leq = \\m.\\n.(iszero (minus m n))" "Returns true if the first argument is a natural number lesser or equal than the second."
@@ -153,20 +158,20 @@ stdfunctions =
   , Function "B" "B = \\f.\\g.\\x.f (g x)" "B combinator."
   , Function "W" "W = \\x.\\y.(y y)" "W combinator."
   , Function "Y" "Y != \\f.(\\x.f (x x))(\\x.f (x x))" "Y combinator. Fixed-point combinator."
-  , Function "tuple" "tuple  = \\x.\\y.\\z.z x y" "Untyped tuple constructor. Takes a and b and returns the tuple (a,b)."
-  , Function "first" "first  = \\p.p true" "Untyped tuple projection. Returns the first element of a tuple."
+  , Function "tuple" "tuple = \\x.\\y.\\z.z x y" "Untyped tuple constructor. Takes a and b and returns the tuple (a,b)."
+  , Function "first" "first = \\p.p true" "Untyped tuple projection. Returns the first element of a tuple."
   , Function "second" "second = \\p.p false" "Untyped tuple projection. Returns the second element of a tuple."
   , Function "cons" "cons = \\h.\\t.\\c.\\n.(c h (t c n))" "List constructor. Appends an element to the head of the list."
   , Function "nil" "nil = \\c.\\n.n" "List constructor. Creates the empty list."
   , Function "foldr" "foldr = \\o.\\n.\\l.(l o n)" "List folding. Combines the elements of the list using a binary operation."
-  , Function "fold" "fold  = \\o.\\n.\\l.(l o n)" "List folding. Combines the elements of the list using a binary operation."
+  , Function "fold" "fold = \\o.\\n.\\l.(l o n)" "List folding. Combines the elements of the list using a binary operation."
   , Function "head" "head = fold const nil" "Returns the head of a list."
   , Function "tail" "tail = \\l.first (l (\\a.\\b.tuple (second b) (cons a (second b))) (tuple nil nil))" "Extracts the head of a list."
   , Function "take" "take = \\n.\\l.first (n (\\t.tuple (cons (head (second t)) (first t)) (tail (second t))) (tuple nil l))" "Extracts all the elements except the head of a list"
   , Function "sum" "sum = (foldr plus 0)" "Adds a list of natural numbers."
-  , Function "prod" "prod   = (foldr mult (succ 0))" "Multiplies a list of natural numbers."
+  , Function "prod" "prod = (foldr mult (succ 0))" "Multiplies a list of natural numbers."
   , Function "length" "length = (foldr (\\h.\\t.succ t) 0)" "Returns the length of a list."
-  , Function "map" "map    = (\\f.(foldr (\\h.\\t.cons (f h) t) nil))" "Maps a function over a list. Returns a list obtained by applying the function to each element of the original list."
+  , Function "map" "map = (\\f.(foldr (\\h.\\t.cons (f h) t) nil))" "Maps a function over a list. Returns a list obtained by applying the function to each element of the original list."
   , Function "filter" "filter = \\p.(foldr (\\h.\\t.((p h) (cons h t) t)) nil)" "Filters a list with a predicate. Returns a list containing only the elements that satisfy the predicate."
   , Function "node" "node = \\x.\\l.\\r.\\f.\\n.(f x (l f n) (r f n))" "Binary tree constructor. Creates a tree whose root is given by the first argument and whose left and right subtrees are given by the second and third arguments, respectively."
   , Function "omega" "omega := (\\x.(x x))(\\x.(x x))" "Omega combinator. An example of a non-reducible lambda calculus expression."
