@@ -14,7 +14,7 @@ import           Environment
 import           Options hiding (defaultOptions)
 
 
--- Lambda interpreter
+-- Lambda interpreter.
 -- The actions of the interpreter are written here. It allows to execute normal
 -- actions (bindings and evaluation), and interpreter specific actions, as "quit"
 -- or "load".
@@ -23,13 +23,16 @@ import           Options hiding (defaultOptions)
 -- | Runs the interpreter with default settings and an empty context.
 main :: IO ()
 main =
-  -- Uses the Options library, which requires the program to start with
-  -- runCommand. The flags are stored in opts and other command line arguments
-  -- are stored in args.
+  -- Uses the Options library, which requires the program to start
+  -- with runCommand. The command-line flags are stored in opts and
+  -- other command line arguments are stored in args.
   runCommand $ \opts args -> do
-  -- Reads the libaries flag
+  -- Reads the libaries flag. If activated, it will not automatically
+  -- load the libraries.
   let initialEnv = if flagLibs opts then defaultEnv else librariesEnv
-  -- Reads more flags
+  -- Reads the rest of the flags. The --version flag shows the current
+  -- version of the interpreter. An optional argument may be used to
+  -- indicate a file to load.
   if flagVersion opts
   then putStrLn versionText
   else case args of
@@ -192,7 +195,7 @@ findFilename s = do
     headMaybe [] = Nothing
     headMaybe (x:_) = Just x
 
--- Flags
+
 -- | Flags datatype
 data MainFlags = MainFlags
   { flagExec :: String

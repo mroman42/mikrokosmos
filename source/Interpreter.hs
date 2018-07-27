@@ -72,6 +72,7 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
             | Error                          -- ^ error on the interpreter
             | Restart                        -- ^ restarts the environment
             | Help                           -- ^ shows help
+ --            | Ask                            -- ^ asks for the definition of a function
             | SetVerbose Bool                -- ^ changes verbosity
             | SetColor Bool                  -- ^ changes colors
             | SetSki Bool                    -- ^ changes ski output
