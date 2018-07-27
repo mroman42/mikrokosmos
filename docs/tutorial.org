@@ -6,42 +6,43 @@
 
 This is a tutorial in how to program on the untyped and simply-typed
 \lambda-calculus using the *[[file:index.org][Mikrokosmos]]* interpreter. It is divided
-on seven chapters.
+on seven chapters of progressive difficulty.
  
  1. [[*The \lambda-calculus][The \lambda-calculus]]: describes the lenguage.
  2. [[*Boolean logic][Boolean logic]]: implements logical gates.
  3. [[*Numbers][Numbers]]: implements aritmetical operators and comparisons.
  4. [[*Combinatory logic][Combinatory logic]]: describes the SKI combinators.
  5. [[*Data structures][Data structures]]: implements lists and binary trees.
- 6. [[*Recursion][Recursion]]: describes fixpoint operators and implements recursion.
+ 6. [[*Recursion][Recursion]]: describes fixpoint operators and recursion.
  7. [[*Types][Types]]: describes the simply-typed \lambda-calculus and its logical interpretation.
 
 * The \lambda-calculus
 ** The untyped \lambda-calculus
-The untyped [[https://en.wikipedia.org/wiki/Lambda_calculus][*λ-calculus*]] (or simply, *\lambda calculus*) is a logical formal system
-which is also a model of computation (like the [[https://en.wikipedia.org/wiki/Turing_machine][Turing machines]], for
-example). It was introduced in the 1930s by [[https://en.wikipedia.org/wiki/Alonzo_Church][Alonzo Church]], who was
-looking for a formal system able to express the notion of
-computability. It is [[https://en.wikipedia.org/wiki/Turing_completeness][Turing-complete]], that is, it has the property
-that every computable function, every function you could write in any
-other programming language, can be written on the untyped λ-calculus.
+The *untyped [[https://en.wikipedia.org/wiki/Lambda_calculus][λ-calculus]]* (sometimes called *λ-calculus*) is a formal
+system that is also a model of computation (in the same sense that
+[[https://en.wikipedia.org/wiki/Turing_machine][Turing machines]] are, for instance).  In fact, it is [[https://en.wikipedia.org/wiki/Turing_completeness][Turing-complete]],
+that is, it has the property that every computable function, every
+function you could write in any programming language, could be written
+on the untyped λ-calculus.  It was introduced in the 1930s by [[https://en.wikipedia.org/wiki/Alonzo_Church][Alonzo
+Church]], who was looking for a formal system able to express the notion
+of computability.
 
-Its [[https://en.wikipedia.org/wiki/Lambda_calculus_definition#Standard_definition][syntax]] is very simple; any expression is either:
+Its [[https://en.wikipedia.org/wiki/Lambda_calculus_definition#Standard_definition][syntax]], however, is very simple; any expression is either:
 
-  - a *variable*, $x,y,z,\dots$ which could have appeared before on
-    the lambda abstraction;
+  - a *variable*, $x,y,z,\dots$ which may appear free or as a placeholder
+    when defining a function;
     
   - a *lambda abstraction* $\lambda x. -$, which can be interpreted 
     as a function taking $x$ as an argument and returning what is
-    written under $-$, which can depend on $x$;
+    written under $-$, which in turn can depend on $x$;
     
-  - or an *application* of two expressions $(\lambda x. M)N$ which 
-    applies the function $(\lambda x. M)$ over the argument $N$.
-    When a function is applied, all the ocurrences of $x$ on $M$ will 
-    be substituted by $N$. This is what is called a *\beta-reduction*;
-    it captures the notion of function application.
+  - or an *application* of two expressions $(\lambda x. M)\ N$ which
+    applies the function $(\lambda x. M)$ over the argument $N$.  When
+    a function is applied, all the ocurrences of $x$ on $M$ will be
+    substituted by $N$. This process is called a *\beta-reduction*, and
+    it captures our usual notion of function application.
 
-That is, in λ-calculus any function $f$ can be written as $(\lambda x.f(x))$, 
+That is, in λ-calculus any function $f$ can be written as $\lambda x.f(x)$, 
 and it can be applied to an argument and \beta-reduced as
 
 \[ (\lambda x.f(x))\ y \longrightarrow f(y). \]
@@ -53,15 +54,16 @@ as $(\lambda x.\ 2 \cdot x)$, and it would be applied to $3$ as
 
 In this chapter, however, we will restrict ourselves to very basic
 functions which do not involve arithmetic. How to define natural
-numbers, addition or multiplication will be topics for future
-chapters.
+numbers, addition or multiplication will be topics for the next
+chapters. An introduction to the untyped lambda calculus can be
+found in the following video.
 
   * [[https://www.youtube.com/watch?v=eis11j_iGMs][Lambda Calculus - Computerphile]]
 
 On this tutorial we will use a didactic \lambda-calculus interpreter,
 [[https://github.com/mroman42/mikrokosmos][Mikroskosmos]]; which can be used directly from the browser. Every time
-you find a Mikrokosmos code snippet like the following, you can execute
-it by pressing *evaluate*.
+you find a Mikrokosmos code snippet like the following, you can
+execute it by pressing *evaluate*.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -71,11 +73,11 @@ it by pressing *evaluate*.
 #+END_EXPORT
 
 ** A first example
-In Mikrokosmos, it is possible to use the backslash character as a λ
+In Mikrokosmos, it is possible to use the backslash character ~\~ as a λ
 to make the input easier. If you happen to have a greek keyboard
-configured, however, feel free to write "λ"! Mikrokosmos accepts both
-sintaxes. For instance, the nested expression $\lambda x.(\lambda y.x)$
-can be written as =\x.(\y.x)=.
+configured, however, feel free to write ~λ~! Mikrokosmos accepts both
+sintaxes. For instance, the nested expression $\lambda x.\lambda y.x$
+can be written as =\x.\y.x=.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -104,7 +106,7 @@ example, the evaluation of =id id= to =id= has followed this chain of
 \beta-reductions and equivalences
 
 \[ 
-id\ id \longrightarrow (\lambda x.x)(\lambda x'.x') \longrightarrow (\lambda x'.x') \longrightarrow  id.
+id\ id = (\lambda x.x)(\lambda y.y) \longrightarrow (\lambda y.y) = id.
 \]
 
 Note that the specific name of a variable is irrelevant. They act only
@@ -118,12 +120,12 @@ ommited when they are not necessary, that is, =f g h= must be read as
 mathematical convention, which always writes parentheses on functions,
 that is, we write
 \[
-f\ x\quad\text{ instead of }\quad f(x);
+f\ x,\quad\text{ instead of }\quad f(x);
 \]
 
 and
 \[
-f\ x\ y\quad\text{ instead of }\quad (f(x))(y)\ \text{ or }\  f(x,y);
+f\ x\ y,\quad\text{ instead of }\quad (f(x))(y),\ \text{ or }\  f(x,y);
 \]
 
 but this makes it less verbose to write multiple argument functions
@@ -175,7 +177,8 @@ compose id id</script>
 
 ** Exercises
 *Exercise 1.1:* Think what should be the result of evaluating the
-following expressions and then check it with the interpreter.
+following expressions and then check it with the interpreter.  Beware
+that the last one is a bit more difficult than the other two.
 
   - =compose const id=
   - =compose id const=
@@ -189,54 +192,58 @@ following expressions and then check it with the interpreter.
 </div>
 #+END_EXPORT
 
-*Exercise 1.2:* Write
+*Exercise 1.2:* Write the lambda terms for
 
  * /function application/, a function taking a function $f$ and a term
-   $x$ as arguments and returning $f(x)$.
+   $x$ as arguments and returning $f(x)$; and
 
- * /swapping of arguments/, a function that takes a function on two
+ * /flip/, a function that takes a function on two
    arguments $f$ and returns a $g$ such that $g(x,y) = g\ x\ y = f\ y\ x = f(y,x)$.
+   In other words, $\mathsf{flip}\ f\ x\ y = f\ y\ x$.
 
-And test them.
+And test them on the interpreter.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
-# -- Your solutions go here</script>
+# -- Your solutions go here
+# app = 
+# flip =
+app not true
+flip const 4 3</script>
 </div>
 #+END_EXPORT
 
 * Boolean logic
 ** Booleans
 We will start our programming journey on \lambda-calculus encoding
-[[https://en.wikipedia.org/wiki/Boolean_algebra][boolean logic]]. In boolean logic, we have two elements =true= and
-=false=; and some logical gates such as
+[[https://en.wikipedia.org/wiki/Boolean_algebra][boolean logic]]. In boolean logic, we have two elements =true= and =false=;
+and some logical gates such as
 
-  * the *and* gate, which outputs true if and only if its two inputs 
-    are true.
-  * the *or* gate, which outputs true if any of its inputs is true,
-    or even if /both/ are true.
-  * the *not* gate, which outpus true if and only if its input is
-    false.
+  * the *and* gate, which outputs true if and only if its two inputs are
+    true.
+  * the *or* gate, which outputs true if any of its inputs is true, or
+    even if /both/ are true.
+  * the *not* gate, which outpus true if and only if its input is false.
 
 For example,
 
 \[
-\mathtt{not(\ or ( true, false )\ ) = not\ true = false}.
+\mathsf{not}\ (\mathsf{or}\ \mathsf{true}\ \mathsf{false}) = \mathsf{not}\ \mathsf{true} = \mathsf{false}.
 \]
 
-Our intuition on what means to be a truth value is that it can
-distinghish between two values (*true* or *false*) or two branches on
-a program =(if ... then ... else ...)=. We are going to use this intuition to
-write an encoding of boolean values based on their ability to choose
-between two branches. Maybe surprisingly, this encoding will be also
-useful to write the usual boolean logic gates.
+Our intuition on what means to be a truth value is that truth values
+can distinghish between two values (*true* or *false*) or two branches on
+a program =(if ... then ... else ...)=. We are going to use this
+intuition to write an encoding of boolean values based on their
+ability to choose between two branches. Maybe surprisingly, this
+encoding will be also useful to write the usual boolean logic gates.
 
 #+BEGIN_EXPORT html
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
 # Church encoding of boolean truth values
-true  = \a.\b.a
+true = \a.\b.a
 false = \a.\b.b
 true
 false</script>
@@ -245,28 +252,29 @@ false</script>
 
 Here, a truth value is a function on two elements that chooses one of them.
 
- - $\mathtt{true}\ a\ b  = a$
- - $\mathtt{false}\ a\ b = b$
+ - $\mathsf{true}\ a\ b  = a$
+ - $\mathsf{false}\ a\ b = b$
 
 This is called the *Church encoding* of the booleans, as it was
-used by Alonzo Church for the first time. This idea of defining a type based not
-on its content but on how it can be used will appear later, when we
-define more complex data structures.
+described by Alonzo Church for the first time. This idea of defining a
+data structure based not on its content but on how it can be used will
+appear later, when dealing with more complex structures. The following
+are examples on how false and true work.
 
 #+BEGIN_EXPORT html
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
-true id const
-false id const
+true 3 4
+false 3 4
 true true false
 false true false</script>
 </div>
 #+END_EXPORT
 
-In particular, =true= is exactly the same lambda term as =const=. This
-is a very usual phenomenon in \lambda-calculus, where the same function
+In particular, =true= is exactly the same lambda term as =const=. This is
+a very usual phenomenon in \lambda-calculus, where the same function
 can be interpreted differently in different contexts. Mikrokosmos
-allows us to have multiple names for the same term.
+allows giving multiple names to the same term.
 
 ** If-else
 The advantage of this way of encoding the boolean values is that they
@@ -284,8 +292,8 @@ already encoded on the \lambda-terms!
 </div>
 #+END_EXPORT
 
-If you really want to write an =if-else= function, it will be, quite
-literally, the trivial one
+If we really want to write an =if-else= function, it will be, quite
+literally, the trivial one.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -298,8 +306,8 @@ ifelse false id const</script>
 
 ** Logic gates
 Usual operations on booleans can be defined too on this encoding and
-they will be surprisingly easy if we think of booleans as functions
-choosing from two terms.
+they will be surprisingly easy to construct if we think of booleans as
+functions choosing from two terms.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -315,9 +323,9 @@ and false false</script>
 </div>
 #+END_EXPORT
 
-*Exercise 2.1:* Think why this definition of the =and= gate works.
-/Hint: think what happens when the first argument is a =true=./
-/What happens if it is a =false=?/
+*Exercise 2.1:* Explain why this definition of the =and= gate works.
+/Hint: think what happens when the first argument is =true=./
+/What happens if it is =false=?/
 
 The =or= gate can be defined in a similar way.
 
@@ -358,12 +366,13 @@ that is, the implication is true if both are true or if the premise is false.
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
-implies = \a.\b.or (not a) b</script>
+implies = \a.\b.or (not a) b
+implies true true</script>
 </div>
 #+END_EXPORT
 
-*Exercise 2.2:* Compute the logic table for the implication using the
- previous definition.
+*Exercise 2.2:* Compute the complete operation table for the implication
+using the previous definition.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -372,11 +381,11 @@ implies = \a.\b.or (not a) b</script>
 </div>
 #+END_EXPORT
 
-*Exercise 2.3:* Compute the following logic clauses using lambda calculus
+*Exercise 2.3:* Compute the following boolean clauses using lambda calculus
  
- - $(\mathtt{true} \vee \mathtt{false})\to \mathtt{false}$.
- - $\mathtt{false} \to (\mathtt{false} \to \mathtt{false})$
- - $(\neg \mathtt{false} \wedge \neg \mathtt{true}) \to \mathtt{true}$
+ - $(\mathsf{true} \vee \mathsf{false})\to \mathsf{false}$.
+ - $\mathsf{false} \to (\mathsf{false} \to \mathsf{false})$
+ - $(\neg \mathsf{false} \wedge \neg \mathsf{true}) \to \mathsf{true}$
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -385,7 +394,7 @@ implies = \a.\b.or (not a) b</script>
 </div>
 #+END_EXPORT
 
-*Exercise 2.4:* Define the `xor` gate as a lambda term. The `xor` of
+*Exercise 2.4:* Define the /xor/ gate as a lambda term. The /xor/ of
 two boolean values must return a true if and only if *exactly one* of
 them are true. Check also its logic table.
 /Hint: you may want to use the already defined `not`./
@@ -393,28 +402,29 @@ them are true. Check also its logic table.
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
 <script type="text/mikrokosmos">
-# -- Your solution goes here</script>
+# -- Your solution goes here
+# xor = </script>
 </div>
 #+END_EXPORT
 
 * Numbers
 ** Peano and the natural numbers
 In the 19th century, [[https://en.wikipedia.org/wiki/Peano_axioms][Giuseppe Peano]] gave a definition of the natural
-numbers and an axiomatic theory of them based on only two contructors
+numbers and an axiomatic theory of them based on only two contructors.
 
  - The zero is a natural number, written as Z.
  - The successor of a natural number is a natural number, written as
    S.
  
-In those terms, the usual natural numbers will be
+In these terms, the usual natural numbers will be
 
-\[ Z,\ SZ,\ S(SZ),\ S(S(SZ)),\ \dots \]
+\[ Z,\ S\ Z,\ S\ (S\ Z),\ S\ (S\ (S\ Z)),\ \dots \]
  
-The question is now how can we encode them on \lambda-calculus. We do
-not have the ability to write the two constructors on \lambda-calculus,
-so we will make the natural numbers depend on them. This is again the
-same idea we used when we tried to encode booleans, we do not care
-about the content, but about how can we use them later.
+The question is now how can we encode them on \lambda-calculus. We
+cannot simply write the two constructors on \lambda-calculus, but we
+can make the natural numbers depend on any two given constructors.
+This is again the same idea we used when we worked with boolean values:
+we do not care about the structure, but about how can it be used later.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -436,9 +446,9 @@ succ (succ (succ 0))</script>
 </div>
 #+END_EXPORT
 
-Under this interpretation, a number =n= is really a function taking a
-function =a= as an argument and applying it =n= times over the
-argument =b=.
+Under this interpretation, a number $n$ is really a function taking a
+function $a$ as an argument and applying it $n$ times over the
+argument $b$.  Interpret the following two evaluations.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -451,7 +461,7 @@ argument =b=.
 
 *Exercise 3.1:* Define a function that takes a natural number and
 returns true if and only if the number is even. 
-/Hint: you may want to interpret the given number as a function./
+/Hint: you may want to think of the given number as a function./
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -489,7 +499,7 @@ double 4</script>
 #+END_EXPORT
 
 We are going now to define *addition* using this same principle. It
-takes a successor and a zero, computes the first number as =(n s z)=
+takes a successor and a zero, computes the first number as =n s z=
 and then uses it as a zero on the interpretation of the second one.
 
 #+BEGIN_EXPORT HTML
@@ -504,7 +514,8 @@ plus 0 5</script>
 
 *Exercise 3.3:* How would you define multiplication? Keep in mind that
 you can use a number as a function. Keep also in mind the previous
-exercises on =double= and =triple=.  /Spoilers below!/
+exercises on =double= and =triple=.  /Spoilers below!/ 
+/You may want to try this exercise before continuing./
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -530,7 +541,7 @@ mult 3 4</script>
 #+END_EXPORT
 
 ** The predecessor function
-But, how to compute the predecessor of a number? We have not encoded
+How to compute the predecessor of a number? We have not encoded
 negative numbers, so it could be a function returning zero whenever it
 tries to get the predecessor of zero. It is an insightful exercise to
 try to define it by yourself, but please, do not get too obsessed with
@@ -544,9 +555,9 @@ it. The solution is certainly not easy.
 #+END_EXPORT
 
 The solution is the term that follows this paragraph. You probably
-expected something easier! Kleene, who was a student of Alonzo Church,
-discovered for the first time how to write a predecessor on lambda
-calculus while at the dentist. This discovery made Church start
+expected something easier! Stephen Kleene, who was a student of Alonzo
+Church, discovered for the first time how to write a predecessor on
+lambda calculus while at the dentist. This discovery made Church start
 thinking that every intuitively computable function could be computed
 using lambda calculus, that is, that the notions of lambda-computable
 function and intuitively computable function would coincide.
@@ -639,14 +650,15 @@ leq 4 1
 eq  5 5</script>
 </div>
 #+END_EXPORT
+
 * Combinatory logic
 ** SKI combinators
 [[https://en.wikipedia.org/wiki/Combinatory_logic][Combinatory logic]] provides a notation for \lambda-terms independent
 from quantified variables. Every \lambda-expression can be written in
 terms of three combinators, $S,K,I$, which are defined as
 
- - $I = \lambda x.x$, the identity function.
- - $K = \lambda x.\lambda y.x$, the constant function.
+ - $I = \lambda x.x$, the identity function;
+ - $K = \lambda x.\lambda y.x$, the constant function;
  - $S = \lambda x.\lambda y.\lambda z. x z (y z)$, a generalized application.
  
 The first one, the identity, can be also written as a function of $S$ and $K$.
@@ -698,7 +710,7 @@ combinators. Some of the other classical combinators are
   * function composition, =B=;
   * and duplication of an argument, =W=;
   
-and they are defined as
+and they are defined as follows.
 
 #+BEGIN_EXPORT HTML
 <div class="mikrojs-console">
@@ -714,11 +726,11 @@ C S K S</script>
 #+END_EXPORT
 
 The [[https://en.wikipedia.org/wiki/Fixed-point_combinator#Fixed_point_combinators_in_lambda_calculus][Y combinator]] is related to recursion and we will discuss it on
-future chapters.
+the following chapters.
 
 * Data structures
 ** Tuples
-Tuples are easily defined from boolean logic. The main idea will be
+Tuples can be easily defined from boolean logic. The main idea will be
 that the application of tuple to a function will result on the
 application of the function to its two components.
 
@@ -761,12 +773,12 @@ As we did with natural numbers, we are going to write a representation
 independent from the constructors, they are going to be passed as
 arguments. We need
 
-  - =nil=, a list.
+  - =nil=, the empty list;
   - =cons=, a function taking an element (head) and a list (tail) and
     returning a new list.
 
 This interpretation makes easier to write folding functions for
-lists. We can define a function on a list simply giving the
+lists. We can define a function on a list by simply giving the
 interpretation for the =nil= and a binary function as an interpretation
 for the =const=.
 
@@ -1004,9 +1016,12 @@ fib 3
 fib 4
 
 # Take care when defining functions using fixpoint combinators!
-# Recursion can easily lead to non-terminating computations</script>
+# Recursion can easily lead to non-terminating computations.
+# If Mikrokosmos enters an infinite loop, please reload this page.
+# Your browser will probably warn you of a non-terminating script.</script>
 </div>
 #+END_EXPORT
+
 ** Evaluation
 The order in which evaluation is performed is crucial to determine if
 an expression will eventually terminate. Mikrokosmos evaluates every

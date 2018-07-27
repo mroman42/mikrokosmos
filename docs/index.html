@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-11-09 Thu 16:21 -->
+<!-- 2018-07-27 Fri 16:54 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Mikrokosmos</title>
@@ -68,6 +68,7 @@
   pre.src-fortran:before { content: 'Fortran'; }
   pre.src-gnuplot:before { content: 'gnuplot'; }
   pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
   pre.src-java:before { content: 'Java'; }
   pre.src-js:before { content: 'Javascript'; }
   pre.src-latex:before { content: 'LaTeX'; }
@@ -186,7 +187,7 @@
 <script type="text/javascript" src="styles/lib/js/jquery.stickytableheaders.js"></script>
 <script type="text/javascript" src="styles/readtheorg/js/readtheorg.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.css">
+<link rel="stylesheet" href="https://mroman42.github.io/mikrokosmos-js/codemirrorcustom.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/addon/mode/simple.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/addon/edit/matchbrackets.js"></script>
 <script src="https://mroman42.github.io/mikrokosmos-js/codemirrormkr.js"></script>
@@ -201,7 +202,7 @@
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2017 Free Software Foundation, Inc.
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -246,15 +247,15 @@ for the JavaScript code in this tag.
 <body>
 <div id="content">
 <h1 class="title">Mikrokosmos
-<br>
+<br />
 <span class="subtitle">A &lambda;-calculus interpreter</span>
 </h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgba64e3c">Try Mikrokosmos!</a></li>
-<li><a href="#orgf82ce1d">About</a></li>
+<li><a href="#org15ba408">Try Mikrokosmos!</a></li>
+<li><a href="#org4af199c">About</a></li>
 </ul>
 </div>
 </div>
@@ -271,9 +272,9 @@ interpreter, borrowing its name from the series of progressive piano
 students with a tool to learn and understand the <a href="https://en.wikipedia.org/wiki/Lambda_calculus#Informal_description">&lambda;-calculus</a>.
 </p>
 
-<div id="outline-container-orgba64e3c" class="outline-2">
-<h2 id="orgba64e3c">Try Mikrokosmos!</h2>
-<div class="outline-text-2" id="text-orgba64e3c">
+<div id="outline-container-org15ba408" class="outline-2">
+<h2 id="org15ba408">Try Mikrokosmos!</h2>
+<div class="outline-text-2" id="text-org15ba408">
 <p>
 You can try Mikrokosmos in your browser. Press the <b>evaluate</b>
 button below!
@@ -309,9 +310,9 @@ A more detailed tutorial and a user's guide are available.
 </div>
 </div>
 
-<div id="outline-container-orgf82ce1d" class="outline-2">
-<h2 id="orgf82ce1d">About</h2>
-<div class="outline-text-2" id="text-orgf82ce1d">
+<div id="outline-container-org4af199c" class="outline-2">
+<h2 id="org4af199c">About</h2>
+<div class="outline-text-2" id="text-org4af199c">
 <p>
 Mikrokosmos has been developed by <a href="https://mroman42.github.io/blog/about/">Mario Román</a> as part of a bachelor
 thesis. It is free software licensed under GPL-3. You can follow the
@@ -330,7 +331,7 @@ development on the relevant GitHub repositories
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Mario Román <a href="https://github.com/mroman42/">(github)</a></p>
-<p class="date">Created: 2017-11-09 Thu 16:21</p>
+<p class="date">Created: 2018-07-27 Fri 16:54</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

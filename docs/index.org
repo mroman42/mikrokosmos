@@ -44,9 +44,9 @@ A more detailed tutorial and a user's guide are available.
  * [[file:userguide.org][Mikrokosmos: user's guide]].
 
 * About
-Mikrokosmos has been developed by [[https://mroman42.github.io/blog/about/][Mario Román]] as part of a bachelor
-thesis. It is free software licensed under GPL-3. You can follow the
-development on the relevant GitHub repositories
+Mikrokosmos has been developed by [[https://mroman42.github.io/blog/about/][Mario Román]] as part of a [[https://mroman42.github.io/mikrokosmos/][bachelor thesis]].
+It is free software licensed under the GNU GPLv3. You can follow the development
+on the following repositories.
 
  * [[https://github.com/mroman42/mikrokosmos][Mikrokosmos]], main repository. Console interpreter.
  * [[https://github.com/mroman42/jupyter-mikrokosmos][Mikrokosmos-Jupyter]], a Jupyter kernel for the interpreter.
