@@ -75,57 +75,53 @@ for the Jupyter kernel and Javascript web application can be found.
 
 When teaching the logical structure of the lambda-calculus, it is
 common to make the students evaluate lambda terms by hand. This
-approach seems neccessary at least on the first stages of the learning
-proccess, but makes it very tedious to study more complex terms.  Just
-as we would never teach the C programming language making students
+approach seems neccessary on the first stages of the learning
+proccess, but makes it very tedious to study complex terms.  Just as
+we would never teach the C programming language making students
 execute big programs by hand, it makes sense to provide an interpreter
 and a programming environment allowing the students to explore lambda
-calculus without having to worry about evaluating step-by-step and
-focusing on the big picture. There is a need for an lambda calculus
-interpreter. Untyped lambda calculus interpreters are common, but they
-are usually meant as programming exercises, and provide ascetic
+calculus without having to worry about the details and focusing on the
+big picture.  Because of this, there is a need for a lambda calculus
+interpreter.  Untyped lambda calculus interpreters are common, but
+they are usually meant as programming exercises, and provide ascetic
 interpreters lacking any didactic features. Mikrokosmos addresses the
 need for an educational interpreter with multiple ways of visualizing
-the results, a clean and self-coherent syntax, libraries, and the
+the results, a clean and coherent syntax, libraries, and the
 possibility of integration in web pages and Jupyter notebooks.
 
 The Curry-Howard isomorphism between simply-typed lambda calculus and
 propositional intuitionistic logic [@wadler2015propositions] is
-sometimes illustrated using the Haskell programming language or
-similar functional programming languages. This approach, however, is
-theoretically questionable: Haskell implements a polymorphic lambda
+sometimes illustrated using the Haskell programming language or other
+similar functional languages. This approach, however, is theoretically
+questionable. On the one hand, Haskell implements a polymorphic lambda
 calculus [@reynolds1994introduction] corresponding to second-order
 intuitionistic logic [@wadler2007girard]; but it is not total, making
-every type inhabited (which is a fatal flaw for the purpose at hand);
-and it fails to represent a cartesian closed category mainly due to
+every type inhabited (which is a fatal flaw for our purpose).  On the
+other hand, it fails to represent a cartesian closed category due to
 its support for strict evaluation, partial functions and undefined
 values [@danielsson2006fast]. All these deviations from the theory are
 justified by the needs of a real-world programming language, but a
 student faced with Haskell as an example of the "Propositions are
 Types" paradigm may find it difficult to determine exactly what parts
 of the language should be ignored in order to retain a sound
-interpretation.  Mikrokosmos, on the contrary, simply implements
-the internal language of a bicartesian closed category
-[@lambek1988introduction] without any spurious additions nor primitive
-types.
+interpretation.  Mikrokosmos, on the contrary, simply implements the
+internal language of a bicartesian closed category
+[@lambek1988introduction] avoiding any spurious additions.
 
 Simply-typed lambda calculus interpreters of this kind are rare; the
 existing software usually implements some primitive types,
-input-output, and tend not use Curry typing, making them not as clear
-to study the Curry-Howard correspondence.
+input-output, and tends not to use Curry typing. It is not designed to
+study the Curry-Howard correspondence.
 
-Mikrokosmos has already been tested on the classroom and the
-Mikrokosmos web application can be easily deployed to create
-interactive tutorials suited for the needs of each specific course.
-This software could be particularly useful in logic or computation
-introductory courses to show how the formal system of the untyped
-lambda calculus constitutes a Turing-complete programming language and
-the Curry-Howard isomorphism.  In particular, Mikrokosmos and its
-interactive tutorial have already been used as a module for the course
-"Lógica y Programación" (Logic and Programming) taught by Pedro
-A. García-Sánchez at the University of Granada. The students were able
-to complete the exercises of the tutorial and to use the interpreter
-as an aid while completing other problem sets of the course.
+Mikrokosmos has already been tested on the classroom and its web
+application can be easily deployed to create interactive tutorials
+suited for the needs of each specific course.  In particular,
+Mikrokosmos and its interactive tutorial have already been used as a
+module for the course "Lógica y Programación" (Logic and Programming)
+taught by Pedro A. García-Sánchez at the University of Granada. The
+students were able to complete the exercises of the tutorial and to
+use the interpreter as an aid while completing other problem sets of
+the course.
 
 # Acknowledgements
 
