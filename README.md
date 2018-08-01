@@ -3,10 +3,6 @@
 ![Version](https://img.shields.io/badge/version-0.8.0-blue.svg)
 ![Travis (.org)](https://img.shields.io/travis/mroman42/mikrokosmos.svg)
 
-<p align="center">
-  <img src ="https://raw.githubusercontent.com/mroman42/mikrokosmos/master/docs/icon.svg.png" />
-</p>
-
 **Mikrokosmos** is a λ-calculus interpreter, borrowing its name from the series of
 progressive piano études *[Mikrokosmos](https://www.youtube.com/watch?v=VEsMk3DAzWM)* written by *Bela Bartok*. 
 It aims to provide students with a tool to learn and understand λ-calculus. It supports both untyped λ-calculus 
