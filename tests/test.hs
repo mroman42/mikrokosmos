@@ -132,8 +132,8 @@ lambda lim size = oneof
 goldenTests :: TestTree
 goldenTests = testGroup "Golden tests (tasty-golden)"
   [ goldenVsFile "Main golden test"
-      "tests/output.golden"
-      "tests/testing.golden"
-      ((createProcess $ shell "mikrokosmos tests/testing.mkr > tests/output.golden") >> return ())
+      "tests/goldenfile.golden"
+      "tests/testingfile"
+      (callCommand "mikrokosmos tests/testing.mkr > tests/testingfile")
   ]
 
