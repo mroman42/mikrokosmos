@@ -1,5 +1,7 @@
 # mikrokosmos
 
+![Travis (.org)](https://img.shields.io/travis/mroman42/mikrokosmos.svg)
+
 <p align="center">
   <img src ="https://raw.githubusercontent.com/mroman42/mikrokosmos/master/docs/icon.svg.png" />
 </p>
