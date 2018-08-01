@@ -1,6 +1,6 @@
 # mikrokosmos
 
-![Version](https://img.shields.io/badge/version-0.7.0-blue.svg)
+![Version](https://img.shields.io/badge/version-0.8.0-blue.svg)
 ![Travis (.org)](https://img.shields.io/travis/mroman42/mikrokosmos.svg)
 
 <p align="center">

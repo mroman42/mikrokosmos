@@ -158,10 +158,10 @@ initialText = unlines [
   formatFormula ++ "Version " ++ version ++ ". GNU General Public License Version 3." ++ end
   ]
 
--- | Version complete text
+-- | Version, complete text
 versionText :: String
 versionText = "Mikrokosmos, version " ++ version
 
 -- | Version
 version :: String
-version = "0.7.0"
+version = "0.8.0"
