@@ -1,0 +1,23 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "http://orcid.org/0000-0003-3158-1226",
+      "@type": "Person",
+      "email": "mromang08@correo.ugr.es",
+      "name": "Mario Román",
+      "affiliation": "University of Granada"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/mroman42/mikrokosmos",
+  "datePublished": "2018-08-05",
+  "dateModified": "2018-08-05",
+  "dateCreated": "2018-08-05",
+  "description": "An educational lambda-calculus interpreter",
+  "keywords": "lambda calculus, functional programming, intuitionistic logic, computability",
+  "license": "GPL v3.0",
+  "title": "Mikrokosmos",
+  "version": "v0.8.0"
+}
