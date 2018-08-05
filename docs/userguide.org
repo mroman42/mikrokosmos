@@ -1,5 +1,5 @@
 #+Title: Mikrokosmos
-#+Subtitle: User's guide (v0.7.0)
+#+Subtitle: User's guide (v0.8.0)
 #+Setupfile: html.setup
 
 * Mikrokosmos
