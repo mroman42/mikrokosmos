@@ -1,0 +1,9 @@
+* Read the org
+
+Read the org is a theme for org-mode files written by Fabrice Niessen.
+It is licensed under the terms of the GNU General Public License
+version 3.
+
+https://github.com/fniessen/org-html-themes
+
+
