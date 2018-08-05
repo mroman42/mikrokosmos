@@ -314,6 +314,53 @@ linked lists or trees in the standard library.
 #+CAPTION: Trees
 [[https://cloud.githubusercontent.com/assets/5337877/18883269/d7c3d616-84e2-11e6-9fc9-aa6e3df606f9.gif]]
 
+* Mikrokosmos in the classroom
+The recommended route for educators wanting to use Mikrokosmos in the
+classroom is to deploy the Mikrokosmos online interpreter on a web
+page accessible by the students.  This avoids the need for a manual
+installation of the Haskell building tools for each one of the
+students. An alternative route is to install the [[https://github.com/mroman42/jupyter-mikrokosmos/][Mikrokosmos Jupyter
+kernel]] into a Jupyter server accessible by the students.
+
+In order to embed Mikrokosmos into your web page, you need the
+following code in your heder.
+
+#+BEGIN_SRC html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/addon/mode/simple.min.js"></script>
+<script src="https://mroman42.github.io/mikrokosmos-js/codemirrormkr.js"></script>
+<script language="javascript" src="https://mroman42.github.io/mikrokosmos-js/rts.js"></script>
+<script language="javascript" src="https://mroman42.github.io/mikrokosmos-js/lib.js"></script>
+<script language="javascript" src="https://mroman42.github.io/mikrokosmos-js/out.js"></script>
+<script language="javascript" src="https://mroman42.github.io/mikrokosmos-js/runmain.js"></script>
+<script language="javascript" src="https://mroman42.github.io/mikrokosmos-js/mikrobox.js" defer></script>
+#+END_SRC
+
+Once this code is added, the =mikrokosmos= Javascript function will be
+available. You can create a Mikrokosmos code pad on your document as
+follows. As an example, assume we are preparing a lesson on the SKI
+combinators, and we want the students to describe the natural numbers
+in terms of SKI combinators. We could add the following pad into our
+web page.
+
+#+BEGIN_SRC html
+<div class="mikrojs-console">
+<script type="text/mikrokosmos">
+:ski on
+S = λa.λb.λc.(a c) (b c)
+K = λa.λb.a
+I = λa.a
+
+# Exercise. Write the natural numbers in terms of lambda 
+# expressions using Church encoding. The interpreter will
+# translate them into SKI combinators. Describe the pattern the
+# natural numbers follow in terms of SKI combinators.
+
+# Your code goes here.</script>
+</div>
+#+END_SRC
+
 * References & interesting links
 The following are interesting links for those who want to learn more
 about \lambda-calculus or how this interpreter has been built.
