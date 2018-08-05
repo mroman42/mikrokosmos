@@ -18,12 +18,12 @@ bibliography: paper.bib
 
 Mikrokosmos is an educational untyped and simply-typed lambda calculus
 interpreter.  For students, it is a tool to learn lambda calculus and
-intuitionistic logic by coding.  For educators, it is a didactic and
-grounded in theory implementation of a functional programming language
-they can integrate with other learning materials.  Mikrokosmos can be
-used on three different environments: as a *command line executable*,
-implementing a read-eval-print loop interpreter; as a *Jupyter
-kernel*, executing code blocks from a Jupyter notebook [@jupyter]; and
+intuitionistic logic by coding.  For educators, it is a didactic resource,
+grounded in the theoretical implementation of a functional programming language,
+so that they can integrate it with other learning materials.  Mikrokosmos can be
+used on three different environments: (1) as a *command line executable*,
+implementing a read-eval-print loop interpreter; (2) as a *Jupyter
+kernel*, executing code blocks from a Jupyter notebook [@jupyter]; and (3)
 as a *Javascript web application*, that can be used in conjunction
 with web text editors such as Codemirror [^codemirror] to create an
 online programming environment.
@@ -33,13 +33,13 @@ online programming environment.
 Mikrokosmos provides a minimalist and unified syntax for both simply
 typed and untyped lambda calculus.  The same expressions can be used
 to define untyped and typed terms.  This helps highlighting the
-differences between the two and avoids the added complexity of two
+differences between the two, and avoids the added complexity of two
 different sintaxes.  Moreover, the syntax is heavily inspired by
 Haskell so that it facilitates transferring the ideas to a
 fully-fledged functional programming.  Mikrokosmos comes also bundled
 with a self-documenting standard library of common lambda calculus
 combinators and data structures which can be consulted directly from
-the interpreter and eases the learning process, demonstrating how to
+the interpreter and ease the learning process, demonstrating how to
 write basic programs on lambda calculus.
 
 The interpreter focuses on being portable, close to the theory and
@@ -68,23 +68,23 @@ such as [@wadler2015propositions] or [@girard1989proofs].
 *Figure 1. An example Gentzen diagram of a proof on intuitionistic logic.*
 
 The latest release of the interpreter can be installed via `stack` or
-`cabal` and the documentation can be found at
+`cabal` and the documentation can be found in
 [https://mroman42.github.io/mikrokosmos/], where usage instructions
-for the Jupyter kernel and Javascript web application can be found.
+for the Jupyter kernel installation and Javascript web application can be found.
 
 
 # Statement of need
 
-When teaching the logical structure of the lambda-calculus, it is
-common to make the students evaluate lambda terms by hand. This
+When teaching the logical structure of lambda-calculus, it is
+common to ask the students evaluate lambda terms by hand. This
 approach seems neccessary on the first stages of the learning
-proccess, but makes it very tedious to study complex terms.  Just as
-we would never teach the C programming language making students
+proccess, but turns out to be very tedious while dealing with complex terms.  
+Just as one would never teach C programming language by making students
 execute big programs by hand, it makes sense to provide an interpreter
-and a programming environment allowing the students to explore lambda
-calculus without having to worry about the details and focusing on the
-big picture. Because of this, there is a need for a lambda calculus
-interpreter.  Untyped lambda calculus interpreters are common, but
+and a programming environment allowing the students to explore lambda-calculus 
+without having to worry about the details and focusing on the
+big picture. Because of this, there is a need for a lambda-calculus
+interpreter.  Untyped lambda-calculus interpreters are common, but
 they are usually developed as programming exercises, and only provide
 ascetic interpreters lacking any didactic features. Mikrokosmos
 addresses the need for an educational interpreter with multiple ways
@@ -98,7 +98,7 @@ programming language or other similar functional languages. This
 approach, however, is theoretically questionable. On the one hand,
 Haskell implements a polymorphic lambda calculus (see
 [@reynolds1994introduction]) corresponding to second-order
-intuitionistic logic, as delineated in [@wadler2007girard]; but it is
+intuitionistic logic, as depicted in [@wadler2007girard]; but it is
 not total and makes every type inhabited, which is a fatal flaw for
 our purpose.  On the other hand, it fails to represent a cartesian
 closed category due to its support for strict evaluation, partial
@@ -132,7 +132,7 @@ the course.
 This development was partially supported by the "Beca de Colaboración
 de Estudiantes en Departamentos Universitarios para el curso académico
 2017-2018" from the Spanish Ministerio de Educación, Cultura y Deporte
-at the Departamento de Álgebra de la Universidad de Granada.
+at the Departamento de Álgebra of the Universidad de Granada.
 
 # References
 
