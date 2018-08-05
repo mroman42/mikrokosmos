@@ -99,13 +99,12 @@ propositional intuitionistic logic described in
 [@wadler2015propositions] is sometimes illustrated using the Haskell
 programming language or other similar functional languages. This
 approach, however, is theoretically questionable. On the one hand,
-Haskell implements a polymorphic lambda calculus, in the sense of
-[@reynolds1994introduction], corresponding to second-order
-intuitionistic logic, as depicted in [@wadler2007girard]; but it is
-not total and makes every type inhabited, which is a fatal flaw for
-our purpose.  On the other hand, it fails to represent a cartesian
-closed category due to its support for strict evaluation, partial
-functions and undefined values; as justified in
+Haskell implements a polymorphic lambda calculus corresponding to
+second-order intuitionistic logic, as depicted in [@wadler2007girard];
+but it is not total and makes every type inhabited, which is a fatal
+flaw for our purpose.  On the other hand, it fails to represent a
+cartesian closed category due to its support for strict evaluation,
+partial functions and undefined values; as justified in
 [@danielsson2006fast]. Even if these deviations from the theory are
 justified by the needs of a real-world programming language, a student
 faced with Haskell as an example of the "Propositions as Types"
