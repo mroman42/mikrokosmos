@@ -16,14 +16,14 @@ bibliography: paper.bib
 
 # Description
 
-Mikrokosmos is an educational untyped and simply-typed lambda calculus
-interpreter.  For students, it is a tool to learn lambda calculus and
+Mikrokosmos is an educational untyped and simply typed lambda-calculus
+interpreter.  For students, it is a tool to learn lambda-calculus and
 intuitionistic logic by coding.  For educators, it is a didactic resource,
 grounded in the theoretical implementation of a functional programming language,
 so that they can integrate it with other learning materials.  Mikrokosmos can be
 used on three different environments: (1) as a *command line executable*,
-implementing a read-eval-print loop interpreter; (2) as a *Jupyter
-kernel*, executing code blocks from a Jupyter notebook [@jupyter]; and (3)
+implementing a read-eval-print loop interpreter; (2) as a *Jupyter kernel*,
+executing code blocks from a Jupyter notebook [@jupyter]; and (3)
 as a *Javascript web application*, that can be used in conjunction
 with web text editors such as Codemirror [^codemirror] to create an
 online programming environment.
@@ -31,20 +31,20 @@ online programming environment.
 [^codemirror]: http://codemirror.net/
 
 Mikrokosmos provides a minimalist and unified syntax for both simply
-typed and untyped lambda calculus.  The same expressions can be used
+typed and untyped lambda-calculus.  The same expressions can be used
 to define untyped and typed terms.  This helps highlighting the
 differences between the two, and avoids the added complexity of two
 different sintaxes.  Moreover, the syntax is heavily inspired by
 Haskell so that it facilitates transferring the ideas to a
 fully-fledged functional programming.  Mikrokosmos comes also bundled
-with a self-documenting standard library of common lambda calculus
+with a self-documenting standard library of common lambda-calculus
 combinators and data structures which can be consulted directly from
 the interpreter and ease the learning process, demonstrating how to
-write basic programs on lambda calculus.
+write basic programs on lambda-calculus.
 
 The interpreter focuses on being portable, close to the theory and
-suited for learning and experimentation.  For the untyped lambda
-calculus, Mikrokosmos works as a Turing-complete programming
+suited for learning and experimentation.  For the untyped
+lambda-calculus, Mikrokosmos works as a Turing-complete programming
 language. Following [@barendregt84], it implements the *leftmost
 evaluation strategy*, which finds a normal form whenever it exists,
 allowing infinite data structures and fixed point definitions.  The
@@ -132,7 +132,10 @@ the course.
 This development was partially supported by the "Beca de Colaboración
 de Estudiantes en Departamentos Universitarios para el curso académico
 2017-2018" from the Spanish Ministerio de Educación, Cultura y Deporte
-at the Departamento de Álgebra of the Universidad de Granada.
+at the Departamento de Álgebra of the Universidad de Granada. The
+author would like to thank his advisor for this grant program,
+professor Pedro A. García-Sánchez, for his patient supervision, advice
+and encouragement.
 
 # References
 
