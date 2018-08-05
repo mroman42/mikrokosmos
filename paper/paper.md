@@ -72,14 +72,14 @@ The latest release of the interpreter can be installed via `stack` or
 `cabal` from Hackage[^hackage] and the documentation can be found in
 https://mroman42.github.io/mikrokosmos/, where installation and usage
 instructions for the Jupyter kernel and the Javascript web application
-can be also found.
+are also described.
 
 [^hackage]: https://hackage.haskell.org/package/mikrokosmos
 
 # Statement of need
 
 When teaching the logical structure of lambda-calculus, it is
-common to ask the students evaluate lambda terms by hand. This
+common to ask the students to evaluate lambda terms by hand. This
 approach seems necessary on the first stages of the learning
 process, but turns out to be very tedious while dealing with complex terms.  
 Just as one would never teach C programming language by making students
