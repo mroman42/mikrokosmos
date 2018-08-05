@@ -323,7 +323,7 @@ students. An alternative route is to install the [[https://github.com/mroman42/j
 kernel]] into a Jupyter server accessible by the students.
 
 In order to embed Mikrokosmos into your web page, you need the
-following code in your heder.
+following code in your HTML header.
 
 #+BEGIN_SRC html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.min.js"></script>
@@ -360,6 +360,8 @@ I = λa.a
 # Your code goes here.</script>
 </div>
 #+END_SRC
+
+An example of this usage can be found in the [[https://mroman42.github.io/mikrokosmos/tutorial.html][tutorial]].
 
 * References & interesting links
 The following are interesting links for those who want to learn more
