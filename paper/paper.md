@@ -34,7 +34,7 @@ Mikrokosmos provides a minimalist and unified syntax for both simply
 typed and untyped lambda-calculus.  The same expressions can be used
 to define untyped and typed terms.  This helps highlighting the
 differences between the two, and avoids the added complexity of two
-different sintaxes.  Moreover, the syntax is heavily inspired by
+different syntaxes.  Moreover, the syntax is heavily inspired by
 Haskell so that it facilitates transferring the ideas to a
 fully-fledged functional programming.  Mikrokosmos comes also bundled
 with a self-documenting standard library of common lambda-calculus
@@ -77,8 +77,8 @@ for the Jupyter kernel installation and Javascript web application can be found.
 
 When teaching the logical structure of lambda-calculus, it is
 common to ask the students evaluate lambda terms by hand. This
-approach seems neccessary on the first stages of the learning
-proccess, but turns out to be very tedious while dealing with complex terms.  
+approach seems necessary on the first stages of the learning
+process, but turns out to be very tedious while dealing with complex terms.  
 Just as one would never teach C programming language by making students
 execute big programs by hand, it makes sense to provide an interpreter
 and a programming environment allowing the students to explore lambda-calculus 
@@ -127,7 +127,7 @@ students were able to complete the exercises of the tutorial and to
 use the interpreter as an aid while completing other problem sets of
 the course.
 
-# Acknowledgements
+# Acknowledgments
 
 This development was partially supported by the "Beca de Colaboración
 de Estudiantes en Departamentos Universitarios para el curso académico
