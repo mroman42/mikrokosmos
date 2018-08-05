@@ -7,10 +7,12 @@ tags:
 - computability
 authors:
 - name: Mario Román
+  orcid: 0000-0003-3158-1226
   affiliation: 1
 affiliations:
 - name: University of Granada
   index: 1
+date: 5 August 2018
 bibliography: paper.bib
 ---
 
