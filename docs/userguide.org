@@ -50,8 +50,9 @@ installation is also available by cloning the git repository and using
   stack install
 #+END_SRC
 
-The **ghc** compiler can be also directly used from its version 8. Make
-sure all the dependencies are available first.
+The **ghc** compiler can be also directly used from its version 8. In
+that case, you must check that all the Haskell libraries on the
+following list are available first.
 
 #+BEGIN_SRC sh
   git clone https://github.com/mroman42/mikrokosmos.git
@@ -59,10 +60,32 @@ sure all the dependencies are available first.
   ghc Main.hs
 #+END_SRC
 
+Please refer to the =mikrokosmos.cabal= file for an updated list of
+libraries.
+
+|------------------+--------------|
+| Library          | Version      |
+|------------------+--------------|
+| base             | >=4.7 && <5, |
+| mtl              | >=2.2,       |
+| containers       | >= 0.5,      |
+| haskeline        | >=0.7,       |
+| parsec           | >=3,         |
+| ansi-terminal    | any          |
+| multimap         | any          |
+| HUnit            | >=1.0        |
+| options          | any          |
+| tasty            | any          |
+| tasty-hunit      | any          |
+| tasty-quickcheck | any          |
+| tasty-golden     | any          |
+| directory        | 1.0          |
+|------------------+--------------|
+
 ** Libraries
-Mikrokosmos comes bundled with a set of lambda calculus libraries.
-They will be directly loaded into the interpreter unless you specify
-the flag =--no-libs=.
+Mikrokosmos comes bundled with a collection of lambda calculus
+libraries.  They will be directly loaded into the interpreter unless
+you specify the flag =--no-libs=.
 
 Apart from these, you can write your own libraries and load them onto
 the interpreter. A library consists on a file with extension =.mkr= and
@@ -231,13 +254,13 @@ presents the following type constructors.
 | A × B | Product type, pairs of elements of type A and B.              |
 | A + B | Union type, disjoint union of A and B.                        |
 | ⊤     | Unit type, with only one element.                             |
-|       | Empty type.                                                   |
+| ⊥     | Empty type.                                                   |
 |-------+---------------------------------------------------------------|
 
-You can use these types with the built-in term constructors on the
-language such as =INL=, =INR=, =ABORT=, =UNIT= or =(-,-)=; but it
-is recommended to load the standard library and work with the
-[[*Type constructors][type constructors]] already available on the library.
+You can directly use these types via the built-in term constructors
+=INL=, =INR=, =ABORT=, =UNIT= and =(-,-)=. However, it is recommended to load
+the standard library and work with the [[*Type constructors][type constructors]] already
+available on the library.
 
 * The Mikrokosmos language
 The Mikrokosmos language aims to be a minimal implementation of pure
@@ -363,7 +386,7 @@ I = λa.a
 
 An example of this usage can be found in the [[https://mroman42.github.io/mikrokosmos/tutorial.html][tutorial]].
 
-* References & interesting links
+* Further reading
 The following are interesting links for those who want to learn more
 about \lambda-calculus or how this interpreter has been built.
 
