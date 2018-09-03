@@ -12,9 +12,9 @@ interpreter, borrowing its name from the series of progressive piano
 students with a tool to learn and understand the [[https://en.wikipedia.org/wiki/Lambda_calculus#Informal_description][\lambda-calculus]].
 
 * Installation
-*Quick start:* it should be possible to install the interpreter and the
-Jupyter kernel only with the two following commands, provided that =cabal=
-and =pip= are installed.
+*Quick start:* under GNU/Linux, it should be possible to install the
+interpreter and the Jupyter kernel only with the two following
+commands, provided that =cabal= and =pip= are installed.
 
 #+BEGIN_SRC sh
   cabal install mikrokosmos
@@ -24,6 +24,11 @@ and =pip= are installed.
 If you want to add custom libraries, they should be placed under
 =~/.mikrokosmos/=. The following sections explain in more detail each
 step.
+
+#+BEGIN_quote
+Please note that the Jupyter kernel does not currently work on
+Windows, as described in issue [[https://github.com/mroman42/mikrokosmos/issues/45][#45]].
+#+END_quote
 
 ** Mikrokosmos
 Mikrokosmos is installable from [[http://hackage.haskell.org/][Hackage]]. The Haskell tools *cabal* and
@@ -121,6 +126,11 @@ command must then be used to load the library =<filename>.mkr=.
 #+END_EXAMPLE
 
 ** Jupyter kernel
+#+BEGIN_quote
+Please note that the Jupyter kernel does not currently work on
+Windows, as described in issue [[https://github.com/mroman42/mikrokosmos/issues/45][#45]].
+#+END_quote
+
 Using *pip*, the [[https://jupyter.org/][Jupyter]] kernel can be installed with the following
 command.
 
