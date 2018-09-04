@@ -9,7 +9,7 @@ Version 3 (see the LICENSE file).
 
 Any bug, failure, or unintended behaviour of the program, specially if
 it differs from the behaviour described on the [user's guide](https://mroman42.github.io/mikrokosmos/userguide.html),
-should be reported on the relevant [issue tracker](https://mroman42.github.io/mikrokosmos/userguide.html).
+should be reported on the relevant [issue tracker](https://github.com/mroman42/mikrokosmos/issues).
 When doing so, please try to include all the relevant information, the
 steps you may take to reproduce the error, and the platform and version
 of Mikrokosmos you were using.
@@ -29,10 +29,10 @@ describing the desired changes and wait for feedback on whether that
 particular feature would be suitable for Mikrokosmos.
 
 In order to submit a pull request,
-[fork](https://mroman42.github.io/mikrokosmos/userguide.html) and
-[clone](https://mroman42.github.io/mikrokosmos/userguide.html) the
+[fork](https://help.github.com/articles/fork-a-repo/) and
+[clone](https://git-scm.com/docs/git-clone) the
 repository. Install the
-[stack](https://mroman42.github.io/mikrokosmos/userguide.html) tool
+[stack](https://docs.haskellstack.org/en/stable/README/) tool
 (or similar). After editing the code, Mikrokosmos can be rebuilt using
 `stack install`. Before making your changes and before submitting your
 pull request, make sure all the tests pass using `stack test`.
