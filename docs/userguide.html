@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-09-03 Mon 11:56 -->
+<!-- 2018-09-04 Tue 15:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Mikrokosmos</title>
@@ -276,53 +276,54 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org33a93b4">1. Mikrokosmos</a></li>
-<li><a href="#orgae3d11d">2. Installation</a>
+<li><a href="#org0fe284c">1. Mikrokosmos</a></li>
+<li><a href="#org47c7703">2. Installation</a>
 <ul>
-<li><a href="#orge98ec33">2.1. Mikrokosmos</a></li>
-<li><a href="#org93d0368">2.2. Libraries</a></li>
-<li><a href="#orgff14b21">2.3. Jupyter kernel</a>
+<li><a href="#orgaf0f940">2.1. Mikrokosmos</a></li>
+<li><a href="#orgc99b1cc">2.2. Libraries</a></li>
+<li><a href="#orgc54591f">2.3. Jupyter kernel</a>
 <ul>
-<li><a href="#orgba264fd">2.3.1. Manual installation</a></li>
+<li><a href="#orgefd83f7">2.3.1. Manual installation</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org4000062">3. First steps</a>
+<li><a href="#org5ea8bde">3. First steps</a>
 <ul>
-<li><a href="#org0fd1351">3.1. First steps on the command line</a></li>
-<li><a href="#orgc8dbc09">3.2. First steps with the Jupyter kernel</a></li>
+<li><a href="#orgccf2005">3.1. First steps on the command line</a></li>
+<li><a href="#org58ae7a3">3.2. First steps with the Jupyter kernel</a></li>
 </ul>
 </li>
-<li><a href="#org803a1cb">4. The Mikrokosmos interpreter</a>
+<li><a href="#orgb95a1bf">4. The Mikrokosmos interpreter</a>
 <ul>
-<li><a href="#org31b2c06">4.1. Verbose mode</a></li>
-<li><a href="#org20c6452">4.2. SKI mode</a></li>
-<li><a href="#org9fdddd3">4.3. Color mode</a></li>
-<li><a href="#org8bd7a9d">4.4. Simply typed &lambda;-calculus</a></li>
+<li><a href="#org5004d08">4.1. Verbose mode</a></li>
+<li><a href="#org2519343">4.2. SKI mode</a></li>
+<li><a href="#orgab49c81">4.3. Color mode</a></li>
+<li><a href="#org2960832">4.4. Simply typed &lambda;-calculus</a></li>
 </ul>
 </li>
-<li><a href="#orgd8b5b5c">5. The Mikrokosmos language</a>
+<li><a href="#orge5fd0d5">5. The Mikrokosmos language</a>
 <ul>
-<li><a href="#org79eca1f">5.1. Lambda expressions</a></li>
-<li><a href="#org9b73b5a">5.2. Bindings</a></li>
-<li><a href="#org80a31b8">5.3. Comments</a></li>
-<li><a href="#orgd0a76b2">5.4. Type constructors</a></li>
+<li><a href="#orgf95e520">5.1. Lambda expressions</a></li>
+<li><a href="#orgd66e7ff">5.2. Bindings</a></li>
+<li><a href="#orgd6bca87">5.3. Comments</a></li>
+<li><a href="#org7cfede8">5.4. Type constructors</a></li>
 </ul>
 </li>
-<li><a href="#orge4d57ec">6. Standard libraries</a>
+<li><a href="#orgd0101ed">6. Standard libraries</a>
 <ul>
-<li><a href="#orga360911">6.1. Loading libraries</a></li>
+<li><a href="#org8d3ac35">6.1. Loading libraries</a></li>
 </ul>
 </li>
-<li><a href="#org6f2c05d">7. Mikrokosmos in the classroom</a></li>
-<li><a href="#org49b00f5">8. Further reading</a></li>
+<li><a href="#org7378e59">7. Mikrokosmos in the classroom</a></li>
+<li><a href="#orgfe2be37">8. Support and contributions</a></li>
+<li><a href="#orgeb71161">9. Further reading</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org33a93b4" class="outline-2">
-<h2 id="org33a93b4"><span class="section-number-2">1</span> Mikrokosmos</h2>
+<div id="outline-container-org0fe284c" class="outline-2">
+<h2 id="org0fe284c"><span class="section-number-2">1</span> Mikrokosmos</h2>
 <div class="outline-text-2" id="text-1">
 
 <div class="figure">
@@ -339,13 +340,13 @@ students with a tool to learn and understand the <a href="https://en.wikipedia.o
 </div>
 </div>
 
-<div id="outline-container-orgae3d11d" class="outline-2">
-<h2 id="orgae3d11d"><span class="section-number-2">2</span> Installation</h2>
+<div id="outline-container-org47c7703" class="outline-2">
+<h2 id="org47c7703"><span class="section-number-2">2</span> Installation</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-<b>Quick start:</b> it should be possible to install the interpreter and the
-Jupyter kernel only with the two following commands, provided that <code>cabal</code>
-and <code>pip</code> are installed.
+<b>Quick start:</b> under GNU/Linux, it should be possible to install the
+interpreter and the Jupyter kernel only with the two following
+commands, provided that <code>cabal</code> and <code>pip</code> are installed.
 </p>
 
 <div class="org-src-container">
@@ -359,10 +360,17 @@ If you want to add custom libraries, they should be placed under
 <code>~/.mikrokosmos/</code>. The following sections explain in more detail each
 step.
 </p>
+
+<blockquote>
+<p>
+Please note that the Jupyter kernel does not currently work on
+Windows, as described in issue <a href="https://github.com/mroman42/mikrokosmos/issues/45">#45</a>.
+</p>
+</blockquote>
 </div>
 
-<div id="outline-container-orge98ec33" class="outline-3">
-<h3 id="orge98ec33"><span class="section-number-3">2.1</span> Mikrokosmos</h3>
+<div id="outline-container-orgaf0f940" class="outline-3">
+<h3 id="orgaf0f940"><span class="section-number-3">2.1</span> Mikrokosmos</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 Mikrokosmos is installable from <a href="http://hackage.haskell.org/">Hackage</a>. The Haskell tools <b>cabal</b> and
@@ -501,8 +509,8 @@ libraries.
 </div>
 </div>
 
-<div id="outline-container-org93d0368" class="outline-3">
-<h3 id="org93d0368"><span class="section-number-3">2.2</span> Libraries</h3>
+<div id="outline-container-orgc99b1cc" class="outline-3">
+<h3 id="orgc99b1cc"><span class="section-number-3">2.2</span> Libraries</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 Mikrokosmos comes bundled with a collection of lambda calculus
@@ -549,8 +557,8 @@ command must then be used to load the library <code>&lt;filename&gt;.mkr</code>.
 </div>
 </div>
 
-<div id="outline-container-orgff14b21" class="outline-3">
-<h3 id="orgff14b21"><span class="section-number-3">2.3</span> Jupyter kernel</h3>
+<div id="outline-container-orgc54591f" class="outline-3">
+<h3 id="orgc54591f"><span class="section-number-3">2.3</span> Jupyter kernel</h3>
 <div class="outline-text-3" id="text-2-3">
 <blockquote>
 <p>
@@ -570,8 +578,8 @@ command.
 </div>
 </div>
 
-<div id="outline-container-orgba264fd" class="outline-4">
-<h4 id="orgba264fd"><span class="section-number-4">2.3.1</span> Manual installation</h4>
+<div id="outline-container-orgefd83f7" class="outline-4">
+<h4 id="orgefd83f7"><span class="section-number-4">2.3.1</span> Manual installation</h4>
 <div class="outline-text-4" id="text-2-3-1">
 <p>
 It is possible to install the kernel by simply copying the files under
@@ -623,15 +631,15 @@ copy manually the script to one of those locations.
 </div>
 </div>
 
-<div id="outline-container-org4000062" class="outline-2">
-<h2 id="org4000062"><span class="section-number-2">3</span> First steps</h2>
+<div id="outline-container-org5ea8bde" class="outline-2">
+<h2 id="org5ea8bde"><span class="section-number-2">3</span> First steps</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org0fd1351" class="outline-3">
-<h3 id="org0fd1351"><span class="section-number-3">3.1</span> First steps on the command line</h3>
+<div id="outline-container-orgccf2005" class="outline-3">
+<h3 id="orgccf2005"><span class="section-number-3">3.1</span> First steps on the command line</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
-Once <a href="#org33a93b4">installed</a>, the interpreter can be opened by executing
+Once <a href="#org0fe284c">installed</a>, the interpreter can be opened by executing
 <code>mikrokosmos</code> in a terminal. It will open a prompt where lambda expressions
 can be evaluated.
 </p>
@@ -666,8 +674,8 @@ Commands available from the prompt:
 </div>
 </div>
 
-<div id="outline-container-orgc8dbc09" class="outline-3">
-<h3 id="orgc8dbc09"><span class="section-number-3">3.2</span> First steps with the Jupyter kernel</h3>
+<div id="outline-container-org58ae7a3" class="outline-3">
+<h3 id="org58ae7a3"><span class="section-number-3">3.2</span> First steps with the Jupyter kernel</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 If Jupyter and the Mikrokosmos Jupyter kernel are installed, a Jupyter
@@ -692,8 +700,8 @@ separately.
 </div>
 </div>
 
-<div id="outline-container-org803a1cb" class="outline-2">
-<h2 id="org803a1cb"><span class="section-number-2">4</span> The Mikrokosmos interpreter</h2>
+<div id="outline-container-orgb95a1bf" class="outline-2">
+<h2 id="orgb95a1bf"><span class="section-number-2">4</span> The Mikrokosmos interpreter</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 In both cases, the interpreter will evaluate commands and expressions
@@ -704,8 +712,8 @@ commands.
 </p>
 </div>
 
-<div id="outline-container-org31b2c06" class="outline-3">
-<h3 id="org31b2c06"><span class="section-number-3">4.1</span> Verbose mode</h3>
+<div id="outline-container-org5004d08" class="outline-3">
+<h3 id="org5004d08"><span class="section-number-3">4.1</span> Verbose mode</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 The <b>verbose mode</b> makes the interpreter show every step on the beta
@@ -723,8 +731,8 @@ deactivated by executing <code>:verbose on</code> and <code>:verbose off</code>.
 </div>
 </div>
 
-<div id="outline-container-org20c6452" class="outline-3">
-<h3 id="org20c6452"><span class="section-number-3">4.2</span> SKI mode</h3>
+<div id="outline-container-org2519343" class="outline-3">
+<h3 id="org2519343"><span class="section-number-3">4.2</span> SKI mode</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 Every lambda expression can be written in terms of SKI combinators,
@@ -735,8 +743,8 @@ activated and deactivated by executing <code>:ski on</code> and <code>:ski off</
 </div>
 </div>
 
-<div id="outline-container-org9fdddd3" class="outline-3">
-<h3 id="org9fdddd3"><span class="section-number-3">4.3</span> Color mode</h3>
+<div id="outline-container-orgab49c81" class="outline-3">
+<h3 id="orgab49c81"><span class="section-number-3">4.3</span> Color mode</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 Colored output will be activated by default. It can be deactivated
@@ -746,8 +754,8 @@ activate the color again.
 </div>
 </div>
 
-<div id="outline-container-org8bd7a9d" class="outline-3">
-<h3 id="org8bd7a9d"><span class="section-number-3">4.4</span> Simply typed &lambda;-calculus</h3>
+<div id="outline-container-org2960832" class="outline-3">
+<h3 id="org2960832"><span class="section-number-3">4.4</span> Simply typed &lambda;-calculus</h3>
 <div class="outline-text-3" id="text-4-4">
 <p>
 Mikrokosmos uses untyped &lambda;-calculus by default, but you can activate
@@ -824,15 +832,15 @@ presents the following type constructors.
 <p>
 You can directly use these types via the built-in term constructors
 <code>INL</code>, <code>INR</code>, <code>ABORT</code>, <code>UNIT</code> and <code>(-,-)</code>. However, it is recommended to load
-the standard library and work with the <a href="#orgd0a76b2">type constructors</a> already
+the standard library and work with the <a href="#org7cfede8">type constructors</a> already
 available on the library.
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgd8b5b5c" class="outline-2">
-<h2 id="orgd8b5b5c"><span class="section-number-2">5</span> The Mikrokosmos language</h2>
+<div id="outline-container-orge5fd0d5" class="outline-2">
+<h2 id="orge5fd0d5"><span class="section-number-2">5</span> The Mikrokosmos language</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 The Mikrokosmos language aims to be a minimal implementation of pure
@@ -843,8 +851,8 @@ following sections briefly describe the language.
 </p>
 </div>
 
-<div id="outline-container-org79eca1f" class="outline-3">
-<h3 id="org79eca1f"><span class="section-number-3">5.1</span> Lambda expressions</h3>
+<div id="outline-container-orgf95e520" class="outline-3">
+<h3 id="orgf95e520"><span class="section-number-3">5.1</span> Lambda expressions</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 A lambda abstraction \((\lambda x. x)\) can be written as
@@ -861,8 +869,8 @@ function to itself.
 </div>
 </div>
 
-<div id="outline-container-org9b73b5a" class="outline-3">
-<h3 id="org9b73b5a"><span class="section-number-3">5.2</span> Bindings</h3>
+<div id="outline-container-orgd66e7ff" class="outline-3">
+<h3 id="orgd66e7ff"><span class="section-number-3">5.2</span> Bindings</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 A expression can be evaluated and the results of the evaluation bound
@@ -880,8 +888,8 @@ operator to assign a value to a variable without evaluating it.
 </div>
 </div>
 
-<div id="outline-container-org80a31b8" class="outline-3">
-<h3 id="org80a31b8"><span class="section-number-3">5.3</span> Comments</h3>
+<div id="outline-container-orgd6bca87" class="outline-3">
+<h3 id="orgd6bca87"><span class="section-number-3">5.3</span> Comments</h3>
 <div class="outline-text-3" id="text-5-3">
 <p>
 Comments must always start with a <code>#</code> and they always expand for one
@@ -891,8 +899,8 @@ Jupyter notebook.
 </div>
 </div>
 
-<div id="outline-container-orgd0a76b2" class="outline-3">
-<h3 id="orgd0a76b2"><span class="section-number-3">5.4</span> Type constructors</h3>
+<div id="outline-container-org7cfede8" class="outline-3">
+<h3 id="org7cfede8"><span class="section-number-3">5.4</span> Type constructors</h3>
 <div class="outline-text-3" id="text-5-4">
 <p>
 When the <code>:types</code> option is on, and the standard library is loaded, a
@@ -955,18 +963,18 @@ predefined set of type constructors and destructors are allowed on
 </div>
 </div>
 
-<div id="outline-container-orge4d57ec" class="outline-2">
-<h2 id="orge4d57ec"><span class="section-number-2">6</span> Standard libraries</h2>
+<div id="outline-container-orgd0101ed" class="outline-2">
+<h2 id="orgd0101ed"><span class="section-number-2">6</span> Standard libraries</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 Apart from the standard libraries.  You can write your own libraries
 and place them under the <code>./lib</code> folder. The installation of libraries 
-has been discussed <a href="#org93d0368">here</a>.
+has been discussed <a href="#orgc99b1cc">here</a>.
 </p>
 </div>
 
-<div id="outline-container-orga360911" class="outline-3">
-<h3 id="orga360911"><span class="section-number-3">6.1</span> Loading libraries</h3>
+<div id="outline-container-org8d3ac35" class="outline-3">
+<h3 id="org8d3ac35"><span class="section-number-3">6.1</span> Loading libraries</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 The reserved keyword <code>:load</code> is used to load libraries. If the library
@@ -1000,8 +1008,8 @@ linked lists or trees in the standard library.
 </div>
 </div>
 
-<div id="outline-container-org6f2c05d" class="outline-2">
-<h2 id="org6f2c05d"><span class="section-number-2">7</span> Mikrokosmos in the classroom</h2>
+<div id="outline-container-org7378e59" class="outline-2">
+<h2 id="org7378e59"><span class="section-number-2">7</span> Mikrokosmos in the classroom</h2>
 <div class="outline-text-2" id="text-7">
 <p>
 The recommended route for educators wanting to use Mikrokosmos in the
@@ -1062,10 +1070,30 @@ An example of this usage can be found in the <a href="https://mroman42.github.io
 </p>
 </div>
 </div>
-
-<div id="outline-container-org49b00f5" class="outline-2">
-<h2 id="org49b00f5"><span class="section-number-2">8</span> Further reading</h2>
+<div id="outline-container-orgfe2be37" class="outline-2">
+<h2 id="orgfe2be37"><span class="section-number-2">8</span> Support and contributions</h2>
 <div class="outline-text-2" id="text-8">
+<p>
+If you are an user seeking support, please use the <a href="https://github.com/mroman42/mikrokosmos/issues">GitHub issue
+tracker</a> of the main repository.  Any bug, failure, or unintended
+behaviour of the program, specially if it differs from the behaviour
+described on the <a href="https://mroman42.github.io/mikrokosmos/userguide.html">user's guide</a>, should be reported on the <a href="https://github.com/mroman42/mikrokosmos/issues">issue
+tracker</a>.  When doing so, please try to include all the relevant
+information, the steps you may take to reproduce the error, and the
+platform and version of Mikrokosmos you were using.
+</p>
+
+<p>
+Mikrokosmos is open to pull requests and issue reports from everyone
+(please see the <a href="https://github.com/mroman42/mikrokosmos/blob/master/CONTRIBUTING.md">CONTRIBUTING</a> file).  The code is licensed under the GNU
+General Public License Version 3 (see the <a href="https://github.com/mroman42/mikrokosmos/blob/master/LICENSE">LICENSE</a> file).
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgeb71161" class="outline-2">
+<h2 id="orgeb71161"><span class="section-number-2">9</span> Further reading</h2>
+<div class="outline-text-2" id="text-9">
 <p>
 The following are interesting links for those who want to learn more
 about &lambda;-calculus or how this interpreter has been built.
@@ -1090,7 +1118,7 @@ written in Haskell.</li>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Mario Román</p>
-<p class="date">Created: 2018-09-03 Mon 11:56</p>
+<p class="date">Created: 2018-09-04 Tue 15:15</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

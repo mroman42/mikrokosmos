@@ -395,6 +395,18 @@ I = λa.a
 #+END_SRC
 
 An example of this usage can be found in the [[https://mroman42.github.io/mikrokosmos/tutorial.html][tutorial]].
+* Support and contributions
+If you are an user seeking support, please use the [[https://github.com/mroman42/mikrokosmos/issues][GitHub issue
+tracker]] of the main repository.  Any bug, failure, or unintended
+behaviour of the program, specially if it differs from the behaviour
+described on the [[https://mroman42.github.io/mikrokosmos/userguide.html][user's guide]], should be reported on the [[https://github.com/mroman42/mikrokosmos/issues][issue
+tracker]].  When doing so, please try to include all the relevant
+information, the steps you may take to reproduce the error, and the
+platform and version of Mikrokosmos you were using.
+
+Mikrokosmos is open to pull requests and issue reports from everyone
+(please see the [[https://github.com/mroman42/mikrokosmos/blob/master/CONTRIBUTING.md][CONTRIBUTING]] file).  The code is licensed under the GNU
+General Public License Version 3 (see the [[https://github.com/mroman42/mikrokosmos/blob/master/LICENSE][LICENSE]] file).
 
 * Further reading
 The following are interesting links for those who want to learn more
