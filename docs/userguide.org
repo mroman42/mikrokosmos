@@ -25,11 +25,6 @@ If you want to add custom libraries, they should be placed under
 =~/.mikrokosmos/=. The following sections explain in more detail each
 step.
 
-#+BEGIN_quote
-Please note that the Jupyter kernel does not currently work on
-Windows, as described in issue [[https://github.com/mroman42/mikrokosmos/issues/45][#45]].
-#+END_quote
-
 ** Mikrokosmos
 Mikrokosmos is installable from [[http://hackage.haskell.org/][Hackage]]. The Haskell tools *cabal* and
 *stack* can be used to install it. For instance, it can be installed
@@ -127,15 +122,24 @@ command must then be used to load the library =<filename>.mkr=.
 
 ** Jupyter kernel
 #+BEGIN_quote
-Please note that the Jupyter kernel does not currently work on
-Windows, as described in issue [[https://github.com/mroman42/mikrokosmos/issues/45][#45]].
+Please note that the Jupyter kernel does not correctly displays
+Unicode characters on Windows. This is a known bug, see Issue [[https://github.com/mroman42/mikrokosmos/issues/49][#49]].
 #+END_quote
 
 Using *pip*, the [[https://jupyter.org/][Jupyter]] kernel can be installed with the following
-command.
+command. Use the flag =-U= if you want to update a previous install
+to the latest version.
 
 #+BEGIN_SRC bash
-sudo pip install imikrokosmos
+pip install imikrokosmos
+#+END_SRC
+
+Development versions of the kernel can be installed from its GitHub
+[[https://github.com/mroman42/jupyter-mikrokosmos][repository]]. For instance, you can use the following command if you
+want to download the source from the =master= branch of the repository.
+
+#+BEGIN_SRC bash
+pip install git+https://github.com/mroman42/jupyter-mikrokosmos.git@master
 #+END_SRC
 
 *** Manual installation
