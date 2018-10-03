@@ -47,25 +47,25 @@ to write basic programs on lambda-calculus.
 The interpreter focuses on being portable, close to the theory and
 suited for learning and experimentation.  For the untyped
 lambda-calculus, Mikrokosmos works as a Turing-complete programming
-language. Following [@barendregt84], it implements the *leftmost
+language. Following @barendregt84, it implements the *leftmost
 evaluation strategy*, which finds a normal form whenever it exists,
 allowing infinite data structures and fixed point definitions.  The
 evaluation can be visualized step-by-step, showing how the internal
-representation of a lambda term using De Bruijn indexes, as described
-in [@de1972lambda], works.  Optional coloring of the output
-facilitates this purpose.  With regards to combinatorial logic, a
-translation between lambda terms and SKI combinators is available. It
-follows a standard algorithm from [@hindley2008lambda] that allows the
-user to input and visualize results in both formats.  On the typed
-side, Mikrokosmos facilitates the study of the Curry-Howard
-isomorphism; see [@sorensen2006lectures] for a description of this
-correspondence.  To this end, it implements implicit typing à la
-Curry: the most general possible type is automatically inferred for
-any term, providing a limited form of polymorphism.  Given any typed
-lambda expression, Mikrokosmos can visualize the logical derivation
-tree it codifies in the style of Gentzen, sharing the notation of
-introductory articles and textbooks such as [@wadler2015propositions]
-or [@girard1989proofs].
+representation of a lambda term using De Bruijn indexes works
+[@de1972lambda].  Optional coloring of the output facilitates this
+purpose.  With regards to combinatorial logic, a translation between
+lambda terms and SKI combinators is available. It follows a standard
+algorithm from @hindley2008lambda that allows the user to input and
+visualize results in both formats.  On the typed side, Mikrokosmos
+facilitates the study of the Curry-Howard isomorphism; see
+@sorensen2006lectures for a description of this correspondence.  To
+this end, it implements implicit typing à la Curry: the most general
+possible type is automatically inferred for any term, providing a
+limited form of polymorphism.  Given any typed lambda expression,
+Mikrokosmos can visualize the logical derivation tree it codifies in
+the style of Gentzen, sharing the notation of introductory articles
+and textbooks such as those by @wadler2015propositions or
+@girard1989proofs.
 
 ![](fig1.png)
 *Figure 1. An example Gentzen diagram of a proof on intuitionistic logic.*
@@ -74,7 +74,7 @@ The latest release of the interpreter can be installed via `stack` or
 `cabal` from Hackage[^hackage] and the documentation can be found in
 https://mroman42.github.io/mikrokosmos/, where installation and usage
 instructions for the Jupyter kernel and the Javascript web application
-are also described.
+are also provided.
 
 [^hackage]: https://hackage.haskell.org/package/mikrokosmos
 
@@ -97,29 +97,29 @@ of visualizing the results, a clean and coherent syntax, libraries,
 and the possibility of integration in web pages and Jupyter notebooks.
 
 The Curry-Howard isomorphism between simply-typed lambda calculus and
-propositional intuitionistic logic described in
-[@wadler2015propositions] is sometimes illustrated using the Haskell
+propositional intuitionistic logic as described by
+@wadler2015propositions is sometimes illustrated using the Haskell
 programming language or other similar functional languages. This
 approach, however, is theoretically questionable. On the one hand,
 Haskell implements a polymorphic lambda calculus corresponding to
-second-order intuitionistic logic, as depicted in [@wadler2007girard];
+second-order intuitionistic logic, as depicted by @wadler2007girard;
 but it is not total and makes every type inhabited, which is a fatal
 flaw for our purpose.  On the other hand, it fails to represent a
 cartesian closed category due to its support for strict evaluation,
-partial functions and undefined values; as justified in
-[@danielsson2006fast]. Even if these deviations from the theory are
+partial functions and undefined values; as justified by
+@danielsson2006fast. Even if these deviations from the theory are
 justified by the needs of a real-world programming language, a student
 faced with Haskell as an example of the "Propositions as Types"
 paradigm may find it difficult to determine exactly what parts of the
 language should be ignored in order to retain a sound interpretation.
 Mikrokosmos, on the contrary, simply implements the internal language
 of a bicartesian closed category, following, for instance,
-[@lambek1988introduction], and avoiding any spurious additions.
+@lambek1988introduction, and avoiding any spurious additions.
 
 Simply-typed lambda calculus interpreters of this kind are rare; the
 existing software usually implements some particular primitive types,
 input-output, and tends not to use Curry typing. It is not designed to
-study the Curry-Howard correspondence.
+allow the study of the Curry-Howard correspondence.
 
 Mikrokosmos has already been tested on the classroom and its web
 application can be easily deployed to create interactive tutorials
