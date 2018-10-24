@@ -3,6 +3,7 @@
 ![Version](https://img.shields.io/badge/version-0.8.1-blue.svg)
 ![Travis (.org)](https://img.shields.io/travis/mroman42/mikrokosmos.svg)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1470226.svg)](https://doi.org/10.5281/zenodo.1470226)
+[![DOI](https://jose.theoj.org/papers/10.21105/jose.00029/status.svg)](https://doi.org/10.21105/jose.00029)
 
 
 **Mikrokosmos** is a λ-calculus interpreter, borrowing its name from the series of
