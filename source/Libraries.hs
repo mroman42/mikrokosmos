@@ -28,7 +28,7 @@ data Function = Function
   deriving (Show)
 
 stdfunctions :: [Function]
-stdfunctions = 
+stdfunctions =
   [ Function "id" "id = \\x.x" "Identity function. Returns its argument unchanged."
   , Function "const" "const = \\x.\\y.x" "Binay function evaluating to its first argument."
   , Function "compose" "compose = \\f.\\g.\\x.f (g x)" "Function composition."

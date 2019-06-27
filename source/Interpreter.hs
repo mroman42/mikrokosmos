@@ -7,7 +7,7 @@ This module contains auxiliary logic, types and representations of
 the internal state of the interpreter.
 -}
 module Interpreter
-  (  
+  (
   -- * Interpreter actions
     InterpreterAction (..)
   , interpreteractionParser
@@ -22,18 +22,18 @@ module Interpreter
 where
 
 import           Control.Applicative           ((<$>), (<*>))
-import           Control.Monad.State.Lazy      
-import           Text.ParserCombinators.Parsec hiding (State)
+import           Control.Monad.State.Lazy
 import           Data.Char
 import           Data.Maybe
-import           Format
 import           Environment
-import           NamedLambda
+import           Format
 import           Lambda
 import           Libraries
+import           NamedLambda
 import           Ski
-import           Stlc.Types
 import           Stlc.Gentzen
+import           Stlc.Types
+import           Text.ParserCombinators.Parsec hiding (State)
 
 
 -- | Execute a block of code in a given environment
@@ -79,7 +79,7 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
             | SetTypes Bool                  -- ^ changes type configuration
             | SetTopo Bool
 
-              
+
 -- | Executes a language action. Given a context and an action, returns
 -- the new context after the action and a text output.
 act :: Action -> State Environment [String]
@@ -110,7 +110,7 @@ askfor :: String -> [String]
 askfor func = case stdquery func of
   Nothing -> ["Error: the function '" ++ func ++ "' is not defined on the standard library.\n"]
   Just f -> [description f ++ "\n", "Defined as: " ++ code f,"\n"]
-    
+
 
 -- | Sets the given option on/off.
 setOption :: Bool ->
@@ -136,9 +136,9 @@ drawDiagram wantsimplification le = do
   return $
     if isopen then [errorUndefinedText ++ "\n"] else
       case maybediagram of
-        Nothing -> [errorNonTypeableText ++ "\n"]
+        Nothing      -> [errorNonTypeableText ++ "\n"]
         Just diagram -> map (++ "\n") . lines $ showProofTree diagram
-  
+
 -- | Executes a lambda expression. Given the context, returns the new
 -- context after the evaluation.
 executeExpression :: NamedLambda -> State Environment [String]
@@ -153,7 +153,7 @@ executeExpression le = do
      let isopen = isOpenExp bruijn
      let coloring = getColor env
      let decolorif = if coloring then id else decolor
-     
+
      return $
        if isopen then [errorUndefinedText ++ "\n"] else
        if illtyped then [errorNonTypeableText ++ "\n"] else
@@ -164,7 +164,7 @@ executeExpression le = do
            [unlines $ map (decolorif . showReduction) $ simplifySteps bruijn] ++
            [completeexp]
          ]
-  
+
 
 -- | Executes multiple actions. Given a context and a set of actions, returns
 -- the new context after the sequence of actions and a text output.
@@ -175,7 +175,7 @@ multipleAct actions = concat <$> mapM act actions
 -- | Shows an expression and the name that is bound to the expression
 -- in the current context
 showCompleteExp :: Environment -> Exp -> String
-showCompleteExp environment expr = 
+showCompleteExp environment expr =
   lambdaname ++ skiname ++ expName ++ typename ++ end
   where
     coloring = getColor environment

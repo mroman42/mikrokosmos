@@ -51,7 +51,7 @@ showexp (Pi2 m)        = "(" ++ "SND " ++ showexp m ++ ")"
 showexp (Inl m)        = "(" ++ "INL " ++ showexp m ++ ")"
 showexp (Inr m)        = "(" ++ "INR " ++ showexp m ++ ")"
 showexp (Caseof m n p) = "(" ++ "CASE " ++ showexp m ++ " OF " ++ showexp n ++ "; " ++ showexp p ++ ")"
-showexp Unit         = "*"
+showexp Unit           = "*"
 showexp (Abort a)      = "(ABORT " ++ showexp a ++ ")"
 showexp (Absurd a)     = "(ABSURD " ++ showexp a ++ ")"
 
@@ -128,7 +128,7 @@ simplify (Inr m)              = Inr (simplify m)
 simplify (Caseof (Inl m) a _) = App a m
 simplify (Caseof (Inr m) _ b) = App b m
 simplify (Caseof a b c)       = Caseof (simplify a) (simplify b) (simplify c)
-simplify Unit               = Unit
+simplify Unit                 = Unit
 simplify (Abort a)            = Abort (simplify a)
 simplify (Absurd a)           = Absurd (simplify a)
 
