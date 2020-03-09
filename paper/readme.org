@@ -1,0 +1,7 @@
+# Mikrokosmos: an educational lambda calculus interpreter
+
+*Mikrokosmos: an educational lambda calculus interpreter* was published on The Journal of Open Source Education on 24 October 2018.  This is the text of the article.
+
+Mikrokosmos is an educational untyped and simply typed lambda-calculus interpreter. For students, it is a tool to learn lambda-calculus and intuitionistic logic by coding. For educators, it is a didactic resource, grounded in the theoretical implementation of a functional programming language, so that they can integrate it with other learning materials. Mikrokosmos can be used on three different environments: (1) as a command line executable, implementing a read-eval-print loop interpreter; (2) as a Jupyter kernel, executing code blocks from a Jupyter notebook (Jupyter Development Team, 2016); and (3) as a Javascript web application, that can be used in conjunction with web text editor such as Codemirror to create an online programming environment.
+
+/Am I wrong? Are there references missing? Is this related to something else? Feel free to open an issue!/
