@@ -16,8 +16,7 @@ newtype Block = Block { getBlock :: [String] }
 instance Monoid Block where
   mempty  = Block [[]]
 #if MIN_VERSION_base(4,9,0)
-  mappend = (<>)
- 
+
 instance Semigroup Block where
   (<>) = joinBlocks
 #else
