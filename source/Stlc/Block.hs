@@ -1,5 +1,3 @@
-{-# LANGUAGE CPP #-}
-
 module Stlc.Block
   ( Block
   , textBlock
@@ -8,20 +6,17 @@ module Stlc.Block
   )
 where 
 
-import Data.Monoid()
+import Data.Semigroup()
 
 newtype Block = Block { getBlock :: [String] }
   deriving (Eq, Ord)
 
-instance Monoid Block where
-  mempty  = Block [[]]
-#if MIN_VERSION_base(4,9,0)
-
 instance Semigroup Block where
   (<>) = joinBlocks
-#else
-  mappend = joinBlocks
-#endif
+
+instance Monoid Block where
+  mempty  = Block [[]]
+  mappend = (<>) -- redundant starting with base-4.11 / GHC 8.4
 
 
 instance Show Block where
