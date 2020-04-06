@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Stlc.Block
   ( Block
   , textBlock
@@ -6,14 +8,22 @@ module Stlc.Block
   )
 where 
 
-import Data.Monoid
+import Data.Monoid()
 
 newtype Block = Block { getBlock :: [String] }
   deriving (Eq, Ord)
 
 instance Monoid Block where
-  mappend = joinBlocks
   mempty  = Block [[]]
+#if MIN_VERSION_base(4,9,0)
+  mappend = (<>)
+ 
+instance Semigroup Block where
+  (<>) = joinBlocks
+#else
+  mappend = joinBlocks
+#endif
+
 
 instance Show Block where
   show = unlines . getBlock
