@@ -6,14 +6,18 @@ module Stlc.Block
   )
 where 
 
-import Data.Monoid
+import Data.Semigroup()
 
 newtype Block = Block { getBlock :: [String] }
   deriving (Eq, Ord)
 
+instance Semigroup Block where
+  (<>) = joinBlocks
+
 instance Monoid Block where
-  mappend = joinBlocks
   mempty  = Block [[]]
+  mappend = (<>) -- redundant starting with base-4.11 / GHC 8.4
+
 
 instance Show Block where
   show = unlines . getBlock
