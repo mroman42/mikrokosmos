@@ -94,8 +94,8 @@ indexColor _ e = show e
 -- >>> simplifyAll $ App (Lambda (Var 1)) (Lambda (Var 1))
 -- λ1
 --
-simplifyAll :: Exp -> Exp
-simplifyAll = last . simplifySteps
+simplifyAll :: String -> Exp -> Exp
+simplifyAll strategy = last . (simplifySteps strategy)
 
 -- | Applies repeated simplification to the expression until it stabilizes and
 -- returns all the intermediate results.
@@ -103,11 +103,12 @@ simplifyAll = last . simplifySteps
 -- >>> simplifySteps $ App (Lambda (Var 1)) (Lambda (Var 1))
 -- [(λ1 λ1),λ1]
 --
-simplifySteps :: Exp -> [Exp]
-simplifySteps e
+simplifySteps :: String -> Exp -> [Exp]
+simplifySteps strategy e
   | e == s    = [e]
-  | otherwise = e : simplifySteps s
-  where s = simplify e
+  | otherwise = e : simplifySteps strategy s
+  where s = case strategy of "full" -> simplify e 
+                             _ -> simplify_cbv e
 
 -- | Simplifies the expression recursively.
 -- Applies only one parallel beta reduction at each step.
@@ -131,6 +132,29 @@ simplify (Caseof a b c)       = Caseof (simplify a) (simplify b) (simplify c)
 simplify Unit               = Unit
 simplify (Abort a)            = Abort (simplify a)
 simplify (Absurd a)           = Absurd (simplify a)
+
+-- | Simplifies the expression recursively using call by strategy.
+-- Applies only one parallel beta reduction at each step.
+simplify_cbv :: Exp -> Exp
+simplify_cbv (Lambda e)           = Lambda e
+simplify_cbv (App (Lambda f) x)   = betared (App (Lambda f) x)
+simplify_cbv (App (Var e) x)      = App (Var e) (simplify_cbv x)
+simplify_cbv (App (App f g) x)    = App (simplify_cbv (App f g)) (simplify_cbv x)
+simplify_cbv (App a b)            = App (simplify_cbv a) (simplify_cbv b)
+simplify_cbv (Var e)              = Var e
+simplify_cbv (Pair a b)           = Pair (simplify_cbv a) (simplify_cbv b)
+simplify_cbv (Pi1 (Pair a _))     = a
+simplify_cbv (Pi1 m)              = Pi1 (simplify_cbv m)
+simplify_cbv (Pi2 (Pair _ b))     = b
+simplify_cbv (Pi2 m)              = Pi2 (simplify_cbv m)
+simplify_cbv (Inl m)              = Inl (simplify_cbv m)
+simplify_cbv (Inr m)              = Inr (simplify_cbv m)
+simplify_cbv (Caseof (Inl m) a _) = App a m
+simplify_cbv (Caseof (Inr m) _ b) = App b m
+simplify_cbv (Caseof a b c)       = Caseof (simplify_cbv a) (simplify_cbv b) (simplify_cbv c)
+simplify_cbv Unit                 = Unit
+simplify_cbv (Abort a)            = Abort (simplify_cbv a)
+simplify_cbv (Absurd a)           = Absurd (simplify_cbv a)
 
 -- | Applies beta-reduction to a function application.
 -- Leaves the rest of the operations untouched.

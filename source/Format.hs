@@ -147,6 +147,7 @@ helpText = unlines [
   "\t:color <on/off> \t sets color mode on/off",
   "\t:ski <on/off> \t\t sets ski mode on/off",
   "\t:types <on/off> \t untyped/simply typed lambda calculus",
+  "\t:strategy <full|cbv>  \t sets evaluation strategy to full beta/call by value", 
   "\t:help       \t\t shows this help"
   ++ end
   ]

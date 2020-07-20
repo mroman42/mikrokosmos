@@ -6,7 +6,7 @@ module Stlc.Block
   )
 where 
 
-import Data.Semigroup()
+import Data.Semigroup hiding (diff)
 
 newtype Block = Block { getBlock :: [String] }
   deriving (Eq, Ord)
