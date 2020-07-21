@@ -273,7 +273,8 @@ commentParser :: Parser Action
 commentParser = string "#" >> many anyChar >> return Comment
 
 strategyParser :: Parser Action
-strategyParser = SetStrategy <$> (string ":strategy" >> spaces >> ((string "full") <|> (string "cbv")))
+strategyParser = SetStrategy <$> (
+  string ":strategy" >> spaces >> (string "full" <|> try (string "cbn")  <|> string "cbv" )) 
 
 quitParser :: Parser InterpreterAction
 quitParser    = string ":quit" >> return Quit
