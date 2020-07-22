@@ -77,6 +77,7 @@ data Action = Bind (String, NamedLambda)     -- ^ bind a name to an expression
             | SetColor Bool                  -- ^ changes colors
             | SetSki Bool                    -- ^ changes ski output
             | SetTypes Bool                  -- ^ changes type configuration
+            | SetStrategy String             -- ^ changes reduction strategy
             | SetTopo Bool
 
               
@@ -88,7 +89,7 @@ act (Bind (s,le)) = do
   modify (\env -> addBind env s (toBruijn (context env) le))
   return [""]
 act (EvalBind (s,le)) = do
-  modify (\env -> addBind env s (simplifyAll $ toBruijn (context env) le))
+  modify (\env -> addBind env s (simplifyAll (getStrategy env) (toBruijn (context env) le)))
   return [""]
 act (Execute le) = executeExpression le
 act (Diagram le) = drawDiagram False le
@@ -101,6 +102,7 @@ act (SetVerbose setting) = setOption setting changeVerbose "verbose: "
 act (SetColor setting) = setOption setting changeColor "color mode: "
 act (SetSki setting) = setOption setting changeSkioutput "ski mode: "
 act (SetTypes setting) = setOption setting changeTypes "types: "
+act (SetStrategy setting) = setOption' setting changeStrategy "strategy: "
 act (SetTopo setting) = setOption setting changeTopo "topology: "
 act (Ask func) = return $ askfor func
 
@@ -125,12 +127,25 @@ setOption setting change message = do
             (if getColor env then formatFormula else "") ++ message ++
             (if setting then "on" else "off") ++ end
 
+-- | Sets the given string option.
+setOption' :: String ->
+             (Environment -> String -> Environment) ->
+             String ->
+             State Environment [String]
+setOption' setting change message = do
+  modify (`change` setting)
+  env <- get
+  return [messageenv env ++ "\n"]
+    where messageenv env =
+            (if getColor env then formatFormula else "") ++ message ++
+            setting ++ end
+
 drawDiagram :: Bool -> NamedLambda -> State Environment [String]
 drawDiagram wantsimplification le = do
   env <- get
   let bruijn = toBruijn (context env) le
   let isopen = isOpenExp bruijn
-  let simpbruijn = simplifyAll bruijn
+  let simpbruijn = simplifyAll (getStrategy env) bruijn
   let maybediagram = gentzendiagram (if wantsimplification then simpbruijn else bruijn)
 
   return $
@@ -149,7 +164,7 @@ executeExpression le = do
      let illtyped = typed && isNothing (typeinference bruijn)
      let notypes = not typed && usestypecons bruijn
      let verbose = getVerbose env
-     let completeexp = showCompleteExp env $ simplifyAll bruijn
+     let completeexp = showCompleteExp env $ simplifyAll (getStrategy env) bruijn
      let isopen = isOpenExp bruijn
      let coloring = getColor env
      let decolorif = if coloring then id else decolor
@@ -161,7 +176,7 @@ executeExpression le = do
        if not verbose then [completeexp ++ "\n"] else
          [unlines $
            [show le] ++
-           [unlines $ map (decolorif . showReduction) $ simplifySteps bruijn] ++
+           [unlines $ map (decolorif . showReduction) $ simplifySteps (getStrategy env) bruijn] ++
            [completeexp]
          ]
   
@@ -222,6 +237,7 @@ actionParser = choice $ map try
   , colorParser
   , skiOutputParser
   , typesParser
+  , strategyParser
   , topoParser
   ]
 
@@ -256,6 +272,10 @@ askParser = Ask <$> (string ":? " >> many1 alphaNum)
 commentParser :: Parser Action
 commentParser = string "#" >> many anyChar >> return Comment
 
+strategyParser :: Parser Action
+strategyParser = SetStrategy <$> (
+  string ":strategy" >> spaces >> (string "full" <|> try (string "cbn")  <|> string "cbv" )) 
+
 quitParser :: Parser InterpreterAction
 quitParser    = string ":quit" >> return Quit
 restartParser, helpParser :: Parser Action
@@ -284,3 +304,4 @@ topoParser      = settingParser SetTopo    ":topology"
 -- | Parses a "load-file" command.
 loadParser :: Parser InterpreterAction
 loadParser = Load <$> (string ":load" >> between spaces spaces (many1 (satisfy (not . isSpace))))
+ 

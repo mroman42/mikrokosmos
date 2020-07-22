@@ -20,6 +20,7 @@ module Environment
   , getSki
   , getTypes
   , getExpressionName
+  , getStrategy
   , getTopo
   
   -- * Modifying the environment
@@ -28,6 +29,7 @@ module Environment
   , changeVerbose
   , changeSkioutput
   , changeTypes
+  , changeStrategy
   , changeTopo
 
   -- * Filenames and Modulenames
@@ -39,7 +41,6 @@ where
 import           Data.List
 import           MultiBimap
 import           Lambda
-
 -- | A filename is a string containing the directory path and
 -- the real name of the file.
 type Filename = String
@@ -55,6 +56,7 @@ data Environment = Environment
   , color :: Bool
   , skioutput :: Bool
   , types :: Bool
+  , strategy :: String
   , topo :: Bool
   }
 
@@ -67,17 +69,20 @@ defaultEnv = Environment
   , color       = True
   , skioutput   = False
   , types       = False
+  , strategy    = "full"
   , topo        = False
   }
 
 -- | Get current settings
 getColor, getVerbose, getSki, getTypes, getTopo :: Environment -> Bool
-getColor   = color
-getVerbose = verbose
-getSki     = skioutput
-getTypes   = types
-getTopo    = topo
+getColor    = color
+getVerbose  = verbose
+getSki      = skioutput
+getTypes    = types
+getTopo     = topo
 
+getStrategy :: Environment -> String
+getStrategy = strategy
 
 
 -- | Adds a name binding to the environment
@@ -103,6 +108,11 @@ changeSkioutput options setting = options {skioutput = setting}
 -- | Sets the types output configuration on/off
 changeTypes :: Environment -> Bool -> Environment
 changeTypes options setting = options {types = setting}
+
+-- | Sets the reduction strategy 
+changeStrategy :: Environment -> String -> Environment
+changeStrategy options setting = options {strategy = setting}
+
 changeTopo :: Environment -> Bool -> Environment
 changeTopo options setting = options {topo = setting}
 
