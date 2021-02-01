@@ -29,19 +29,22 @@ main =
   runCommand $ \opts args -> do
   -- Reads the libaries flag. If activated, it will not automatically
   -- load the libraries.
-  let initialEnv = if flagLibs opts then defaultEnv else librariesEnv
+  let 
+    initialEnv = if flagLibs opts then defaultEnv else librariesEnv
+    filename = flagExec opts
   -- Reads the rest of the flags. The --version flag shows the current
   -- version of the interpreter. An optional argument may be used to
   -- indicate a file to load.
   if flagVersion opts
   then putStrLn versionText
-  else case args of
-             [] ->
+  else if not $ null args
+    then putStrLn $ "Unknown arguments " ++ show args
+    else case filename of
+             "" ->
                runInputT
                  defaultSettings
                  (outputStrLn initialText >> interpreterLoop initialEnv)
-             [filename] -> executeFile filename
-             _ -> putStrLn "Wrong number of arguments"
+             _ -> executeFile initialEnv filename
 
 -- | Interpreter awaiting for an instruction.
 interpreterLoop :: Environment -> InputT IO ()
@@ -138,13 +141,13 @@ loadFile filename = do
 
 -- | Executes the commands inside a file. A .mkr file can contain a sequence of
 --   expressions and variable bindings, and it is interpreted sequentially.
-executeFile :: Filename -> IO ()
-executeFile filename = do
+executeFile :: Environment -> Filename -> IO ()
+executeFile environment filename = do
   maybeloadfile <- loadFile filename
   case maybeloadfile of
     Nothing -> putStrLn "Error loading file"
     Just actions ->
-      case runState (multipleAct actions) defaultEnv of
+      case runState (multipleAct actions) environment of
         (outputs, _) -> mapM_ putStr outputs
 
 -- | Reads module dependencies
